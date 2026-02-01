@@ -1,0 +1,22 @@
+client server chat/
+flaskGPT/
+flasktest/
+salvador/
+
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.env
+.env.*
+
+# Flask
+instance/
+.webassets-cache
+
+# OS / editor junk
+.DS_Store
+*.swp
