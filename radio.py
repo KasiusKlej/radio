@@ -7,7 +7,7 @@ def hello():
     
 
 
-#(when running script from here from IDE)
+#(januar 2026 when running script from here from IDE)
 if __name__ == "__main__":
     #launch this app like this (or else you can run batch file to launch)
     app.run(debug=True)
