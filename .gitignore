@@ -3,6 +3,9 @@ flaskGPT/
 flasktest/
 salvador/
 
+*.pyc
+*.log
+
 
 # Python
 __pycache__/
