@@ -2,9 +2,11 @@
 from flask import Flask, render_template , url_for 
 from cardgames.routes import cardgames_bp
 
+#app = Flask(__name__, static_url_path="/static")
+#app.config["APPLICATION_ROOT"] = "/"
 app = Flask(__name__)
 app.secret_key = "428ef008c81fd2d317876eb94ffeb68039d6a0d304b7a9e4cc5a7f47ec5fea00"
-app.register_blueprint(cardgames_bp, url_prefix="/cardgames")
+app.register_blueprint(cardgames_bp, url_prefix="//cardgames")
 
 @app.route("/")
 def hello():
@@ -12,8 +14,13 @@ def hello():
     
 
 
+
+
 #january 2026
 if __name__ == "__main__":
     #launch this app like this (or else you can run batch file to launch)
     app.run(debug=True)
+    
+
+
     
