@@ -1,0 +1,293 @@
+Card Games
+ malfunction.
+You won.
+You lost.
+Card Games for One Player for Windows       (c) september 2000    (p) miha11@yahoo.com
+                                                    
+This game is shareware. 
+If you want more than please register.
+Won: 
+Lost: 
+Played: 
+Percent: 
+Percent alfa: 
+---
+&New game
+&Zoom
+&Options
+&Help
+E&xit
+Zoom &in
+Zoom &out
+Ma&ximal zoom
+Mi&nimal zoom
+&Autoplay
+&Resizable cards
+&Load other cards...
+&Statistcs...
+&Overall statistics...
+&Rules
+&About...
+---
+OK
+Cancel
+---
+OK
+Legend:
+won
+unfinished
+lost
+---
+&Language...
+&Customising...
+&Register...
+-----------
+-----------
+This game is shareware.
+If you want more than please register.
+
+
+------------
+------------
+[Registration form]
+Registration form
+---
+You are not yet fully registered user of Card Games.
+You may not be able to play all the games unless you register.
+You can register for 18$ or less.
+To register, send us a request. 
+If you allready payed for the Card Games and have received serial number,
+then you can enter the serial number and become the registered player.
+You can also visit http://abulafia.ijs.si/bbxmih/games/
+---
+I want to buy Card Games
+
+I will pay with
+cash
+money order
+cheque
+credit card
+VISA
+Mastercard
+other...
+
+I want to receive
+Serial Number
+3,5" Floppy Disk
+CD-ROM
+
+I want to receive the product
+by mail
+by e-mail
+My address
+My e-mail
+Name: 
+Street: 
+City: 
+ZIP code (US only)
+State (US only)
+Country: 
+
+I don't want all of the games
+(this will reduce the price)
+
+Amount
+Shipment cost
+Total amount
+---
+Print registration form
+Send order by mail
+To send order by mail, print registration form and send it to to the above address.
+Send order by e-mail
+Enter serial number
+OK
+Close
+---
+To:
+Subject:
+---
+
+
+
+[GAMENAME]
+Free cell
+The object of a game is to put all the cards 
+in upper 4 right places starting with ace of clubs,
+ace of diamonds, ace of hearts and ace of spades
+in each of 4 places.
+
+[GAMENAME]
+Four seasons
+Put all the cards in corners starting with aces
+in each corner. There are 5 cards in middle 5 positions
+and other cards in the deck. Use middle positions to
+store cards. You can move cards from deck to place
+near deck or to 5 middle positions.
+
+[GAMENAME]
+Golf
+The object of the game is to move all cards from the 
+deck and from 7 columns to talon in ascending or descending 
+sequence regardless of suit. 
+
+[GAMENAME]
+Alternate
+Build 4 piles in alternate colours in ascending 
+order on the aces and descending order on the kings.
+Deal cards one at a time, building where possible or
+discarding into any of four waste heaps. The top card 
+of each heap is always available. When all the cards 
+have been dealt, redeal without shufling. Two such redeals
+are allowed.
+
+[GAMENAME]
+Canfield
+  The goal of the game is to complete all four foundation piles
+starting from aces and build upwards in suit sequence.
+  Use tableau piles to store cards in descending sequence of 
+alternating colour. There are four cards in tableau at begining 
+of the game.
+  Use top card from stock, where there are 13 cards at begining. 
+  Other 34 cards are left in the deck. Take 3 cards from the deck
+to your hand. Only top card is available. When all of 3 possibilities
+were played, turn over and discard remamining of the 3 cards (that 
+were not played) to talon. 
+  When the deck is exsausted, the talon is turned over without being
+shuffled and becomes the new deck, the cards in it again being turned 
+over in packets of three. There is no limit to the number of times this 
+can be done.
+
+[GAMENAME]
+Aud Lang Syne
+Build upwards in suit from aces to kings.
+Use tableau to store cards in descending
+alternate order. Double click on stock to redeal.
+
+[GAMENAME]
+Castles in Spain
+The object of a game is to complete all four
+foundation columns buildig from aces ascending
+to kings in suit. Use tableau to store cards
+in descending alternate order. Double click the
+face down card to turn it over.
+
+[GAMENAME]
+Klondike
+(rank: very difficult)
+
+Put all the cards in four foundation columns
+starting from aces building in suit up to kings.
+Use tableau to store cards in descending alternate
+order. If vacancy in tableau is created during game,
+you can put king or a sequence with a king as the base
+card. Double click face down card to turn it over.
+Once all possible moves in the tableau has been made,
+turn the cards in the stock one by one, playing any 
+cards that can be played onto a suitable card in the 
+tableau or onto its foundation pile. Cards that cannot 
+be played are put into the talon. One redeal of the talon
+is allowed.
+
+[GAMENAME]
+Ship shape and Bristol fashion
+The goal is to build 4 foundations upwards 
+regardless of suit starting from aces. 
+Packing within the tableau is downwards, 
+ragardless of suit. Only one card at a time 
+can be played. 
+Double click stock to deal next three cards 
+to reserve columns.
+
+[GAMENAME]
+The Battle of Ladies
+Three Jacks are excluded from pack and are put far right, near stock.
+Other Jack is at the top of pyramid. The goal is to build from 4 Queens
+upwards to tens according to suit.
+The name of the game originates from the old rule that the Queen 
+whos' foundation is completed first claims the Jack and wins.
+Cards at the side of pyramid are build downwards in alternate
+colours. They can only be moved one by one. Spaces created are filled
+by cards from the stock. When no more moves are possible deal 6
+cards from stock to sides of pyramid by double clicking on stock.
+When stock is exsausted, cards from sides of pyramid are taken and
+redealed. Two such redeals are allowed. To redeal double click the
+Jack card at the top of pyramid.
+
+[GAMENAME]
+Son of Fortune
+The goal is to complete foundation columns from aces 
+to kings building in suit.
+Use two rows in tableau to store cards in descending 
+suit matching order.
+Cards that cannot be played from stock to foundation or tableau
+are put to waste column (you can double click on stock to do so). 
+Top card of the waste column is always available.
+Any vacancies that are created in the tableau are filled
+from waste pile or, if it's empty, from the stock.
+
+[GAMENAME]
+The Beleaguered Castle
+(rank: very difficult)
+
+The aim of the game is to complete 4 foundation piles
+building from aces to kings. Use 8 side columns to 
+store cards in descending alternate order.
+
+[GAMENAME]
+Bisley
+(rank: very difficult)
+
+Build downwards in suit starting with kings.
+The tableau card can be moved to a card that 
+matches in suit and is next to it in rank (eight 
+of clubs could go to nine or seven of clubs).
+
+[GAMENAME]
+Fortress
+(rank: very difficult)
+
+Build four piles upwards in suit starting from aces.
+The side cards can be moved to a card that 
+matches in suit and is next to it in rank (eight 
+of clubs could go to nine or seven of clubs).
+
+[GAMENAME]
+Grandpa's clock
+There are 12 foundation columns forming a clock.
+You must build up in suit on each, starting on 
+foundation card and building until sequence reaches
+the number of the hours at which the foundation card sits.
+Use five tableau rows to store cards in descending order
+regardless of suit. Double click the tableau card to turn 
+it over.
+
+[GAMENAME]
+Princ Albert
+Build upwards in suit starting from aces.
+Use tableau (9 columns) to store cards in 
+alternate descending order. 
+Seven cards from the reserve can be played 
+on foundation or tableau but not back to the 
+reserve.
+
+[GAMENAME]
+Quadrille
+You can play this game by double clicking on stock.
+
+  (Cards are turned up from the stock one at a time.
+The foundation cards are fives and sixes. Fives go
+on north, west, east and south positions, sixes go
+between them. On fives you can build down in suit 
+to aces, on sixes you can build up to jacks. Queens
+play no part in the game. When they turn up, they 
+are put in the middle position.
+Two redeals are allowed after the stock is exsausted.)
+
+[GAMENAME]
+Raglan
+The goal is to build four foundations from aces
+to kings.
+Use tableau to store cards in alternate descending order.
+Double click facedown card to turn it over.
+The six cards from reserve can be put to foundation
+but can not be put to tableau.

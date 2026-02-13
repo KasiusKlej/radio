@@ -1,0 +1,293 @@
+Karte Spiele 
+StÃ¶rung. 
+Sie gewannen. 
+Sie verloren. 
+Kardieren Sie Spiele fÃ¼r einen Spieler fÃ¼r Windows (c) September 2000 (P) miha11@yahoo.com 
+
+Dieses Spiel ist shareware. Wenn Sie mehr als bitte wÃ¼nschen 
+Register an http://abulafia.ijs.si/bbxmih/games / 
+Gewonnen: 
+Verloren: 
+Gespielt: 
+Prozente: 
+Prozentalfa: 
+--- 
+&Neues Spiel 
+&Zoom 
+&Optionen 
+&Hilfe 
+&Ausgang 
+Zoom &innen 
+Zoom &heraus 
+Ma&ximaler Zoom 
+Mi&nimaler Zoom 
+&Automatik spielen 
+&Karten erstrecken 
+&Legen Sie andere Karten ein 
+&Statistken 
+&Gesamte Statistiken 
+&Richtlinien 
+&Ãber... 
+--- 
+O.K. 
+LÃ¶schen 
+--- 
+O.K. 
+Legende: 
+gewonnen 
+unfertig 
+verloren 
+--- 
+&Sprache...
+&Anpassen...
+&Registrieren Sie...
+----------- 
+----------- 
+Dieses Spiel ist shareware. 
+Wenn Sie mehr als wÃ¼nschen, registrieren Sie bitte. 
+Besuchen Sie http://abulafia.ijs.si/bbxmih/games / 
+Besuchen Sie http://abulafia.ijs.si/bbxmih/page2.html 
+------------ 
+------------ 
+[Registration form]
+Ausrichtung Formular 
+---
+Sie sind nicht noch vÃ¶llig zugelassener Benutzer der Karte Spiele. 
+Sie kÃ¶nnen nicht kÃ¶nnen, alle Spiele zu spielen, es sei denn Sie registrieren. 
+Sie kÃ¶nnen fÃ¼r 18$ oder kleiner registrieren. 
+, um zu registrieren, schicken Sie uns einen Antrag.  
+Wenn Sie allready fÃ¼r die Karte Spiele payed und Seriennummer empfangen haben, 
+dann kÃ¶nnen Sie die Seriennummer eintragen und der eingetragene Spieler werden. 
+Sie kÃ¶nnen http://abulafia.ijs.si/bbxmih/games auch besuchen / 
+---
+Ich mÃ¶chte Karte Spiele kaufen 
+
+Ich zahle mit 
+Bargeld
+Zahlungsan.
+Scheck
+Kreditkarte
+VISUM 
+Mastercard 
+anderes... 
+
+Ich mÃ¶chte empfangen 
+Seriennummer
+3.5 " Diskette
+Cd-rom
+
+Ich mÃ¶chte das Produkt empfangen 
+Post
+E-mail
+Meine Adresse 
+Meine E-mail
+Name:  
+StraÃe:  
+Stadt:  
+REISSVERSCHLUSS-Code (nur US) 
+Zustand (nur US) 
+Land:  
+
+Ich wÃ¼nsche nicht alle Spiele 
+(dieses verringert den Preis) 
+
+Menge 
+Versandkosten 
+Gesamtmenge 
+--- 
+Druckausrichtung Formular 
+Schicken Sie Ordnung mit der Post 
+, um Ordnung mit der Post zu schicken, drucken Sie Ausrichtung Formular und schicken Sie es zu zur oben genannten Adresse. 
+Senden Sie Ordnung durch E-mail 
+Tragen Sie Seriennummer ein 
+O.K. 
+AbschluÃ 
+--- 
+To: 
+Thema: 
+--- 
+
+
+
+[GAMENAME]
+Freie Zelle 
+Die Nachricht eines Spiels ist, alle Karten zu setzen 
+in den rechten PlÃ¤tzen des Upper 4 beginnend mit As der Vereine, 
+As der Diamanten, As der Innerer und As der Spaten 
+in jedem von 4 PlÃ¤tzen. 
+
+[GAMENAME]
+Vier Jahreszeiten 
+Setzen Sie alle Karten in Ecken beginnend mit Assen ein 
+in jeder Ecke. Es gibt 5 Karten in Positionen der Mitte 5 
+und andere Karten in der Plattform. Verwenden Sie mittlere Positionen zu 
+speichern Sie Karten. Sie kÃ¶nnen Karten von Plattform zu Platz verschieben 
+nahe Plattform oder in 5 mittlere Positionen. 
+
+[GAMENAME]
+Golf 
+Die Nachricht des Spiels ist, alle Karten von zu verschieben 
+Plattform und von 7 Spalten zum Talon in steigendem oder in absteigendem 
+Reihenfolge unabhÃ¤ngig davon Klage. 
+
+[GAMENAME]
+Alternative 
+Bauen Sie 4 Stapel in den wechselnden Farben beim Steigen auf 
+Ordnung auf den Assen und absteigende Folge auf den KÃ¶nigen. 
+Abkommenkarten einzeln, wo mÃ¶glich aufbauend oder 
+Verwerfen in irgendwelche von vier Ã¼berschÃ¼ssigen Haufen. Die obere Karte 
+von jedem Haufen ist immer vorhanden. Wenn alle Karten 
+sind behandelt worden, redeal, ohne shufling. Zwei solche redeals 
+werden gewÃ¤hrt. 
+
+[GAMENAME]
+Canfield 
+Das Ziel des Spiels ist, alle vier Grundlage Stapel durchzufÃ¼hren 
+**time-out** beginnen von As und Bau aufwÃ¤rts in Klage Reihenfolge. 
+Benutzen Sie tableaustapel, um Karten in absteigender Reihenfolge von zu speichern 
+wechselnde Farbe. Es gibt vier Karten im tableau am Begining 
+vom Spiel. 
+Benutzen Sie obere Karte vom Vorrat, in dem es 13 Karten am Begining gibt. 
+Andere 34 Karten werden in der Plattform gelassen. Karten des Nehmens 3 von der Plattform 
+zu Ihrer Hand. Nur obere Karte ist vorhanden. Wenn alle 3 MÃ¶glichkeiten 
+wurden gespielt, umdrehen und verwerfen das Remamining der 3 Karten (die 
+wurden) nicht zum Talon gespielt. 
+Wenn die Plattform ist, exsausted, der Talon wird umgedreht ohne zu sein 
+und wird die neue Plattform shuffled, die Karten in ihr wieder drehend 
+Ã¼ber in Paketen von drei. Es gibt keine Begrenzung zur Zahl Zeiten dieses 
+kann getan werden. 
+
+[GAMENAME]
+Aud Lang Syne 
+Bauen Sie aufwÃ¤rts in der Klage von Asse zu KÃ¶nige auf. 
+Verwenden Sie tableau, um Karten beim Absteigen zu speichern 
+wechseln Sie Ordnung. Verdoppeln Sie klicken an Vorrat zu redeal. 
+
+[GAMENAME]
+LuftschlÃ¶sser 
+Die Nachricht eines Spiels ist, alle vier durchzufÃ¼hren 
+Grundlage Spaltebuildig von den steigenen Assen 
+zu den KÃ¶nigen in der Klage. Verwenden Sie tableau, um Karten zu speichern 
+in absteigender wechselnder Ordnung. Doppeltes Klicken 
+Gesicht kardieren unten, um es umzuwenden. 
+
+[GAMENAME]
+Klondike 
+(Rank: sehr schwierig) 
+
+Setzen Sie alle Karten in vier Grundlage Spalten ein 
+Abfahren von den Assen, die in der Klage bis zu den KÃ¶nigen aufbauen. 
+Verwenden Sie tableau, um Karten in absteigender Alternative zu speichern 
+Ordnung. Wenn freie Stelle im tableau wÃ¤hrend des Spiels erstellt wird, 
+Sie kann KÃ¶nig oder eine Reihenfolge mit einem KÃ¶nig als die Unterseite setzen 
+Karte. Doppeltes Klickengesicht kardieren unten, um sie umzuwenden. 
+Sobald alle mÃ¶glichen MaÃnahmen im tableau getroffen worden ist, 
+drehen Sie die Karten das auf Lager eins nach dem anderen und irgendwelche spielen 
+Karten, die auf eine verwendbare Karte in gespielt werden kÃ¶nnen 
+tableau oder auf seinen Grundlage Stapel. Karten, die nicht kÃ¶nnen 
+seien werden gesetzt in den Talon gespielt Sie. Ein redeal vom Talon 
+wird gewÃ¤hrt. 
+
+[GAMENAME]
+Schiff Form und Bristolart und Weise 
+Das Ziel ist, 4 Grundlagen aufwÃ¤rts aufzubauen 
+unabhÃ¤ngig davon die Klage, die von den Assen abfÃ¤hrt. 
+Das Packen innerhalb des tableau ist abwÃ¤rts, 
+ragardless von der Klage. Nur eine Karte hintereinander 
+kann gespielt werden. 
+Verdoppeln Sie Klickenvorrat, um zunÃ¤chst drei Karten zu behandeln 
+zu den Reservespalten. 
+
+[GAMENAME]
+Die Schlacht der Damen 
+Drei Steckfassungen werden vom Satz ausgeschlossen und sind, nahe Vorrat gesetztes weites rechtes. 
+Anderer Jack ist an der Oberseite der Pyramide. Das Ziel ist, von 4 KÃ¶niginnen aufzubauen 
+aufwÃ¤rts zu den 10 entsprechend Klage. 
+Der Name des Spiels entsteht von der alten Richtlinie, die die KÃ¶nigin 
+wessen Grundlage zuerst durchgefÃ¼hrt wird, behauptet den Jack und gewinnt. 
+Karten an der Seite der Pyramide sind Bau abwÃ¤rts in der Alternative 
+Farben. Sie kÃ¶nnen nur eins nach dem anderen verschoben werden. Die erstellten worden Platz werden gefÃ¼llt 
+durch Karten vom Vorrat. Wenn keine mehr Bewegungen mÃ¶glich sind, behandeln Sie 6 
+Karten von Vorrat zu Seiten der Pyramide durch das doppelte Klicken auf Vorrat. 
+Wenn Vorrat ist, exsausted, werden Karten von den Seiten der Pyramide genommen und 
+redealed. Zwei solche redeals werden erlaubt. Zum redeal doppelten Klicken 
+Jackkarte an der Oberseite der Pyramide. 
+
+[GAMENAME]
+Sohn des VermÃ¶gens 
+Das Ziel ist, Grundlage Spalten von den Assen durchzufÃ¼hren 
+zu den KÃ¶nigen, die in der Klage aufbauen. 
+Verwenden Sie zwei Reihen im tableau, um Karten beim Absteigen zu speichern 
+entsprechen Sie zusammenpassender Ordnung. 
+Zu Karten, die nicht gespielt werden kann von Vorrat Grundlage oder tableau 
+werden gesetzt, um Spalte (Sie kÃ¶nnen verdoppeln Vorrat, an zu klicken, um so zu tun) zu vergeuden. 
+Obere Karte der Ã¼berschÃ¼ssigen Spalte ist immer vorhanden. 
+Alle mÃ¶gliche freien Stellen, die im tableau erstellt werden, werden gefÃ¼llt 
+vom Ã¼berschÃ¼ssigen Stapel oder, wenn er leer ist, vom Vorrat. 
+
+[GAMENAME]
+Das Belagerte SchloÃ 
+(Rank: sehr schwierig) 
+
+Das Ziel des Spiels ist, 4 Grundlage Stapel durchzufÃ¼hren 
+GebÃ¤ude von Asse zu KÃ¶nige. Benutzen Sie 8 seitliche Spalten zu 
+speichern Sie Karten in absteigender wechselnder Ordnung. 
+
+[GAMENAME]
+Bisley 
+(Rank: sehr schwierig) 
+
+Bau abwÃ¤rts in der Klage beginnend mit KÃ¶nigen. 
+Die tableaukarte kann auf eine Karte verschoben werden das 
+Ãbereinstimmungen in der Klage und ist nahe bei ihr im Rank (acht 
+von den Vereinen konnte bis neun oder sieben von Vereinen gehen). 
+
+[GAMENAME]
+Fortress 
+(Rank: sehr schwierig) 
+
+Bauen Sie vier Stapel aufwÃ¤rts in der Klage auf, die von den Assen abfÃ¤hrt. 
+Die seitlichen Karten kÃ¶nnen auf eine Karte verschoben werden das 
+Ãbereinstimmungen in der Klage und ist nahe bei ihr im Rank (acht 
+von den Vereinen konnte bis neun oder sieben von Vereinen gehen). 
+
+[GAMENAME]
+Taktgeber Grandpa 
+Es gibt 12 Grundlage Spalten, die einen Taktgeber bilden. 
+Sie mÃ¼ssen in der Klage auf jedem aufbauen und an beginnen 
+Grundlage Karte und GebÃ¤ude bis Reihenfolge Reichweiten 
+die Zahl den Stunden, an denen die Grundlage Karte sitzt. 
+Verwenden Sie fÃ¼nf tableaureihen, um Karten in absteigender Folge zu speichern 
+unabhÃ¤ngig davon Klage. Doppeltes Klicken die tableaukarte zum Drehen 
+es rÃ¼ber. 
+
+[GAMENAME]
+Princ Albert 
+Bau aufwÃ¤rts in der Klage, die von den Assen abfÃ¤hrt. 
+Verwenden Sie tableau (9 Spalten) um Karten innen zu speichern 
+wechseln Sie absteigende Folge. 
+Sieben Karten von der Reserve kÃ¶nnen gespielt werden 
+auf Grundlage oder tableau aber nicht zurÃ¼ck zu 
+Reserve. 
+
+[GAMENAME]
+Quadrille 
+Sie kÃ¶nnen dieses Spiel durch das doppelte Klicken auf Vorrat spielen. 
+
+(Karten werden oben vom Vorrat einzeln gedreht. 
+Die Grundlage Karten sind fives und sixes. Fives gehen 
+auf Norden West, Osten und SÃ¼dpositionen gehen sixes 
+zwischen ihnen. Auf fives kÃ¶nnen Sie unten in der Klage aufbauen 
+zu den Assen auf sixes kÃ¶nnen Sie zu den Steckfassungen aufbauen. KÃ¶niginnen 
+spielen Sie keine Rolle im Spiel. Wenn sie sich oben drehen, sie 
+werden in die mittlere Position gesetzt. 
+Zwei redeals werden erlaubt, nachdem der Vorrat exsausted. ist), 
+
+[GAMENAME]
+Raglan 
+Das Ziel ist, vier Grundlagen von den Assen aufzubauen 
+zu den KÃ¶nigen. 
+Verwenden Sie tableau, um Karten in der wechselnden absteigenden Folge zu speichern. 
+Verdoppeln Sie Klickenfacedownkarte, um sie umzuwenden. 
+Die sechs Karten von der Reserve kÃ¶nnen zur Grundlage gesetzt werden 
+aber kann nicht zum tableau gesetzt werden. 

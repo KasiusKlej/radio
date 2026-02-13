@@ -1,0 +1,295 @@
+Giochi Della Scheda 
+disfunzione. 
+Avete vinto. 
+Avete perso. 
+Cardare i giochi per un giocatore per i Window (c) settembre 2000 (p) miha11@yahoo.com 
+
+Questo gioco e shareware. Se desiderate piu prego 
+registro a http://abulafia.ijs.si/bbxmih/games / 
+Vinto: 
+Perso: 
+Giocato: 
+Percento: 
+Alfa di percento: 
+--- 
+&Nuovo gioco 
+&Zoom 
+&Opzioni 
+&Aiuto 
+&Uscita 
+Zoom &dentro 
+Zoom &fuori 
+Zoom ma&ssimo 
+Zoom mi&nimo 
+&Autoplay 
+&Schedi di Resizable 
+&Caricare altre schedi 
+&Statistcs 
+Statistiche &generali 
+&Regole 
+&Circa... 
+--- 
+APPROVAZIONE 
+Annullamento 
+--- 
+APPROVAZIONE 
+Leggenda: 
+vinto 
+non finito 
+perso 
+--- 
+&Linguaggio...
+&Personalizzare...
+&Registrare...
+------
+----------
+Questo gioco e shareware. 
+Se desiderate piu registrare prego. 
+Visitare http://abulafia.ijs.si/bbxmih/games / 
+Visitare http://abulafia.ijs.si/bbxmih/page2.html 
+------
+--------
+[Registration form]
+Forma di registro 
+---
+Non siete utente ancora completamente registrato dei giochi della scheda. 
+Non potete potere giocare tutti i giochi a meno che registriate. 
+Potete registrare per 18$ o di meno. 
+Per registrare, trasmetterci una richiesta.  
+Se allready payed per i giochi della scheda ed avete ricevuto il numero di serie, 
+allora potete entrare nel numero di serie e diventare il giocatore registrato. 
+Potete anche visitare http://abulafia.ijs.si/bbxmih/games / 
+---
+Desidero comprare i giochi della scheda 
+
+Io pag con 
+contanti
+ord. di soldi
+assegno
+carta credito
+VISTO 
+Mastercard 
+altro... 
+
+Desidero ricevere 
+Numero di serie
+3.5 " Dischetto
+Cd-rom
+
+Desidero ricevere il prodotto 
+posta
+dal E-mail
+Il mio indirizzo
+Il mio E-mail
+Nome:  
+Via:  
+Citta:  
+Codice di POSTALE (Stati Uniti soltanto) 
+Condizione (Stati Uniti soltanto) 
+Paese:  
+
+Non desidero tutti i giochi 
+(questo ridurra il prezzo) 
+
+Importo
+Costo spedizione
+Importo totale
+--- 
+Forma di registro della stampa 
+Trasmettere l' ordine per posta 
+Per trasmettere l' ordine per posta, stampare la forma di registro e trasmetterla al suddetto indirizzo. 
+Trasmettere l' ordine dal E-mail 
+Entrare nel numero di serie 
+OK
+Fine
+--- 
+To: 
+Oggetto: 
+--- 
+
+
+
+
+
+[GAMENAME]
+Cellula libera 
+L' oggetto d'un gioco e mettere tutte le schedi 
+nei giusti posti della tomaia 4 cominciando dall' asso dei randelli, 
+asso dei diamanti, asso dei cuori ed asso delle forcelle 
+in ciascuno di 4 posti. 
+
+[GAMENAME]
+Quattro stagioni 
+Mettere tutte le schedi nei angoli cominciando dagli assi 
+in ogni angolo. Ci sono 5 schedi nelle posizioni della meta 5 
+ed altre schedi nella piattaforma. Usare le posizioni centrali a 
+memorizzare le schedi. Potete spostare le schedi dalla piattaforma verso il posto 
+vicino alla piattaforma o a 5 posizioni centrali. 
+
+[GAMENAME]
+Golf 
+L' oggetto del gioco e spostare tutte le schedi dal 
+piattaforma e da 7 colonne al talon in ascendente o in discendente 
+sequenza senza riguardo al vestito. 
+
+[GAMENAME]
+Alternativa 
+Costruire 4 mucchi nei colori alternati nell' ascesa 
+ordine sugli assi ed ordine discendente sui re. 
+Trattare le schedi una alla volta, costruendo nel possibile o 
+scartando in c'e ne di quattro mucchi residui. La scheda superiore 
+di ogni mucchio e sempre disponibile. Quando tutte le schedi 
+sono stati trattati, redeal senza shufling. Due tali redeals 
+si concedono. 
+
+[GAMENAME]
+Canfield 
+L' obiettivo del gioco e di completare tutti e quattro i mucchi del fondamento 
+a partire dagli assi e dalla configurazione verso l'alto nella sequenza del vestito. 
+Usare i mucchi di tableau per memorizzare le schedi nella sequenza discendente di 
+colore alternato. Ci sono quattro schedi in tableau a begining 
+del gioco. 
+Usare la scheda superiore dalla scorta, in cui ci sono 13 schedi a begining. 
+Altre 34 schedi sono lasciate nella piattaforma. Schedi dell' introito 3 dalla piattaforma 
+alla vostra mano. Soltanto la scheda superiore e disponibile. Quando tutte le 3 possibilita 
+sono stati giocati, girano e scartano remamining delle 3 schedi (quella 
+non sono stati giocati) al talon. 
+Quando la piattaforma e exsausted, il talon e girato senza essere 
+mescolareata ed e la nuova piattaforma, le schedi in esso che e girata ancora 
+sopra in i pacchetti di tre. Non ci e limite al numero di volte questo 
+puo essere fatto. 
+
+[GAMENAME]
+Aud Lang Syne 
+Costruire verso l'alto in vestito dagli assi ai re. 
+Usare il tableau per memorizzare le schedi nel discendere 
+alternare l' ordine. Raddoppiarsi scattano sopra la scorta a redeal. 
+
+[GAMENAME]
+Castelli in spagna 
+L' oggetto d'un gioco e completare tutti e quattro le 
+buildig delle colonne del fondamento dagli assi che ascendono 
+ai re in vestito. Usare il tableau per memorizzare le schedi 
+nell' ordine alternato discendente. Doppio scatto 
+la faccia giu carda per farla girare. 
+
+[GAMENAME]
+Klondike 
+(Rank: molto difficile) 
+
+Mettere tutte le schedi in quattro colonne del fondamento 
+a partire dagli assi che costruiscono nel vestito fino ai re. 
+Usare il tableau per memorizzare le schedi nell' alternativa discendente 
+ordine. Se la vacanza in tableau e creata durante il gioco, 
+potete mettere il re o una sequenza con un re come la base 
+scheda. La doppia faccia di scatto giu carda per farla girare. 
+Una volta che tutti i movimenti possibili nel tableau e stato fatto, 
+girare le schedi nella scorta uno per uno, giocando c'e ne 
+schedi che possono essere giocate su una scheda adatta in 
+tableau o sul relativo mucchio del fondamento. Schedi che non possono 
+essere giocato sono messi nel talon. Uno redeal del talon 
+si concede. 
+
+[GAMENAME]
+Figura della nave e modo de Bristol 
+L' obiettivo e di sviluppare 4 fondamenti verso l'alto 
+senza riguardo al vestito a partire dagli assi. 
+Imballando all'interno del tableau e verso il basso, 
+ragardless del vestito. Soltanto una scheda alla volta 
+puo essere giocato. 
+Raddoppiare la scorta di scatto per trattare dopo tre schedi 
+alle colonne della riserva. 
+
+[GAMENAME]
+La battaglia delle signore 
+Tre prese sono escluse dal pacchetto e sono di destra lontano messo, vicino alla scorta. 
+L' altro Jack e alla parte superiore della piramide. L' obiettivo e di costruire da 4 regine 
+verso l'alto ai dieci secondo il vestito. 
+Il nome del gioco proviene dalla vecchia regola che la regina 
+chi il fondamento e completato in primo luogo esigono il Jack e vincono. 
+Le schedi sul lato della piramide sono configurazione verso il basso nell' alternativa 
+colori. Possono essere spostati soltanto uno per uno. Gli spazi creati sono riempiti 
+dalle schedi dalla scorta. Quando non ci non sono movimenti possibili trattare 6 
+schedi dalla scorta ai lati della piramide dal doppio scattarsi sulla scorta. 
+Quando la scorta e exsausted, le schedi dai lati della piramide sono prese e 
+redealed. Due tali redeals sono permessi. Al doppio scatto redeal 
+Scheda del Jack alla parte superiore della piramide. 
+
+[GAMENAME]
+Figlio di fortuna 
+L' obiettivo e di completare le colonne del fondamento dagli assi 
+ai re che costruiscono nel vestito. 
+Usare due file in tableau per memorizzare le schedi nel discendere 
+soddisfare l' ordine di corrispondenza. 
+Schedi che non possono essere giocate dalla scorta al fondamento o al tableau 
+sono messi per sprecare la colonna (potete raddoppiarsi per scattare sopra la scorta per fare cosi). 
+La scheda superiore della colonna residua e sempre disponibile. 
+Tutti i posti vacanti che sono creati nel tableau sono riempiti 
+dal mucchio residuo o, se e vuoto, dalla scorta. 
+
+[GAMENAME]
+Il Castello Assillato 
+(Rank: molto difficile) 
+
+Lo scopo del gioco e completare 4 mucchi del fondamento 
+costruzione dagli assi ai re. Usare 8 colonne laterali a 
+memorizzare le schedi nell' ordine alternato discendente. 
+
+[GAMENAME]
+Bisley 
+(Rank: molto difficile) 
+
+Configurazione verso il basso in vestito cominciando dai re. 
+La scheda di tableau puo essere spostata verso una scheda quello 
+le corrispondenze in vestito ed e vicino esso nel Rank (otto 
+dei randelli ha potuto andare a nove o a sette dei randelli). 
+
+[GAMENAME]
+Fortress 
+(Rank: molto difficile) 
+
+Costruire quattro mucchi verso l'alto in vestito a partire dagli assi. 
+Le schedi laterali possono essere spostate verso una scheda quello 
+le corrispondenze in vestito ed e vicino esso nel Rank (otto 
+dei randelli ha potuto andare a nove o a sette dei randelli). 
+
+[GAMENAME]
+Orologio di Grandpa 
+Ci sono 12 colonne del fondamento che formano un orologio. 
+Dovete accumularsi in vestito su ciascuno, cominciando sopra 
+scheda e costruzione del fondamento fino alle estensioni di sequenza 
+il numero delle ore a ou la scheda del fondamento si siede. 
+Usare cinque file di tableau per memorizzare le schedi nell' ordine discendente 
+senza riguardo al vestito. Doppio scatto la scheda di tableau da girare 
+esso sopra. 
+
+[GAMENAME]
+Princ Albert 
+Configurazione verso l'alto in vestito a partire dagli assi. 
+Usare il tableau (9 colonne) per memorizzare le schedi dentro 
+alternare l' ordine discendente. 
+Sette schedi dalla riserva possono essere giocate 
+sul fondamento o sul tableau ma non di nuovo al 
+riserva. 
+
+[GAMENAME]
+Quadrille 
+Potete giocare questo gioco dal doppio scattarsi sulla scorta. 
+
+(schedi sono girate in su da quella di riserva alla volta. 
+Le schedi del fondamento sono fives e sixes. Fives va 
+sul nord, ad ovest, sull' est e sulle posizioni del sud, i sixes vanno 
+fra loro. Sui fives potete costruire giu in vestito 
+agli assi, sui sixes che potete aumentano fino alle prese. Regine 
+non sostenere parte nel gioco. Quando girano in su, 
+sono posizionati centrale. 
+Due redeals sono permessi dopo che la scorta sia exsausted.) 
+
+[GAMENAME]
+Raglan 
+L' obiettivo e di sviluppare quattro fondamenti dagli assi 
+ai re. 
+Usare il tableau per memorizzare le schedi nell' ordine discendente alternato. 
+Raddoppiare la scheda del facedown di scatto per farlo girare. 
+Le sei schedi dalla riserva possono essere messe al fondamento 
+ma non puo essere messo al tableau. 

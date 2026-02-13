@@ -1,0 +1,293 @@
+Igre s kartami
+ v okvari.
+Zmagal si.
+PoraĹľen si.
+Igre s kartami za enega igralca
+           za Windows
+  (c) september 2000
+  (p) miha11@yahoo.com
+Ĺ t. zmag: 
+Ĺ t. porazov: 
+Ĺ t. odigranih: 
+Procent: 
+Procent alfa: 
+---
+&Nova igra
+&Zoom
+&Opcije
+&PomoÄŤ
+&Izhod
+&PoveÄŤaj
+&PomanjĹˇaj
+Ma&ximalni zoom
+Mi&nimalni zoom
+&Samodejno odigravanje
+&Raztegljive karte
+&NaloĹľi druge karte...
+&Statistika...
+&SploĹˇna statistika...
+&Pravila
+&O programu...
+---
+OK
+PrekliÄŤi
+---
+OK
+Legenda:
+zmage
+nedokonÄŤane igre
+porazi
+---
+&Jezik...
+&Kustomizacija...
+&Registracija...
+-----------
+-----------
+Ta program je shareware.
+ÄŚe Ĺľelite veÄŤ, se prosim registrirajte.
+
+
+-----------
+-----------
+[Registration form]
+Registracijski obrazec
+---
+Niste Ĺˇe popolni igralec Iger s kartami.
+Dokler se ne registrirate, ne boste mogli igrati vseh iger.
+Registrirate se lahko za 18 $ ali manj.
+PoĹˇljite nam izpolnjen obrazec in denar.
+
+ÄŚe ste Ĺľe plaÄŤali za igre in prejeli serijsko Ĺˇtevilko,
+potem lahko vnesete 20 mestno serijsko Ĺˇtevilko
+in tako postanete registrirani igralec.
+---
+Kupiti hoÄŤem igre s kartami
+
+PlaÄŤal bom z
+gotovino
+den. nakaz.
+ÄŤek
+kredit. kart.
+VISA
+Mastercard
+drugo...
+
+Prejeti Ĺľelim
+serijsko Ĺˇtevilko
+3,5" disketo
+CD-ROM
+
+Izdelek Ĺľelim prejeti po
+po poĹˇti
+e-poĹˇti
+Moj naslov
+Moj e-mail
+Ime: 
+Ulica: 
+Kraj: 
+ZIP code (US only)
+State (US only)
+DrĹľava: 
+
+Ne Ĺľelim vseh iger
+(to bi lahko pocenilo nakup)
+
+Cena
+PoĹˇtni stroĹˇki
+Skupaj
+---
+Natisni obrazec
+PoĹˇlji naroÄŤilo po poĹˇti
+Da bi poslal naroÄŤilo po poĹˇti, natisni formular in ga poĹˇlji na zgornji naslov.
+PoĹˇlji naroÄŤilo po elektronski poĹˇti
+Vnesi serijsko Ĺˇtevilko
+OK
+Zapri
+---
+To:
+Subject:
+---
+
+
+[GAMENAME]
+Prosta celica
+  Cilj igre je spraviti vse karte na 4 bazne pozicije
+zgoraj desno zaÄŤenĹˇi s kriĹľevim, karinim, srÄŤevim in 
+pikovim asom. Karte, ki sledijo asom, morajo ustrezati 
+barvi in naraĹˇÄŤajoÄŤemu zaporedju.
+
+[GAMENAME]
+Ĺ tirje letni ÄŤasi
+  Spravi vse karte v kote zaÄŤenĹˇi z asom v vsakem kotu
+in gradi v naraĹˇÄŤajoÄŤem zaporedju.
+  Pet kart je na srednjih petih pozicijah, ostale pa so 
+v kupu. Srednjih pet pozicij uporabi za hranjenje kart
+v padajoÄŤem zaporedju.
+  Iz kupa kart lahko premakneĹˇ karto v talon (kupÄŤek poleg)
+ali na ustrezno pozicijo na tabli.
+
+[GAMENAME]
+Golf
+Cilj igre je spraviti vse karte iz kupa in sedmih stolpcev
+v talon. Karta ustreza talonu, ÄŤe se ujema v naraĹˇÄŤajoÄŤem ali 
+padajoÄŤem redu, ne glede na barvo. 
+
+[GAMENAME]
+Alternacija
+  Zgradi 4 kupe v izmenjujoÄŤi barvi (alternacija) v 
+naraĹˇÄŤajoÄŤem redu na ase in padajoÄŤem redu na kralje.
+  Jemlji po eno karto, ÄŤe karta ne ustreza bazi, gre
+na kateregakoli od Ĺˇtirih rezervnih stolpcev (desno).
+Vrhnja karta vsakega rezervnega kupa je vedno dostopna.
+  Ko v kupu zmanjka kart, poberi karte iz rezervnih kupov
+in jih brez meĹˇanja ponovno razdeli. MoĹľni sta dve 
+ponovni delitvi.
+
+[GAMENAME]
+Kenfild
+  Cilj igre je napolniti vse Ĺˇtiri bazne stolpce zaÄŤenĹˇi z asi
+gradeÄŤ naraĹˇÄŤajoÄŤe in v barvi.
+  Uporabi 4 tabelne stolpce za hranjenje kart v padajoÄŤem zaporedju
+in barvno alternirajoÄŤe. V tabelnih stolpcih so na zaÄŤetku 4 karte.
+  Uporabi zgornjo karto iz zaloge, kjer je na zaÄŤetku 13 kart.
+  Ostalih 34 kart je v kupu. Vzemi 3 karte iz kupa v roko. Samo 
+zgornja karta v roki je dostopna. Ko si odigral vse tri moĹľne karte,
+vzemi preostanek treh kart (karte ki niso odigrane) in jih premakni
+v talon (spodaj).
+  Ko v kupu zmanjka kart, se obrne talon, ki brez meĹˇanja postane 
+nov kup, iz katerega se spet jemlje po 3 karte. Ni omejitve kolikokrat
+se to lahko stori.
+
+[GAMENAME]
+V starih ÄŤasih
+Gradi naraĹˇÄŤajoÄŤe v barvi od asov do kraljev.
+Uporabi tablo za hranjenje kart v padajoÄŤem 
+alternirajoÄŤem redu. Dvoklikni na zalogi kart 
+za ponovno delitev. 
+
+[GAMENAME]
+Ĺ panski gradovi
+  Cilj igre je kompletirati vse Ĺˇtiri bazne stolpce
+zaÄŤenĹˇi z asi gradeÄŤ naraĹˇÄŤajoÄŤe v barvi do kraljev.
+  Uporabi tablo za hranjenje kart v padajoÄŤem 
+alternirajoÄŤem redu. Dvoklikni na pokriti karti, 
+da jo obrneĹˇ. 
+
+[GAMENAME]
+Klondajk
+(stopnja: zelo teĹľka)
+
+  Cilj igre je kompletirati vse Ĺˇtiri bazne stolpce
+zaÄŤenĹˇi z asi gradeÄŤ naraĹˇÄŤajoÄŤe v barvi do kraljev.
+  Uporabi stolpce na tabli za hranjenje kart v padajoÄŤem 
+alternirajoÄŤem redu. ÄŚe je tabelni stolpec izÄŤrpan, 
+lahko nanj poloĹľiĹˇ kralja ali sekvenco kart s kraljem
+kot bazo. Dvoklikni pokrito karto, da jo obrneĹˇ. 
+  Ko si odigral vse moĹľne poteze na tabli, odpiraj
+karte iz zaloge eno po eno, gradeÄŤ na bazo ali na tablo
+ali v talon, ÄŤe poteza ni moĹľna. 
+  Dovoljena je ena ponovna delitev talona.
+
+[GAMENAME]
+Ladijski kroj in Bristolska moda
+  Cilj je zgraditi 4 bazne stolpce naraĹˇÄŤajoÄŤe, 
+ne glede na barvo, zaÄŤenĹˇi z asi.
+  Grajenje v tabelnih stolpcih je padajoÄŤe,
+ne glede na barvo. PremikaĹˇ lahko po eno karto.
+  Dvoklikni na zalogi, da razdeliĹˇ naslednje
+tri karte na rezervne stolpce.
+
+[GAMENAME]
+Bitka dam
+  Trije pobi so izvzeti in poloĹľeni skrajno desno, poleg zaloge.
+Preostali (srÄŤev) poba se nahaja na vrhu piramide. Cilj je 
+graditi na Ĺˇtirih damah do desetic naraĹˇÄŤajoÄŤe v barvi.
+  Ime igre izvira iz pravila, da prva dama, ki zgradi do desetice,
+pobere poba z vrha piramide in zmaga.
+  Stolpci na straneh piramide se gradijo padajoÄŤe v alternirajoÄŤi
+barvi. PremikaĹˇ lahko samo po eno. Nastale praznine se zapolnijo
+s kartami iz zaloge. Ko ni veÄŤ moĹľnih potez, razdeli 6 kart iz
+zaloge na strani piramide z dvoklikom na zalogi.
+  Ko je zaloga izpraznjena, se poberejo karte s strani piramide
+in se ponovno razdelijo. Za ponovno delitev dvoklikni poba na
+vrhu piramide.
+
+[GAMENAME]
+SreÄŤkoviÄŤ
+  Cilj je kompletirati bazne stolpce zaÄŤenĹˇi z asi in 
+gradeÄŤ naraĹˇÄŤajoÄŤe v barvi do kraljev.
+  Uporabi dve vrsti kart na tabli za hranjenje kart v 
+padajoÄŤem redu v ujemajoÄŤe v barvi.
+  Karte iz zaloge, ki jih ni mogoÄŤe odigrati na tablo 
+ali bazo, gredo v rezervni stolpec (za to lahko dvoklikneĹˇ
+zalogo).
+  Vrhnja karta rezervnega stolpca je vedno dostopna.
+  Vsaka nastala praznina na tabli se zapolni iz rezervnega
+stolpca ali, ÄŤe je ta prazen, iz zaloge.
+
+[GAMENAME]
+Oblegan grad
+(stopnja: zelo teĹľka)
+
+Cilj igre je kompletirati 4 bazne stolpce gradeÄŤ
+od asov do kraljev. Uporabi 8 stranskih stolpcev
+za hranjenje kart v padajoÄŤem alternirajoÄŤem redu.
+
+[GAMENAME]
+Bizli
+(stopnja: zelo teĹľka)
+
+  Gradi navzdol v barvi zaÄŤenĹˇi s kralji.
+Karta iz tablenega stolpca sme na karto, ki
+se ujema v barvi in je sosednja v vrednosti
+(kriĹľeva osmica sme na kriĹľevo sedmico in 
+kriĹľevo devetico).
+
+[GAMENAME]
+Trdnjava
+(stopnja: zelo teĹľka)
+
+  Zgradi 4 bazne stolpce zaÄŤenĹˇi z asi, gradeÄŤ
+naraĹˇÄŤajoÄŤe v barvi.
+  Stranske karte smejo na karto, ki se ujema 
+v barvi in je sosednja v vrednosti (kriĹľeva 
+osmica sme na kriĹľevo sedmico in devetico).
+
+[GAMENAME]
+Dedkova ura
+  Dvanajst baznih stolpcev oblikuje uro. Na vsakem
+gradiĹˇ naraĹˇÄŤajoÄŤe v barvi, zaÄŤenĹˇi s tamkajĹˇnjo karto
+in konÄŤavĹˇi s karto, ki doseĹľe Ĺˇtevilko ure na tej 
+poziciji (od 1 do 12).
+  Pet stolpcev na tabli lahko uporabiĹˇ za hranjenje kart 
+v padajoÄŤem redu ne glede na barvo. Dvoklikni pokrito karto,
+da jo obrneĹˇ.
+
+[GAMENAME]
+Princ Albert
+  Gradi naraĹˇÄŤajoÄŤe v barvi zaÄŤenĹˇi z asi.
+  Uporabi tablo (9 stolpcev) za hranjenje kart v 
+padajoÄŤem alternirajoÄŤem redu.
+  Sedem kart iz rezerve sme na bazo, na tablo, vendar 
+ne nazaj na rezervo.
+
+[GAMENAME]
+ÄŚetvorka
+  To igro lahko igraĹˇ z dvoklikanjem na zalogi.
+
+  (Karte se jemljejo iz zaloge po eno. Bazne karte so
+petice in Ĺˇestice. Petice gredo na sever, jug, vzhod, 
+zahod poloĹľaje, Ĺˇestice pa gredo med petice. Na petice
+gradiĹˇ padajoÄŤe v barvi do asov, na Ĺˇestice pa gradiĹˇ
+naraĹˇÄŤajoÄŤe do pobov. Dame v tej igri nimajo vloge. Ko
+se pojavijo, jih odstrani na sredino table. Dve delitvi
+sta dovoljeni kadar zmanjka kart v zalogi.)
+
+[GAMENAME]
+PovrĹˇnik
+  Cilj je zgraditi 4 bazne stolpce od asov do kraljev.
+  Uporabi tabelne stolpce za hranjenje kart v padajoÄŤem
+alternirajoÄŤem redu.
+  Dvoklikni pokrito karto, da jo obrneĹˇ.
+  Ĺ est kart iz rezerve lahko premakneĹˇ na bazo, ne pa 
+tudi na tablo.

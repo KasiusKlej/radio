@@ -1,0 +1,294 @@
+Juegos De la Tarjeta 
+malfuncionamiento. 
+Usted ganÃ³. 
+Usted perdiÃ³. 
+Card los juegos para un jugador para los Windows (c) septiembre 2000 (p) miha11@yahoo.com 
+
+Este juego es shareware. Si usted desea mÃ¡s que por favor 
+registro en http://abulafia.ijs.si/bbxmih/games / 
+Ganado: 
+Perdido: 
+Jugado: 
+Por ciento: 
+Alfa de los por ciento: 
+--- 
+&Nuevo juego 
+&Zoom 
+&Opciones 
+&Ayuda 
+&Salida 
+Zoom &adentro 
+Zoom &hacia fuera 
+Zoom mÃ¡&ximo 
+Zoom mÃ­&nimo 
+&Autoplay 
+Tarjetas de &Resizable 
+&Cargue otras tarjetas 
+&Statistcs 
+&EstadÃ­stica total 
+&Reglas 
+&Sobre... 
+--- 
+AUTORIZACIÃN 
+CancelaciÃ³n 
+--- 
+AUTORIZACIÃN 
+Leyenda: 
+ganado 
+inacabado 
+perdido 
+--- 
+&Lenguaje...
+&El modificar para requisitos particulares...
+&ColoqÃºese...
+------
+------
+Este juego es shareware. 
+Si usted desea mÃ¡s que coloqÃºese por favor. 
+Visite http://abulafia.ijs.si/bbxmih/games / 
+Visite http://abulafia.ijs.si/bbxmih/page2.html 
+--------
+---------
+[Registration form]
+Forma de registro 
+---
+Usted no es utilizador todavÃ­a completamente registrado de los juegos de la tarjeta. 
+Usted no puede poder jugar todos los juegos a menos que usted se coloque. 
+Usted puede colocarse para 18$ o menos. 
+Para colocarse, envÃ­enos una peticiÃ³n.  
+Si usted allready payed para los juegos de la tarjeta y ha recibido nÃºmero de serie, 
+despuÃ©s usted puede incorporar el nÃºmero de serie y hacer el jugador registrado. 
+Usted puede tambiÃ©n visitar http://abulafia.ijs.si/bbxmih/games / 
+---
+Deseo comprar juegos de la tarjeta 
+
+PagarÃ© con 
+efectivo
+orden din.
+cheque
+tarjeta crÃ©d.
+VISA 
+Mastercard 
+otro... 
+
+Deseo recibir 
+NÃºmero de serie
+3.5 " Diskette
+Cd-rom
+
+Deseo recibir el producto 
+correo
+E-mail
+Mi direccionamiento 
+Mi E-mail 
+Nombre:  
+Calle:  
+Ciudad:  
+CÃ³digo postal (los E.E.U.U. solamente) 
+Estado (los E.E.U.U. solamente) 
+PaÃ­s:  
+
+No deseo todos los juegos 
+(esto reducirÃ¡ el precio) 
+
+Cantidad
+Coste del envÃ­o
+Cantidad total
+--- 
+Forma de registro de la impresiÃ³n 
+EnvÃ­e la orden por correo 
+Para enviar orden por correo, imprima la forma de registro y envÃ­ela al direccionamiento antedicho. 
+EnvÃ­e la orden por E-mail 
+Incorpore el nÃºmero de serie 
+OK
+Cierre 
+--- 
+To: 
+Tema: 
+--- 
+
+
+
+ 
+[GAMENAME]
+CÃ©lula libre 
+El objeto de un juego es poner todas las tarjetas 
+en lugares derechos del alto 4 comenzando con el as de clubs, 
+as de diamantes, as de corazones y as de espadas 
+en cada uno de 4 lugares. 
+ 
+[GAMENAME]
+Cuatro estaciones 
+Ponga todas las tarjetas en esquinas comenzando con as 
+en cada esquina. Hay 5 tarjetas en posiciones del centro 5 
+y otras tarjetas en la cubierta. Utilice las posiciones medias a 
+salve las tarjetas. Usted puede mover tarjetas desde cubierta al lugar 
+cerca de cubierta o a 5 posiciones medias. 
+ 
+[GAMENAME]
+Golf 
+El objeto del juego es mover todas las tarjetas desde 
+cubierta y a partir de 7 columnas a la garra en ascendente o descendente 
+secuencia sin importar juego. 
+ 
+[GAMENAME]
+Suplente 
+Construya 4 pilas en colores alternos en la ascensiÃ³n 
+orden en los as y orden descendente en los reyes. 
+Tarjetas del reparto una a la vez, construyendo en lo posible o 
+desecho en cualesquiera de cuatro montones inÃºtiles. La tarjeta superior 
+de cada montÃ³n estÃ¡ siempre disponible. Cuando todas las tarjetas 
+se han repartido, redeal sin shufling. Dos tales redeals 
+se permiten. 
+
+[GAMENAME]
+Canfield 
+La meta del juego es terminar las cuatro pilas de la fundaciÃ³n 
+el salir de as y de estructura hacia arriba en secuencia del juego. 
+Utilice las pilas del tableau para salvar tarjetas en la sucesiÃ³n descendente de 
+color que se alterna. Hay cuatro tarjetas en tableau en begining 
+del juego. 
+Utilice la tarjeta superior de la terraja, donde hay 13 tarjetas en begining. 
+Otras 34 tarjetas se dejan en la cubierta. Tarjetas de la toma 3 de la cubierta 
+a su mano. Solamente la tarjeta superior estÃ¡ disponible. Cuando todas las 3 posibilidades 
+fueron jugados, vuelcan y desechan remamining de las 3 tarjetas (de que 
+no fueron jugados) a la garra. 
+Cuando es la cubierta exsausted, la garra turned.over sin ser 
+se mezcla y la cubierta nueva, las tarjetas en ella que es dada vuelta otra vez 
+concluÃ­do en los paquetes de tres. No hay lÃ­mite al nÃºmero de Ã©pocas esto 
+puede ser hecho. 
+
+[GAMENAME]
+Aud Lang Syne 
+Construya hacia arriba en juego de as a los reyes. 
+Utilice el tableau para salvar tarjetas en descender 
+alterne la orden. Doble hacen clic encendido la terraja a redeal. 
+
+[GAMENAME]
+Castillos en Espana 
+El objeto de un juego es terminar los cuatro 
+buildig de las columnas de la fundaciÃ³n de los as que ascienden 
+a los reyes en juego. Utilice el tableau para salvar tarjetas 
+en orden alterno descendente. Tecleo doble 
+la cara abajo card para darle la vuelta. 
+
+[GAMENAME]
+Klondike 
+(fila: muy difÃ­cil) 
+
+Ponga todas las tarjetas en cuatro columnas de la fundaciÃ³n 
+el salir de los as que construyen en juego hasta reyes. 
+Utilice el tableau para salvar tarjetas en suplente descendente 
+orden. Si la vacante en tableau se crea durante juego, 
+usted puede poner el rey o una secuencia con un rey como la base 
+tarjeta. La cara doble del tecleo abajo card para darle la vuelta. 
+Una vez que todos los movimientos posibles en el tableau se hayan hecho, 
+dÃ© vuelta a las tarjetas en la terraja uno por uno, jugando cualesquiera 
+tarjetas que se pueden jugar sobre una tarjeta conveniente en 
+tableau o sobre su pila de la fundaciÃ³n. Tarjetas que no pueden 
+juegÃºese se ponen en la garra. Uno redeal de la garra 
+se permite. 
+
+[GAMENAME]
+DimensiÃ³n de una variable de la nave y manera de Bristol 
+La meta es construir 4 fundaciones hacia arriba 
+sin importar el juego que empieza con as. 
+La pila de discos dentro del tableau estÃ¡ hacia abajo, 
+ragardless de juego. Solamente una tarjeta al mismo tiempo 
+puede ser jugado. 
+Doble la terraja del tecleo para repartir despuÃ©s tres tarjetas 
+a las columnas de la reserva. 
+
+[GAMENAME]
+La batalla de senoras 
+Tres gatos se excluyen de paquete y correctos lejano puesto, cerca de terraja. 
+El otro Gato estÃ¡ en la tapa de la pirÃ¡mide. La meta es construir a partir de 4 reinas 
+hacia arriba a los diez segÃºn juego. 
+El nombre del juego origina de la vieja regla que la reina 
+quiÃ©n la fundaciÃ³n se termina primero demanda al Gato y gana. 
+Las tarjetas en la cara de la pirÃ¡mide son estructura hacia abajo en suplente 
+colores. Pueden ser movidos solamente uno por uno. Los espacios creados se llenan 
+por las tarjetas de la terraja. Cuando no mÃ¡s de movimientos no son posibles reparta 6 
+tarjetas de la terraja a las caras de la pirÃ¡mide por hacer clic doble en terraja. 
+Cuando es la terraja exsausted, las tarjetas de caras de la pirÃ¡mide se toman y 
+redealed. Se permiten dos tales redeals. Al tecleo doble redeal 
+Tarjeta de Gato en la tapa de la pirÃ¡mide. 
+
+[GAMENAME]
+Hijo de la fortuna 
+La meta es terminar columnas de la fundaciÃ³n de as 
+a los reyes que construyen en juego. 
+Utilice dos filas en tableau para salvar tarjetas en descender 
+satisfaga la orden que corresponde con. 
+Tarjetas que no se pueden jugar de terraja a la fundaciÃ³n o al tableau 
+se ponen para perder la columna (usted puede doblar para hacer clic encendido la terraja para hacer tan). 
+La tarjeta superior de la columna inÃºtil estÃ¡ siempre disponible. 
+Se llena cualquier vacante que se cree en el tableau 
+de la pila inÃºtil o, si es vacÃ­a, de la terraja. 
+
+[GAMENAME]
+El Castillo Cercado 
+(fila: muy difÃ­cil) 
+
+La punterÃ­a del juego es terminar 4 pilas de la fundaciÃ³n 
+edificio de as a los reyes. Utilice 8 columnas laterales a 
+salve las tarjetas en orden alterno descendente. 
+
+[GAMENAME]
+Bisley 
+(fila: muy difÃ­cil) 
+
+Estructura hacia abajo en juego comenzando con reyes. 
+La tarjeta del tableau se puede mover a una tarjeta eso 
+los emparejamientos en juego y estÃ¡n al lado de Ã©l en la fila (ocho 
+de clubs podÃ­a ir a nueve o a siete de clubs). 
+
+[GAMENAME]
+Fortaleza 
+(fila: muy difÃ­cil) 
+
+Construya cuatro pilas hacia arriba en el juego que empieza con as. 
+Las tarjetas laterales se pueden mover a una tarjeta eso 
+los emparejamientos en juego y estÃ¡n al lado de Ã©l en la fila (ocho 
+de clubs podÃ­a ir a nueve o a siete de clubs). 
+
+[GAMENAME]
+Reloj de Grandpa 
+Hay 12 columnas de la fundaciÃ³n que forman un reloj. 
+Usted debe acumularse en juego en cada uno, comenzando encendido 
+tarjeta y edificio de la fundaciÃ³n hasta alcances de la secuencia 
+el nÃºmero de las horas en las cuales la tarjeta de la fundaciÃ³n se sienta. 
+Utilice cinco filas del tableau para salvar tarjetas en orden descendente 
+sin importar juego. Tecleo doble la tarjeta del tableau a dar vuelta 
+Ã©l encima. 
+
+[GAMENAME]
+Princ Albert 
+Estructura hacia arriba en el juego que empieza con as. 
+Utilice el tableau (9 columnas) para salvar tarjetas adentro 
+alterne la orden descendente. 
+Siete tarjetas de la reserva pueden ser jugadas 
+en la fundaciÃ³n o el tableau pero no de nuevo a 
+reserva. 
+
+[GAMENAME]
+Quadrille 
+Usted sabe jugar este juego por hacer clic doble en terraja. 
+
+(las tarjetas se dan vuelta para arriba de la terraja una a la vez. 
+Las tarjetas de la fundaciÃ³n son fives y sixes. Fives va 
+en el norte, del oeste, el este y posiciones del sur, los sixes van 
+entre ellos. En fives usted puede construir abajo en juego 
+a los as, en sixes que usted puede aumentaron hasta gatos. Reinas 
+no juegue ninguna parte en el juego. Cuando dan vuelta para arriba, ellos 
+se ponen en la posiciÃ³n media. 
+Se permiten dos redeals despuÃ©s de que sea la terraja exsausted.) 
+
+[GAMENAME]
+Raglan 
+La meta es construir cuatro fundaciones de as 
+a los reyes. 
+Utilice el tableau para salvar tarjetas en orden descendente alterno. 
+Doble la tarjeta del facedown del tecleo para darle la vuelta. 
+Las seis tarjetas de la reserva se pueden poner a la fundaciÃ³n 
+pero no puede ser puesto al tableau. 

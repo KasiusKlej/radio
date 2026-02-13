@@ -1,0 +1,3218 @@
+[GAMENAME]
+Prosta celica (Free cell)
+  Cilj igre je spraviti vse karte na 4 bazne pozicije
+zgoraj desno zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevim, karinim, srĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤evim in 
+pikovim asom. Karte, ki sledijo asom, morajo ustrezati 
+barvi in naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤emu zaporedju.
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+empty1, 00, 0, 1
+empty2, 01, 0, 1
+empty3, 02, 0, 1
+empty4, 03, 0, 1
+home1, 04,0,1
+home2, 05,0,1
+home3, 06,0,1
+home4, 07,0,1
+column1, 10, 7, 1
+column2, 11, 7, 1
+column3, 12, 7, 1
+column4, 13, 7, 1
+column5, 14, 6, 1
+column6, 15, 6, 1
+column7, 16, 6, 1
+column8, 17, 6, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[empty1]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+[empty2]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+[empty3]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+[empty4]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+[home1]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[home2]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[home3]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[home4]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[column1]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto8]
+[column2]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto9]
+[column3]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto10]
+[column4]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto11]
+[column5]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto12]
+[column6]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto13]
+[column7]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto14]
+[column8]
+alternate=0
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=any-[movepileto15]
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=0-4
+every_turn=0-5
+every_turn=0-6
+every_turn=0-7
+every_turn=1-4
+every_turn=1-5
+every_turn=1-6
+every_turn=1-7
+every_turn=2-4
+every_turn=2-5
+every_turn=2-6
+every_turn=2-7
+every_turn=3-4
+every_turn=3-5
+every_turn=3-6
+every_turn=3-7
+every_turn=8-4
+every_turn=8-5
+every_turn=8-6
+every_turn=8-7
+every_turn=9-4
+every_turn=9-5
+every_turn=9-6
+every_turn=9-7
+every_turn=10-4
+every_turn=10-5
+every_turn=10-6
+every_turn=10-7
+every_turn=11-4
+every_turn=11-5
+every_turn=11-6
+every_turn=11-7
+every_turn=12-4
+every_turn=12-5
+every_turn=12-6
+every_turn=12-7
+every_turn=13-4
+every_turn=13-5
+every_turn=13-6
+every_turn=13-7
+every_turn=14-4
+every_turn=14-5
+every_turn=14-6
+every_turn=14-7
+every_turn=15-4
+every_turn=15-5
+every_turn=15-6
+every_turn=15-7
+[movepileto8]
+parameter01=countempty(0,1,2,3,9,10,11,12,13,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-8
+[]
+[movepileto9]
+parameter01=countempty(0,1,2,3,8,10,11,12,13,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-9
+[]
+[movepileto10]
+parameter01=countempty(0,1,2,3,8,9,11,12,13,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-10
+[]
+[movepileto11]
+parameter01=countempty(0,1,2,3,8,9,10,12,13,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-11
+[]
+[movepileto12]
+parameter01=countempty(0,1,2,3,8,9,10,11,13,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-12
+[]
+[movepileto13]
+parameter01=countempty(0,1,2,3,8,9,10,11,12,14,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-13
+[]
+[movepileto14]
+parameter01=countempty(0,1,2,3,8,9,10,11,12,13,15)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-14
+[]
+[movepileto15]
+parameter01=countempty(0,1,2,3,8,9,10,11,12,13,14)
+increase(parameter01)
+parameter02=cardsrowed(selected)
+parameter03=min(parameter01,parameter02)
+trymovepile=parameter03,selected-15
+[]
+[FINISH]
+[VICTORY]
+empty_columns=8,9,10,11,12,13,14,15
+
+
+[GAMENAME]
+Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â tirje letni Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤asi (Four seasons)
+  Spravi vse karte v kote zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asom v vsakem kotu
+in gradi v naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju.
+  Pet kart je na srednjih petih pozicijah, ostale pa so 
+v kupu. Srednjih pet pozicij uporabi za hranjenje kart
+v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju.
+  Iz kupa kart lahko premakneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ karto v talon (kupĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ek poleg)
+ali na ustrezno pozicijo na tabli.
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0deck, 10, 47, 1
+1neardeck, 12, 0, 1
+2home1, 04, 0, 1
+3home2, 06, 0, 1
+4home3, 24, 0, 1
+5home4, 26, 0, 1
+6mid, 05, 1, 1
+7mid, 14, 1, 1
+8mid, 15, 1, 1
+9mid, 16, 1, 1
+10mid, 25, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0deck]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+overlap_x=25
+dblclick_moves_to=1
+[1neardeck]
+suit_or_card=any
+player_can_put_card=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+overlap_x=25
+[2home1]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[3home2]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[4home3]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[5home4]
+suit=1
+player_can_put_card_if_empty=c0c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[6mid]
+card_value=3
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=1
+[7mid]
+card_value=3
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=1
+[8mid]
+card_value=3
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=1
+[9mid]
+card_value=3
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=1
+[10mid]
+card_value=3
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=1
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=1-2
+every_turn=1-3
+every_turn=1-4
+every_turn=1-5
+every_turn=6-2
+every_turn=6-3
+every_turn=6-4
+every_turn=6-5
+every_turn=7-2
+every_turn=7-3
+every_turn=7-4
+every_turn=7-5
+every_turn=8-2
+every_turn=8-3
+every_turn=8-4
+every_turn=8-5
+every_turn=9-2
+every_turn=9-3
+every_turn=9-4
+every_turn=9-5
+every_turn=10-2
+every_turn=10-3
+every_turn=10-4
+every_turn=10-5
+every_turn=0-2
+every_turn=0-3
+every_turn=0-4
+every_turn=0-5
+[FINISH]
+
+[VICTORY]
+empty_columns=0,1,6,7,8,9,10
+
+[DEFEAT]
+
+[GAMENAME]
+Golf
+Cilj igre je spraviti vse karte iz kupa in sedmih stolpcev
+v talon. Karta ustreza talonu, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e se ujema v naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em ali 
+padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu, ne glede na barvo. 
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0deck, 20, 16, 1
+1golf, 00, 5, 1
+2golf, 01, 5, 1
+3golf, 02, 5, 1
+4golf, 03, 5, 1
+5golf, 04, 5, 1
+6golf, 05, 5, 1
+7golf, 06, 5, 1
+8goal, 22, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0deck]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+overlap_x=30
+dblclick_moves_to=8
+allways_facedown=1
+[1golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[2golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[3golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[4golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[5golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[6golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[7golf]
+contents_at_start=next
+player_can_take_card=yes
+cards_face_up=1,1,1,1,1,1,1
+overlap_y=default
+dblclick_moves_to=8
+[8goal]
+card_value=23
+contents_at_start=next
+cards_face_up=1
+overlap_x=default
+always_allowed_from_columns=0
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+
+[FINISH]
+
+[VICTORY]
+empty_columns=1,2,3,4,5,6,7
+
+[DEFEAT]
+empty_columns=0
+
+[GAMENAME]
+Alternacija (Alternate)
+  Zgradi 4 kupe v izmenjujoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤i barvi (alternacija) v 
+naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu na ase in padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu na kralje.
+  Jemlji po eno karto, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e karta ne ustreza bazi, gre
+na kateregakoli od Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tirih rezervnih stolpcev (desno).
+Vrhnja karta vsakega rezervnega kupa je vedno dostopna.
+  Ko v kupu zmanjka kart, poberi karte iz rezervnih kupov
+in jih brez meÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡anja ponovno razdeli. MoÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľni sta dve 
+ponovni delitvi.
+
+[START]
+[DECK]
+set=c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0home, 00, 1, 0
+1home, 01, 1, 0
+2home, 02, 1, 0
+3home, 03, 1, 0
+4waste, 05, 0, 1
+5waste, 06, 0, 1
+6waste, 07, 0, 1
+7waste, 08, 0, 1
+8deck, 04, 48, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0home]
+alternate=1
+contents_at_start=h01
+cards_face_up=1
+overlap_y=default
+player_can_take_card=yes
+[1home]
+alternate=0
+contents_at_start=c13
+cards_face_up=1
+overlap_y=default
+player_can_take_card=yes
+[2home]
+alternate=1
+contents_at_start=d01
+cards_face_up=1
+overlap_y=default
+player_can_take_card=yes
+[3home]
+alternate=0
+contents_at_start=s13
+cards_face_up=1
+overlap_y=default
+player_can_take_card=yes
+[4waste]
+always_allowed_from_columns=8
+player_can_take_card=yes
+overlap_y=40
+[5waste]
+always_allowed_from_columns=8
+player_can_take_card=yes
+overlap_y=40
+[6waste]
+always_allowed_from_columns=8
+player_can_take_card=yes
+overlap_y=40
+[7waste]
+always_allowed_from_columns=8
+player_can_take_card=yes
+overlap_y=40
+[8deck]
+contents_at_start=next
+cards_face_up=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+dblclick_moves_to=4,5,6,7
+player_can_take_card=yes
+overlap_y=40
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+if(empty_columns=8)then[action1]
+[action1]
+movecolumn=7-6
+movecolumn=6-5
+movecolumn=5-4
+movecolumn=4-8
+[]
+
+[FINISH]
+
+[VICTORY]
+empty_columns=4,5,6,7,8
+
+[DEFEAT]
+
+[GAMENAME]
+Kenfild (Canfield)
+  Cilj igre je napolniti vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi
+gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e in v barvi.
+  Uporabi 4 tabelne stolpce za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju
+in barvno alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e. V tabelnih stolpcih so na zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤etku 4 karte.
+  Uporabi zgornjo karto iz zaloge, kjer je na zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤etku 13 kart.
+  Ostalih 34 kart je v kupu. Vzemi 3 karte iz kupa v roko. Samo 
+zgornja karta v roki je dostopna. Ko si odigral vse tri moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľne karte,
+vzemi preostanek treh kart (karte ki niso odigrane) in jih premakni
+v talon (spodaj).
+  Ko v kupu zmanjka kart, se obrne talon, ki brez meÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡anja postane 
+nov kup, iz katerega se spet jemlje po 3 karte. Ni omejitve kolikokrat
+se to lahko stori.
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h01,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0stock, 00, 13, 1
+1deck, 10, 31, 1
+2hand, 20, 3, 1
+3talon, 30, 0, 1
+4fou, 02, 1, 0
+5fou, 03, 0, 0
+6fou, 04, 0, 0
+7fou, 05, 0, 0
+8tab, 22, 1, 1
+9tab, 23, 1, 1
+10tab, 24, 1, 1
+11tab, 25, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0stock]
+cards_face_up=1,1,1,1,1,1,1,1,1,1,1,1,1
+contents_at_start=next
+overlap_x=40
+player_can_take_card=yes
+dblclick_moves_to=4,5,6,7,8,9,10,11
+[1deck]
+cards_face_up=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+contents_at_start=next
+overlap_x=40
+allways_facedown=1
+[2hand]
+cards_face_up=1,1,1
+contents_at_start=next
+overlap_x=default
+player_can_take_card=yes
+dblclick_moves_to=4,5,6,7,8,9,10,11,3
+[3talon]
+overlap_x=40
+player_can_put_card=2
+allways_facedown=1
+after_playermove_action=2-[discardAllFromHandToTalon]
+[4fou]
+backstyle=1
+backcolor=8
+suit=1
+contents_at_start=c01
+overlap_y=100
+[5fou]
+backstyle=1
+backcolor=8
+suit=1
+player_can_put_card_if_empty=d01,h01,s01
+overlap_y=100
+[6fou]
+backstyle=1
+backcolor=8
+suit=1
+player_can_put_card_if_empty=d01,h01,s01
+overlap_y=100
+[7fou]
+backstyle=1
+backcolor=8
+suit=1
+player_can_put_card_if_empty=d01,h01,s01
+overlap_y=100
+[8tab]
+alternate=0
+cards_face_up=1
+contents_at_start=next
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=4,5,6,7,9,10,11
+overlap_y=default
+attempted_playermove_action=9,10,11-[movepileto8]
+[9tab]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=4,5,6,7,8,10,11
+overlap_y=default
+attempted_playermove_action=8,10,11-[movepileto9]
+[10tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=4,5,6,7,8,9,11
+attempted_playermove_action=8,9,11-[movepileto10]
+[11tab]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=4,5,6,7,8,9,10
+overlap_y=default
+attempted_playermove_action=8,9,10-[movepileto11]
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=8-4
+every_turn=8-5
+every_turn=8-6
+every_turn=8-7
+every_turn=9-4
+every_turn=9-5
+every_turn=9-6
+every_turn=9-7
+every_turn=10-4
+every_turn=10-5
+every_turn=10-6
+every_turn=10-7
+every_turn=11-4
+every_turn=11-5
+every_turn=11-6
+every_turn=11-7
+every_turn=2-4
+every_turn=2-5
+every_turn=2-6
+every_turn=2-7
+every_turn=0-4
+every_turn=0-5
+every_turn=0-6
+every_turn=0-7
+if(empty_columns=2)then[take3cards]
+[take3cards]
+movepile=3,1-2
+[]
+if(empty_columns=1,2)then[dealagain]
+[dealagain]
+turncolumn=3
+movecolumn=3-1
+movepile=3,1-2
+[]
+[discardAllFromHandToTalon]
+turncolumn=2
+movepile=3,2-3
+movepile=3,1-2
+[]
+[movepileto8]
+trymovepile=52,selected-8
+[]
+[movepileto9]
+trymovepile=52,selected-9
+[]
+[movepileto10]
+trymovepile=52,selected-10
+[]
+[movepileto11]
+trymovepile=52,selected-11
+[]
+
+[FINISH]
+
+[VICTORY]
+empty_columns=0,1,2,3,8,9,10,11
+
+[GAMENAME]
+V starih Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤asih (Aud Lang Syne)
+Gradi naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi od asov do kraljev.
+Uporabi tablo za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
+alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Dvoklikni na zalogi kart 
+za ponovno delitev. 
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0home, 01, 1, 0
+1home, 02, 1, 0
+2home, 03, 1, 0
+3home, 04, 1, 0
+4waste, 11, 0, 1
+5waste, 12, 0, 1
+6waste, 13, 0, 1
+7waste, 14, 0, 1
+8deck, 00, 48, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0home]
+suit=1
+contents_at_start=c01
+cards_face_up=1
+overlap_y=20
+player_can_take_card=no
+attempted_playermove_action=8-[deal]
+[1home]
+suit=1
+contents_at_start=d01
+cards_face_up=1
+overlap_y=20
+player_can_take_card=no
+[2home]
+suit=1
+contents_at_start=h01
+cards_face_up=1
+overlap_y=20
+player_can_take_card=no
+[3home]
+suit=1
+contents_at_start=s01
+cards_face_up=1
+overlap_y=20
+player_can_take_card=no
+[4waste]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=5,6,7-[movepileto4]
+overlap_y=default
+[5waste]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=4,6,7-[movepileto5]
+overlap_y=default
+[6waste]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=4,5,7-[movepileto6]
+overlap_y=default
+[7waste]
+alternate=0
+player_can_take_card=yes
+player_can_put_card_if_empty=yes
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=4,5,6-[movepileto7]
+overlap_y=default
+[8deck]
+contents_at_start=next
+player_can_take_card=yes
+allways_facedown=1
+dblclick_moves_to=0
+overlap_y=20
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=4-0
+every_turn=4-1
+every_turn=4-2
+every_turn=4-3
+every_turn=5-0
+every_turn=5-1
+every_turn=5-2
+every_turn=5-3
+every_turn=6-0
+every_turn=6-1
+every_turn=6-2
+every_turn=6-3
+every_turn=7-0
+every_turn=7-1
+every_turn=7-2
+every_turn=7-3
+[deal]
+movepile=1,8-4
+movepile=1,8-5
+movepile=1,8-6
+movepile=1,8-7
+autoplay
+[]
+[movepileto4]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-4
+[]
+[movepileto5]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-5
+[]
+[movepileto6]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-6
+[]
+[movepileto7]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-7
+[]
+
+[FINISH]
+
+[VICTORY]
+empty_columns=4,5,6,7,8
+
+[GAMENAME]
+Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â panski gradovi (Castles in Spain)
+  Cilj igre je kompletirati vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce
+zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
+  Uporabi tablo za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
+alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Dvoklikni na pokriti karti, 
+da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡. 
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0line1, 00, 4, 1
+1line1, 01, 4, 1
+2line1, 02, 4, 1
+3line1, 03, 4, 1
+4line1, 04, 4, 1
+5line2, 10, 4, 1
+6line2, 11, 4, 1
+7line2, 12, 4, 1
+8line2, 13, 4, 1
+9line3, 20, 4, 1
+10line3, 21, 4, 1
+11line3, 22, 4, 1
+12line4, 31, 4, 1
+13home1, 06, 0, 0
+14home2, 16, 0, 0
+15home3, 26, 0, 0
+16home4, 36, 0, 0
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=150
+overlap_y=160
+zoom=0.85
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0line1]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-0
+[1line1]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-1
+[2line1]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-2
+[3line1]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-3
+[4line1]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-4
+[5line2]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-5
+[6line2]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-6
+[7line2]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-7
+[8line2]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-8
+[9line3]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-9
+[10line3]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-10
+[11line3]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-11
+[12line4]
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+overlap_y=default
+contents_at_start=next
+dblclick_moves_to=13,14,15,16
+cards_face_up=0,0,0,1
+alternate=0
+use_facedown=1
+attempted_playermove_action=any-trymovepile=52,selected-12
+[13home1]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+overlap_x=default
+backstyle=1
+backcolor=8
+[14home2]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+overlap_x=default
+backstyle=1
+backcolor=8
+[15home3]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+overlap_x=default
+backstyle=1
+backcolor=8
+[16home4]
+suit=1
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+overlap_x=default
+backstyle=1
+backcolor=8
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=0-13
+every_turn=0-14
+every_turn=0-15
+every_turn=0-16
+every_turn=1-13
+every_turn=1-14
+every_turn=1-15
+every_turn=1-16
+every_turn=2-13
+every_turn=2-14
+every_turn=2-15
+every_turn=2-16
+every_turn=3-13
+every_turn=3-14
+every_turn=3-15
+every_turn=3-16
+every_turn=4-13
+every_turn=4-14
+every_turn=4-15
+every_turn=4-16
+every_turn=5-13
+every_turn=5-14
+every_turn=5-15
+every_turn=5-16
+every_turn=6-13
+every_turn=6-14
+every_turn=6-15
+every_turn=6-16
+every_turn=7-13
+every_turn=7-14
+every_turn=7-15
+every_turn=7-16
+every_turn=8-13
+every_turn=8-14
+every_turn=8-15
+every_turn=8-16
+every_turn=9-13
+every_turn=9-14
+every_turn=9-15
+every_turn=9-16
+every_turn=10-13
+every_turn=10-14
+every_turn=10-15
+every_turn=10-16
+every_turn=11-13
+every_turn=11-14
+every_turn=11-15
+every_turn=11-16
+every_turn=12-13
+every_turn=12-14
+every_turn=12-15
+every_turn=12-16
+[FINISH]
+
+[VICTORY]
+empty_columns=0,1,2,3,4,5,6,7,8,9,10,11,12
+
+[GAMENAME]
+Klondajk (Klondike)
+(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+
+  Cilj igre je kompletirati vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce
+zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
+  Uporabi stolpce na tabli za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
+alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Ă„â€šĂ˘â‚¬ĹľĂ„Ä…ÄąË‡e je tabelni stolpec izĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤rpan, 
+lahko nanj poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„ÄľiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ kralja ali sekvenco kart s kraljem
+kot bazo. Dvoklikni pokrito karto, da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡. 
+  Ko si odigral vse moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľne poteze na tabli, odpiraj
+karte iz zaloge eno po eno, gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ na bazo ali na tablo
+ali v talon, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e poteza ni moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľna. 
+  Dovoljena je ena ponovna delitev talona.
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0stock, 27, 23, 1
+1tab, 00, 1, 1
+2tab, 01, 2, 1
+3tab, 02, 3, 1
+4tab, 03, 4, 1
+5tab, 04, 5, 1
+6tab, 05, 6, 1
+7tab, 06, 7, 1
+8found, 30, 0, 1
+9found, 31, 0, 1
+10found, 32, 0, 1
+11found, 33, 0, 1
+12talon, 37, 0, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0stock]
+overlap_x=50
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=8,9,10,11
+[1tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=2,3,4,5,6,7-[trymovepileto1]
+[2tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,3,4,5,6,7-[trymovepileto2]
+[3tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,2,4,5,6,7-[trymovepileto3]
+[4tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,0,0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,2,3,5,6,7-[trymovepileto4]
+[5tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,0,0,0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,2,3,4,6,7-[trymovepileto5]
+[6tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,0,0,0,0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,2,3,4,5,7-[trymovepileto6]
+[7tab]
+alternate=0
+overlap_y=default
+player_can_take_card=yes
+player_can_put_card_if_empty=c13,d13,h13,s13
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,1
+use_facedown=1
+dblclick_moves_to=8,9,10,11
+attempted_playermove_action=1,2,3,4,5,6-[trymovepileto7]
+[8found]
+suit=1
+overlap_y=200
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[9found]
+suit=1
+overlap_y=200
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[10found]
+suit=1
+overlap_y=200
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[11found]
+suit=1
+overlap_y=200
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[12talon]
+always_allowed_from_columns=0
+player_can_take_card=no
+overlap_x=50
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+[trymovepileto1]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-1
+[]
+[trymovepileto2]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-2
+[]
+[trymovepileto3]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-3
+[]
+[trymovepileto4]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-4
+[]
+[trymovepileto5]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-5
+[]
+[trymovepileto6]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-6
+[]
+[trymovepileto7]
+parameter01=cardsrowed(selected)
+trymovepile=parameter01,selected-7
+[]
+if(empty_columns=0)then[one_redeal]
+[one_redeal]
+ifduringaction(parameter02=0)thenturncolumn=12
+ifduringaction(parameter02=0)thenmovecolumn=12-0
+ifduringaction(parameter02=0)thenincrease(parameter02)
+[]
+[FINISH]
+
+[VICTORY]
+empty_columns=0,1,2,3,4,5,6,7,12
+
+[GAMENAME]
+Ladijski kroj in Bristolska moda (Ship shape and Bristol fashion)
+  Cilj je zgraditi 4 bazne stolpce naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e, 
+ne glede na barvo, zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi.
+  Grajenje v tabelnih stolpcih je padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e,
+ne glede na barvo. PremikaÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ lahko po eno karto.
+  Dvoklikni na zalogi, da razdeliÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ naslednje
+tri karte na rezervne stolpce.
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0stock, 27, 28, 1
+1tab, 00, 3, 1
+2tab, 02, 3, 1
+3tab, 04, 3, 1
+4tab, 06, 3, 1
+5tab, 10, 3, 1
+6tab, 12, 3, 1
+7tab, 14, 3, 1
+8tab, 16, 3, 1
+9reserve, 24, 0, 1
+10reserve, 25, 0, 1
+11reserve, 26, 0, 1
+12found, 20, 0, 1
+13found, 21, 0, 1
+14found, 22, 0, 1
+15found, 23, 0, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=300
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0stock]
+overlap_x=50
+player_can_put_card=no
+player_can_take_card=yes
+dblclick_moves_to=12
+allways_facedown=1
+[1tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[2tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[3tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[4tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[5tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[6tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[7tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[8tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=12,13,14,15
+[9reserve]
+overlap_x=20
+overlap_y=50
+player_can_put_card=no
+player_can_take_card=yes
+dblclick_moves_to=12,13,14,15
+[10reserve]
+overlap_x=20
+overlap_y=50
+player_can_put_card=no
+player_can_take_card=yes
+dblclick_moves_to=12,13,14,15
+[11reserve]
+overlap_x=20
+overlap_y=50
+player_can_put_card=no
+player_can_take_card=yes
+dblclick_moves_to=12,13,14,15
+[12found]
+card_value=2
+overlap_y=default
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+attempted_playermove_action=0-[deal_3_reserve_cards]
+aces_on_kings=no
+[13found]
+card_value=2
+overlap_y=default
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+aces_on_kings=no
+[14found]
+card_value=2
+overlap_y=default
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+aces_on_kings=no
+[15found]
+card_value=2
+overlap_y=default
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+aces_on_kings=no
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+[deal_3_reserve_cards]
+movepile=1,0-9
+movepile=1,0-10
+movepile=1,0-11
+[]
+
+[FINISH]
+[VICTORY]
+empty_columns=0,1,2,3,4,5,6,7,8,9,10,11
+
+[GAMENAME]
+Bitka dam (The Battle of Ladies)
+  Trije pobi so izvzeti in poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeni skrajno desno, poleg zaloge.
+Preostali (srĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ev) poba se nahaja na vrhu piramide. Cilj je 
+graditi na Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tirih damah do desetic naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
+  Ime igre izvira iz pravila, da prva dama, ki zgradi do desetice,
+pobere poba z vrha piramide in zmaga.
+  Stolpci na straneh piramide se gradijo padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤i
+barvi. PremikaÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ lahko samo po eno. Nastale praznine se zapolnijo
+s kartami iz zaloge. Ko ni veĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľnih potez, razdeli 6 kart iz
+zaloge na strani piramide z dvoklikom na zalogi.
+  Ko je zaloga izpraznjena, se poberejo karte s strani piramide
+in se ponovno razdelijo. Za ponovno delitev dvoklikni poba na
+vrhu piramide.
+
+[START]
+[DECK]
+set=c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c13,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d13,h01,h02,h03,h04,h05,h06,h07,h08,h09,h10,h13,s01,s02,s03,s04,s05,s06,s07,s08,s09,s10,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0jack, 04, 1, 0
+1side, 13, 1, 1
+2side, 22, 1, 1
+3side, 31, 1, 1
+4side, 15, 1, 1
+5side, 26, 1, 1
+6side, 37, 1, 1
+7queen, 41, 1, 0
+8queen, 43, 1, 0
+9queen, 45, 1, 0
+10queen, 47, 1, 0
+11stock, 07, 38, 1
+12rest3jacks, 49, 3, 0
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0jack]
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=h11
+dblclick_moves_to=12
+allways_facedown=1
+attempted_playermove_action=11-[redealSidesOfPyramid]
+[1side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=2,3,4,5,6-[fill_vacancy]
+[2side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=1,3,4,5,6-[fill_vacancy]
+[3side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=1,2,4,5,6-[fill_vacancy]
+[4side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=1,2,3,5,6-[fill_vacancy]
+[5side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=1,2,3,4,6-[fill_vacancy]
+[6side]
+alternate=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=7,8,9,10
+after_playermove_action=1,2,3,4,5-[fill_vacancy]
+[7queen]
+suit=1
+overlap_x=80
+overlap_y=-80
+player_can_take_card=no
+contents_at_start=c12
+after_playermove_action=1,2,3,4,5,6-[fill_vacancy]
+[8queen]
+suit=1
+overlap_x=40
+overlap_y=-80
+player_can_take_card=no
+contents_at_start=d12
+after_playermove_action=1,2,3,4,5,6-[fill_vacancy]
+[9queen]
+suit=1
+overlap_x=-40
+overlap_y=-80
+player_can_take_card=no
+contents_at_start=h12
+after_playermove_action=1,2,3,4,5,6-[fill_vacancy]
+[10queen]
+suit=1
+overlap_x=-80
+overlap_y=-80
+player_can_take_card=no
+contents_at_start=s12
+after_playermove_action=1,2,3,4,5,6-[fill_vacancy]
+[11stock]
+overlap_x=50
+player_can_put_card=no
+player_can_take_card=yes
+dblclick_moves_to=0
+allways_facedown=1
+[12rest3jacks]
+player_can_put_card=no
+contents_at_start=c11,d11,s11
+player_can_take_card=no
+allways_facedown=1
+attempted_playermove_action=0-[redealStock]
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+seek_parameter=parameter02=source_column
+seek_parameter=parameter10=weight_of(7)
+seek_parameter=parameter11=weight_of(8)
+seek_parameter=parameter12=weight_of(9)
+seek_parameter=parameter13=weight_of(10)
+if(parameter10=12)thenmovecolumn=0-7
+if(parameter11=12)thenmovecolumn=0-8
+if(parameter12=12)thenmovecolumn=0-9
+if(parameter13=12)thenmovecolumn=0-10
+[redealSidesOfPyramid]
+movepile=1,11-1
+movepile=1,11-2
+movepile=1,11-3
+movepile=1,11-4
+movepile=1,11-5
+movepile=1,11-6
+[]
+[fill_vacancy]
+movepile=1,11-parameter02
+[]
+[redealStock]
+ifduringaction(parameter01=<2)thenmovecolumn=3-6
+ifduringaction(parameter01=<2)thenmovecolumn=6-2
+ifduringaction(parameter01=<2)thenmovecolumn=2-5
+ifduringaction(parameter01=<2)thenmovecolumn=5-1
+ifduringaction(parameter01=<2)thenmovecolumn=1-4
+ifduringaction(parameter01=<2)thenmovecolumn=4-11
+ifduringaction(parameter01=<2)then[redealSidesOfPyramid]
+increase(parameter01)
+[]
+[FINISH]
+
+[VICTORY]
+empty_columns=0
+
+[GAMENAME]
+SreĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤koviĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ (Son of Fortune)
+  Cilj je kompletirati bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi in 
+gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
+  Uporabi dve vrsti kart na tabli za hranjenje kart v 
+padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu v ujemajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
+  Karte iz zaloge, ki jih ni mogoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e odigrati na tablo 
+ali bazo, gredo v rezervni stolpec (za to lahko dvoklikneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡
+zalogo).
+  Vrhnja karta rezervnega stolpca je vedno dostopna.
+  Vsaka nastala praznina na tabli se zapolni iz rezervnega
+stolpca ali, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e je ta prazen, iz zaloge.
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0stock, 40, 36, 1
+1found, 00, 1, 0
+2found, 01, 1, 0
+3found, 02, 1, 0
+4found, 03, 1, 0
+5row, 20, 1, 1
+6row, 30, 1, 1
+7waste, 43, 0, 1
+8row5, 21, 1, 1
+9row5, 22, 1, 1
+10row5, 23, 1, 1
+11row5, 24, 1, 1
+12row5, 25, 1, 1
+13row6, 31, 1, 1
+14row6, 32, 1, 1
+15row6, 33, 1, 1
+16row6, 34, 1, 1
+17row6, 35, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=140
+overlap_y=170
+zoom=0.90
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0stock]
+overlap_x=70
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+dblclick_moves_to=1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,7
+[1found]
+suit=1
+overlap_y=default
+player_can_take_card=no
+contents_at_start=c01
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[2found]
+suit=1
+overlap_y=default
+player_can_take_card=no
+contents_at_start=d01
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[3found]
+suit=1
+overlap_y=default
+player_can_take_card=no
+contents_at_start=h01
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[4found]
+suit=1
+overlap_y=default
+player_can_take_card=no
+contents_at_start=s01
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[5row]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=6,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[6row]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,8,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[7waste]
+overlap_x=130
+player_can_put_card=no
+always_allowed_from_columns=0
+player_can_take_card=yes
+dblclick_moves_to=1,2,3,4
+[8row5]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,9,10,11,12,13,14,15,16,17-[fill_vacancy]
+[9row5]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,10,11,12,13,14,15,16,17-[fill_vacancy]
+[10row5]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,11,12,13,14,15,16,17-[fill_vacancy]
+[11row5]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,12,13,14,15,16,17-[fill_vacancy]
+[12row5]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,13,14,15,16,17-[fill_vacancy]
+[13row6]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,12,14,15,16,17-[fill_vacancy]
+[14row6]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,12,13,15,16,17-[fill_vacancy]
+[15row6]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,12,13,14,16,17-[fill_vacancy]
+[16row6]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,17-[fill_vacancy]
+[17row6]
+suit=0
+overlap_x=default
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=1,2,3,4
+after_playermove_action=5,6,8,9,10,11,12,13,14,15,16-[fill_vacancy]
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+seek_parameter=parameter02=source_column
+[fill_vacancy]
+setparameter=parameter01=0
+setparameter=parameter01=countempty(7)
+ifduringaction(parameter01=0)thenmovepile=1,7-parameter02
+ifduringaction(parameter01=1)thenmovepile=1,0-parameter02
+[]
+[FINISH]
+[VICTORY]
+empty_columns=0,5,6,7,8,9,10,11,12,13,14,15,16,17
+
+[GAMENAME]
+Oblegan grad (The Beleaguered Castle)
+(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+
+Cilj igre je kompletirati 4 bazne stolpce gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤
+od asov do kraljev. Uporabi 8 stranskih stolpcev
+za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0home, 03, 1, 0
+1home, 13, 1, 0
+2home, 23, 1, 0
+3home, 33, 1, 0
+4side, 02, 6, 1
+5side, 12, 6, 1
+6side, 22, 6, 1
+7side, 32, 6, 1
+8side, 04, 6, 1
+9side, 14, 6, 1
+10side, 24, 6, 1
+11side, 34, 6, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0home]
+suit=1
+player_can_take_card=no
+contents_at_start=c01
+[1home]
+suit=1
+player_can_take_card=no
+contents_at_start=d01
+[2home]
+suit=1
+player_can_take_card=no
+contents_at_start=h01
+[3home]
+suit=1
+player_can_take_card=no
+contents_at_start=s01
+[4side]
+alternate=0
+overlap_x=-200
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[5side]
+alternate=0
+overlap_x=-200
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[6side]
+alternate=0
+overlap_x=-200
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[7side]
+alternate=0
+overlap_x=-200
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[8side]
+alternate=0
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[9side]
+alternate=0
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[10side]
+alternate=0
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[11side]
+alternate=0
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=4-0
+every_turn=4-1
+every_turn=4-2
+every_turn=4-3
+every_turn=5-0
+every_turn=5-1
+every_turn=5-2
+every_turn=5-3
+every_turn=6-0
+every_turn=6-1
+every_turn=6-2
+every_turn=6-3
+every_turn=7-0
+every_turn=7-1
+every_turn=7-2
+every_turn=7-3
+every_turn=8-0
+every_turn=8-1
+every_turn=8-2
+every_turn=8-3
+every_turn=9-0
+every_turn=9-1
+every_turn=9-2
+every_turn=9-3
+every_turn=10-0
+every_turn=10-1
+every_turn=10-2
+every_turn=10-3
+every_turn=11-0
+every_turn=11-1
+every_turn=11-2
+every_turn=11-3
+[FINISH]
+
+[VICTORY]
+empty_columns=4,5,6,7,8,9,10,11
+
+[GAMENAME]
+Bizli (Bisley)
+(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+
+  Gradi navzdol v barvi zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s kralji.
+Karta iz tablenega stolpca sme na karto, ki
+se ujema v barvi in je sosednja v vrednosti
+(kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeva osmica sme na kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo sedmico in 
+kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo devetico).
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0home, 00, 3, 1
+1home, 02, 3, 1
+2home, 04, 3, 1
+3home, 06, 3, 1
+4tab, 10, 1, 0
+5tab, 11, 1, 0
+6tab, 12, 1, 0
+7tab, 13, 1, 0
+8tab, 14, 4, 1
+9tab, 15, 4, 1
+10tab, 16, 4, 1
+11tab, 31, 4, 1
+12tab, 32, 4, 1
+13tab, 33, 4, 1
+14tab, 34, 4, 1
+15tab, 35, 4, 1
+16tab, 36, 4, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=180
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0home]
+suit=0
+player_can_take_card=no
+contents_at_start=next
+overlap_x=default
+player_can_put_card_if_empty=c13,d13,h13,s13
+backstyle=1
+backcolor=8
+[1home]
+suit=0
+player_can_take_card=no
+contents_at_start=next
+overlap_x=default
+player_can_put_card_if_empty=c13,d13,h13,s13
+backstyle=1
+backcolor=8
+[2home]
+suit=0
+player_can_take_card=no
+contents_at_start=next
+overlap_x=default
+player_can_put_card_if_empty=c13,d13,h13,s13
+backstyle=1
+backcolor=8
+[3home]
+suit=0
+player_can_take_card=no
+contents_at_start=next
+overlap_x=default
+player_can_put_card_if_empty=c13,d13,h13,s13
+backstyle=1
+backcolor=8
+[4tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=c01
+dblclick_moves_to=0,1,2,3
+[5tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=d01
+dblclick_moves_to=0,1,2,3
+[6tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=h01
+dblclick_moves_to=0,1,2,3
+[7tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=s01
+dblclick_moves_to=0,1,2,3
+[8tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[9tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[10tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[11tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[12tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[13tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[14tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[15tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[16tab]
+suit=10
+overlap_y=default
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+[autostart]
+movecolumn=0-4
+movecolumn=1-5
+movecolumn=2-6
+movecolumn=3-7
+[]
+[FINISH]
+[VICTORY]
+empty_columns=4,5,6,7,8,9,10,11,12
+
+[GAMENAME]
+Trdnjava (Fortress)
+(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+
+  Zgradi 4 bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi, gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤
+naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
+  Stranske karte smejo na karto, ki se ujema 
+v barvi in je sosednja v vrednosti (kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeva 
+osmica sme na kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo sedmico in devetico).
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0home, 03, 0, 1
+1home, 13, 0, 1
+2home, 23, 0, 1
+3home, 33, 0, 1
+4tab, 02, 6, 1
+5tab, 12, 5, 1
+6tab, 22, 5, 1
+7tab, 32, 5, 1
+8tab, 42, 5, 1
+9tab, 04, 6, 1
+10tab, 14, 5, 1
+11tab, 24, 5, 1
+12tab, 34, 5, 1
+13tab, 44, 5, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0home]
+suit=1
+player_can_take_card=no
+overlap_y=10
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[1home]
+suit=1
+player_can_take_card=no
+overlap_y=10
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[2home]
+suit=1
+player_can_take_card=no
+overlap_y=10
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[3home]
+suit=1
+player_can_take_card=no
+overlap_y=10
+player_can_put_card_if_empty=c01,d01,h01,s01
+backstyle=1
+backcolor=8
+[4tab]
+suit=10
+overlap_x=-260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[5tab]
+suit=10
+overlap_x=-260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[6tab]
+suit=10
+overlap_x=-260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[7tab]
+suit=10
+overlap_x=-260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[8tab]
+suit=10
+overlap_x=-260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[9tab]
+suit=10
+overlap_x=260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[10tab]
+suit=10
+overlap_x=260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[11tab]
+suit=10
+overlap_x=260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[12tab]
+suit=10
+overlap_x=260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[13tab]
+suit=10
+overlap_x=260
+player_can_put_card_if_empty=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=4-0
+every_turn=4-1
+every_turn=4-2
+every_turn=4-3
+every_turn=5-0
+every_turn=5-1
+every_turn=5-2
+every_turn=5-3
+every_turn=6-0
+every_turn=6-1
+every_turn=6-2
+every_turn=6-3
+every_turn=7-0
+every_turn=7-1
+every_turn=7-2
+every_turn=7-3
+every_turn=8-0
+every_turn=8-1
+every_turn=8-2
+every_turn=8-3
+every_turn=9-0
+every_turn=9-1
+every_turn=9-2
+every_turn=9-3
+every_turn=10-0
+every_turn=10-1
+every_turn=10-2
+every_turn=10-3
+every_turn=11-0
+every_turn=11-1
+every_turn=11-2
+every_turn=11-3
+every_turn=12-0
+every_turn=12-1
+every_turn=12-2
+every_turn=12-3
+every_turn=13-0
+every_turn=13-1
+every_turn=13-2
+every_turn=13-3
+[FINISH]
+
+[VICTORY]
+empty_columns=4,5,6,7,8,9,10,11,12,13
+
+[GAMENAME]
+Dedkova ura (Grandpa's clock)
+  Dvanajst baznih stolpcev oblikuje uro. Na vsakem
+gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi, zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s tamkajÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡njo karto
+in konĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤avÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s karto, ki doseÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľe Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tevilko ure na tej 
+poziciji (od 1 do 12).
+  Pet stolpcev na tabli lahko uporabiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ za hranjenje kart 
+v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu ne glede na barvo. Dvoklikni pokrito karto,
+da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡.
+
+[START]
+[DECK]
+set=c01,c02,c03,c04,c06,c07,c08,c10,c11,c12,d01,d02,d03,d05,d06,d07,d09,d10,d11,d13,h01,h03,h04,h05,h07,h08,h09,h11,h12,h13,s01,s02,s04,s05,s06,s08,s09,s10,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0clock, 03, 1, 0
+1clock, 14, 1, 0
+2clock, 15, 1, 0
+3clock, 26, 1, 0
+4clock, 35, 1, 0
+5clock, 34, 1, 0
+6clock, 43, 1, 0
+7clock, 32, 1, 0
+8clock, 31, 1, 0
+9clock, 20, 1, 0
+10clock, 11, 1, 0
+11clock, 12, 1, 0
+12tab, 07, 8, 1
+13tab, 17, 8, 1
+14tab, 27, 8, 1
+15tab, 37, 8, 1
+16tab, 47, 8, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0clock]
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=c09
+[1clock]
+custom_y=1500
+max_cards=5
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=h10
+[2clock]
+custom_y=2900
+max_cards=5
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=s11
+[3clock]
+max_cards=5
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=d12
+[4clock]
+custom_y=5680
+max_cards=5
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=c13
+[5clock]
+custom_y=7080
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=h02
+[6clock]
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=s03
+[7clock]
+custom_y=7080
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=d04
+[8clock]
+custom_y=5680
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=c05
+[9clock]
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=h06
+[10clock]
+custom_y=2900
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=s07
+[11clock]
+custom_y=1500
+max_cards=4
+suit=1
+overlap_x=50
+overlap_y=50
+player_can_take_card=no
+contents_at_start=d08
+[12tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3,4,5,6,7,8,9,10,11
+use_facedown=1
+[13tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3,4,5,6,7,8,9,10,11
+use_facedown=1
+[14tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3,4,5,6,7,8,9,10,11
+use_facedown=1
+[15tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3,4,5,6,7,8,9,10,11
+use_facedown=1
+[16tab]
+card_value=3
+overlap_x=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3,4,5,6,7,8,9,10,11
+use_facedown=1
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+
+[FINISH]
+
+[VICTORY]
+empty_columns=12,13,14,15,16
+
+[GAMENAME]
+Princ Albert - Dolga salonska suknja (Prince Albert)
+  Gradi naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi.
+  Uporabi tablo (9 stolpcev) za hranjenje kart v 
+padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
+  Sedem kart iz rezerve sme na bazo, na tablo, vendar 
+ne nazaj na rezervo.
+
+[START]
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0fou, 00, 0, 1
+1fou, 02, 0, 1
+2fou, 04, 0, 1
+3fou, 06, 0, 1
+4tab, 10, 1, 1
+5tab, 11, 2, 1
+6tab, 12, 3, 1
+7tab, 13, 4, 1
+8tab, 14, 5, 1
+9tab, 15, 6, 1
+10tab, 16, 7, 1
+11tab, 17, 8, 1
+12tab, 18, 9, 1
+13reserve, 40, 1, 1
+14reserve, 41, 1, 1
+15reserve, 42, 1, 1
+16reserve, 43, 1, 1
+17reserve, 44, 1, 1
+18reserve, 45, 1, 1
+19reserve, 46, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0fou]
+suit=1
+overlap_x=100
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[1fou]
+suit=1
+overlap_x=100
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[2fou]
+suit=1
+overlap_x=100
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[3fou]
+suit=1
+overlap_x=100
+player_can_put_card_if_empty=c01,d01,h01,s01
+player_can_take_card=no
+backstyle=1
+backcolor=8
+[4tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[5tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[6tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[7tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[8tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[9tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[10tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[11tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[12tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+aces_on_kings=no
+[13reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[14reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[15reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[16reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[17reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[18reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[19reserve]
+max_cards=1
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+backstyle=1
+backcolor=5
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+every_turn=4-0
+every_turn=5-0
+every_turn=6-0
+every_turn=7-0
+every_turn=8-0
+every_turn=9-0
+every_turn=10-0
+every_turn=11-0
+every_turn=12-0
+every_turn=13-0
+every_turn=14-0
+every_turn=15-0
+every_turn=16-0
+every_turn=17-0
+every_turn=18-0
+every_turn=19-0
+every_turn=4-1
+every_turn=5-1
+every_turn=6-1
+every_turn=7-1
+every_turn=8-1
+every_turn=9-1
+every_turn=10-1
+every_turn=11-1
+every_turn=12-1
+every_turn=13-1
+every_turn=14-1
+every_turn=15-1
+every_turn=16-1
+every_turn=17-1
+every_turn=18-1
+every_turn=19-1
+every_turn=4-2
+every_turn=5-2
+every_turn=6-2
+every_turn=7-2
+every_turn=8-2
+every_turn=9-2
+every_turn=10-2
+every_turn=11-2
+every_turn=12-2
+every_turn=13-2
+every_turn=14-2
+every_turn=15-2
+every_turn=16-2
+every_turn=17-2
+every_turn=18-2
+every_turn=19-2
+every_turn=4-3
+every_turn=5-3
+every_turn=6-3
+every_turn=7-3
+every_turn=8-3
+every_turn=9-3
+every_turn=10-3
+every_turn=11-3
+every_turn=12-3
+every_turn=13-3
+every_turn=14-3
+every_turn=15-3
+every_turn=16-3
+every_turn=17-3
+every_turn=18-3
+every_turn=19-3
+
+[FINISH]
+[VICTORY]
+empty_columns=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+
+[GAMENAME]
+Ă„â€šĂ˘â‚¬ĹľĂ„Ä…ÄąË‡etvorka (Quadrille)
+  To igro lahko igraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ z dvoklikanjem na zalogi.
+
+  (Karte se jemljejo iz zaloge po eno. Bazne karte so
+petice in Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice. Petice gredo na sever, jug, vzhod, 
+zahod poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľaje, Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice pa gredo med petice. Na petice
+gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do asov, na Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice pa gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡
+naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e do pobov. Dame v tej igri nimajo vloge. Ko
+se pojavijo, jih odstrani na sredino table. Dve delitvi
+sta dovoljeni kadar zmanjka kart v zalogi.)
+
+[START]
+
+[DECK]
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0five, 02, 0, 1
+1five, 24, 0, 1
+2five, 42, 0, 1
+3five, 20, 0, 1
+4six, 13, 0, 1
+5six, 33, 0, 1
+6six, 31, 0, 1
+7six, 11, 0, 1
+8deck, 05, 52, 1
+9talon, 26, 0, 1
+10queens, 22, 0, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0five]
+max_cards=5
+suit=0
+overlap_x=-200
+player_can_put_card_if_empty=c05,d05,h05,s05
+player_can_take_card=no
+backstyle=1
+backcolor=11
+[1five]
+max_cards=5
+suit=0
+overlap_y=-300
+player_can_put_card_if_empty=c05,d05,h05,s05
+player_can_take_card=no
+backstyle=1
+backcolor=11
+[2five]
+max_cards=5
+suit=0
+overlap_x=200
+player_can_put_card_if_empty=c05,d05,h05,s05
+player_can_take_card=no
+backstyle=1
+backcolor=11
+[3five]
+max_cards=5
+suit=0
+overlap_y=300
+player_can_put_card_if_empty=c05,d05,h05,s05
+player_can_take_card=no
+backstyle=1
+backcolor=11
+[4six]
+max_cards=6
+suit=1
+overlap_x=-160
+overlap_y=110
+player_can_put_card_if_empty=c06,d06,h06,s06
+player_can_take_card=no
+backstyle=1
+backcolor=3
+[5six]
+max_cards=6
+suit=1
+overlap_x=-160
+overlap_y=-110
+player_can_put_card_if_empty=c06,d06,h06,s06
+player_can_take_card=no
+backstyle=1
+backcolor=3
+[6six]
+max_cards=6
+suit=1
+overlap_x=160
+overlap_y=-110
+player_can_put_card_if_empty=c06,d06,h06,s06
+player_can_take_card=no
+backstyle=1
+backcolor=3
+[7six]
+max_cards=6
+suit=1
+overlap_x=160
+overlap_y=110
+player_can_put_card_if_empty=c06,d06,h06,s06
+player_can_take_card=no
+backstyle=1
+backcolor=3
+[8deck]
+overlap_x=20
+overlap_y=10
+player_can_put_card=no
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3,4,5,6,7,10,9
+[9talon]
+overlap_x=20
+overlap_y=10
+player_can_put_card=yes
+player_can_take_card=no
+allways_facedown=1
+[10queens]
+card_value=1
+overlap_x=60
+overlap_y=80
+player_can_put_card_if_empty=c12,d12,h12,s12
+player_can_take_card=no
+backstyle=1
+backcolor=12
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+if(empty_columns=8)then[redeal]
+every_turn=8-0
+every_turn=8-1
+every_turn=8-2
+every_turn=8-3
+every_turn=8-4
+every_turn=8-5
+every_turn=8-6
+every_turn=8-7
+every_turn=8-10
+[redeal]
+ifduringaction(parameter01=<2)thenmovecolumn=9-8
+increase(parameter01)
+[]
+[FINISH]
+[VICTORY]
+empty_columns=8,9
+
+[GAMENAME]
+PovrÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡nik (Raglan)
+  Cilj je zgraditi 4 bazne stolpce od asov do kraljev.
+  Uporabi tabelne stolpce za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em
+alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
+  Dvoklikni pokrito karto, da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡.
+  Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â est kart iz rezerve laho premakneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ na bazo, ne pa 
+tudi na tablo.
+
+[START]
+[DECK]
+set=c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,s02,s03,s04,s05,s06,s07,s08,s09,s10,s11,s12,s13
+shuffle_now=1
+[END DECK]
+
+[COLUMNS]
+0fou, 01, 1, 0
+1fou, 03, 1, 0
+2fou, 05, 1, 0
+3fou, 07, 1, 0
+4tab, 10, 7, 1
+5tab, 11, 7, 1
+6tab, 12, 7, 1
+7tab, 13, 6, 1
+8tab, 14, 5, 1
+9tab, 15, 4, 1
+10tab, 16, 3, 1
+11tab, 17, 2, 1
+12tab, 18, 1, 1
+13reserve, 40, 1, 1
+14reserve, 41, 1, 1
+15reserve, 42, 1, 1
+16reserve, 43, 1, 1
+17reserve, 44, 1, 1
+18reserve, 45, 1, 1
+[END COLUMNS]
+
+[COLUMNS DEFAULTS]
+overlap_x=200
+overlap_y=350
+[END COLUMNS DEFAULTS]
+
+[COLUMNS BEHAVIOUR]
+[0fou]
+suit=1
+overlap_x=150
+player_can_take_card=no
+contents_at_start=c01
+[1fou]
+suit=1
+overlap_x=150
+player_can_take_card=no
+contents_at_start=d01
+[2fou]
+suit=1
+overlap_x=150
+player_can_take_card=no
+contents_at_start=h01
+[3fou]
+suit=1
+overlap_x=150
+player_can_take_card=no
+contents_at_start=s01
+[4tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[5tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[6tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[7tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[8tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[9tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[10tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[11tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+cards_face_up=0,1
+dblclick_moves_to=0,1,2,3
+use_facedown=1
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[12tab]
+alternate=0
+overlap_y=default
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+attempted_playermove_action=13,14,15,16,17,18-[thisMoveNotAllowed_CancelIt]
+[13reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[14reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[15reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[16reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[17reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[18reserve]
+max_cards=1
+player_can_put_card_if_empty=yes
+player_can_take_card=yes
+contents_at_start=next
+dblclick_moves_to=0,1,2,3
+[END COLUMNS BEHAVIOUR]
+
+[SPECIAL]
+
+[ACTIONS]
+[thisMoveNotAllowed_CancelIt]
+parameter00=1
+[]
+[FINISH]
+
+[VICTORY]
+empty_columns=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18

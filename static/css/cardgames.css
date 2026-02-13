@@ -1,0 +1,263 @@
+/* =========================
+   VARIABLES
+   ========================= */
+:root {
+    --table-green: #0b6b2e;
+
+    --card-width: 80px;
+    --card-height: 120px;
+
+    --slot-width: 80px;
+    --slot-height: 120px;
+
+    --outline-dark: #000;
+    --outline-muted: #666;
+    --foundation-fill: #888;
+
+    /* visual spacing */
+    --table-padding: 10px;
+    --column-gap: 5px;
+}
+
+
+/* =========================
+   BODY
+   ========================= */
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--table-green);
+    font-family: sans-serif;
+    overflow: hidden;
+}
+body.busy {
+    cursor: wait;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* =========================
+   TABLE
+   ========================= */
+#game-table {
+    position: relative;
+
+    /* JS will set these dynamically */
+    min-width: 100%;
+    min-height: 100%;
+
+    padding: var(--table-padding);
+    box-sizing: border-box;
+
+    background-color: var(--table-green);
+}
+
+#table-scroll {
+    position: fixed;
+    inset: 0;
+    overflow: auto;          /* 🔒 THIS IS THE SCROLLBAR */
+    background: var(--table-green);
+}
+
+
+/* =========================
+   ROWS
+   ========================= */
+/* Rows are positioned by JS — CSS must NOT add vertical spacing */
+.row {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    gap: var(--column-gap);
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================
+   SLOTS
+   ========================= */
+.slot {
+    position: relative;
+    width: var(--slot-width);
+    height: var(--slot-height);
+    flex: 0 0 auto;
+}
+
+/* =========================
+   COLUMNS
+   ========================= */
+.column {
+    position: relative;
+    width: var(--slot-width);
+    height: var(--slot-height);
+    z-index: 10;
+}
+
+/* Empty placeholder columns (must exist, but stay under cards) */
+.column.empty-column {
+    z-index: 1;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 2px solid var(--outline-dark);
+    background-color: var(--table-green);
+}
+
+/* Foundation slots */
+.column.empty-column.foundation {
+    background-color: var(--foundation-fill);
+}
+
+.column.empty-column.foundation::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--outline-muted);
+    opacity: 0.4;
+}
+
+/* Spacer columns (reserve space only) */
+.column.spacer {
+    border: none;
+    background: none;
+    pointer-events: auto; /* allow future clicks */
+}
+
+/* =========================
+   CARDS
+   ========================= */
+.card {
+    position: absolute;
+    width: var(--card-width);
+    height: auto;
+
+    cursor: pointer;
+    display: block;
+
+    /* cards always above empty slots */
+    z-index: 100;
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+.card.face-down {
+    opacity: 0.9;
+}
+
+.card.selected {
+    transform: translateY(-10px);
+    box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.9);
+    z-index: 1000;
+}
+
+
+/* =========================
+   TITLE BAR
+   ========================= */
+#title-bar {
+    height: 28px;
+    background: linear-gradient(to right, #000080, #0000aa);
+    color: white;
+    font-family: Tahoma, sans-serif;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-shadow: inset 0 -1px #404040;
+}
+
+.title-text {
+    font-weight: bold;
+}
+
+/* =========================
+   MENU BAR
+   ========================= */
+#menu-bar {
+    background: #c0c0c0;
+    border-bottom: 2px solid #808080;
+    font-family: Tahoma, sans-serif;
+    user-select: none;
+}
+
+.menu-root {
+    list-style: none;
+    margin: 0;
+    padding: 2px;
+    display: flex;
+}
+
+.menu-item {
+    position: relative;
+    padding: 4px 10px;
+    cursor: default;
+}
+
+.menu-item:hover {
+    background: #000080;
+    color: white;
+}
+
+/* =========================
+   DROPDOWNS
+   ========================= */
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #c0c0c0;
+    border: 2px solid #808080;
+    box-shadow:
+        inset -1px -1px #404040,
+        inset 1px 1px #ffffff;
+    list-style: none;
+    padding: 2px;
+    min-width: 160px;
+    z-index: 2000;
+}
+
+.menu-item:hover .dropdown {
+    display: block;
+}
+
+.dropdown li {
+    padding: 4px 20px 4px 8px;
+    white-space: nowrap;
+}
+
+.dropdown li:hover {
+    background: #000080;
+    color: white;
+}
+
+.separator {
+    height: 1px;
+    background: #808080;
+    margin: 4px 2px;
+}
+
+/* =========================
+   CHECKABLE ITEMS
+   ========================= */
+.checkable::before {
+    content: "✓ ";
+    visibility: hidden;
+}
+
+.checkable.checked::before {
+    visibility: visible;
+}
+

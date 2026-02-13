@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="/static/css/cardgames.css">
+</head>
+<body>
+
+<!-- TITLE BAR -->
+<div id="title-bar">
+    <span class="title-text">
+        Card Games – {{ game.name }}
+    </span>
+</div>
+
+<!-- MENU BAR -->
+<div id="menu-bar">
+    {% include "menu.html" %}
+</div>
+
+<!-- GAME AREA -->
+<div id="table-scroll">
+    <div id="game-table" data-game-id="{{ game.game_id }}"></div>
+</div>
+
+<script>
+    window.INITIAL_GAME_STATE = {{ game.to_dict() | tojson | safe }};
+</script>
+
+<script src="/static/js/cardgame.js"></script>
+
+</body>
+</html>

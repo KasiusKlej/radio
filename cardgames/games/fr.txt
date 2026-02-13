@@ -1,0 +1,294 @@
+Jeux De Carte 
+dÃ©faut de fonctionnement. 
+Vous avez gagnÃ©. 
+Vous avez dÃ©truit. 
+Cardez les jeux pour un joueur pour les Windows (c) septembre 2000 (p) miha11@yahoo.com 
+
+Ce jeu est shareware. Si vous voulez plus que s'il vous plaÃ®t 
+registre a http://abulafia.ijs.si/bbxmih/games / 
+GagnÃ©: 
+Perdu: 
+JouÃ©: 
+Pour cent: 
+Alfa de pour cent: 
+--- 
+&Nouveau jeu 
+&Zoom 
+&Options 
+&Aide 
+&Sortie 
+Zoom ded&ans 
+Zoom deh&ors 
+Zoom ma&ximal 
+Zoom mi&nimal 
+&Autoplay 
+Cartes de &Resizable 
+&Chargez d'autres cartes 
+&Statistcs 
+Statistiques &globales 
+&Regles 
+&Au sujet de... 
+--- 
+OK 
+Annulation 
+--- 
+OK 
+LÃ©gende: 
+gagnÃ© 
+non fini 
+perdu 
+--- 
+&Langage...
+&Personnaliser...
+&Registre...
+-------
+--------
+Ce jeu est shareware. 
+Si vous voulez plus que registre s'il vous plaÃ®t. 
+Visitez http://abulafia.ijs.si/bbxmih/games / 
+Visitez http://abulafia.ijs.si/bbxmih/page2.html 
+------
+--------
+[Registration form]
+Fiche 
+---
+Vous n'etes pas utilisateur encore entierement registre des jeux de carte. 
+Vous ne pouvez pas pouvoir jouer tous les jeux a moins que vous registre. 
+Vous pouvez vous inscrire a 18$ ou a moins. 
+Pour registre, envoyez-nous une demande.  
+Si vous allready payed pour les jeux de carte et avez reÃ§u le numÃ©ro de sÃ©rie, 
+alors vous pouvez Ã©crire le numÃ©ro de sÃ©rie et devenir le joueur registre. 
+Vous pouvez Ã©galement visiter http://abulafia.ijs.si/bbxmih/games / 
+---
+Je veux acheter des jeux de carte 
+
+Je payerai avec 
+argent
+mandat
+cheque
+carte crÃ©dit
+VISA
+Mastercard
+autre... 
+
+Je veux recevoir 
+NumÃ©ro de sÃ©rie
+3.5 " Disquette
+Disque compact 
+
+Je veux recevoir le produit 
+la poste
+E-mail
+Mon adresse 
+Mon E-mail 
+Nom: 
+Rue: 
+Ville: 
+Code postal (USA seulement) 
+Ãtat (USA seulement) 
+Pays: 
+
+Je ne veux pas tous les jeux 
+(ceci rÃ©duira le prix) 
+
+QuantitÃ© 
+Cout d'expÃ©dition 
+Montant total 
+---
+Fiche d'impression 
+Envoyez la commande par la poste 
+Pour envoyer la commande par la poste, imprimez la fiche et envoyez-l'a a l'adresse ci-dessus. 
+Envoyez la commande par E-mail 
+Ãcrivez le numÃ©ro de sÃ©rie 
+OK 
+Fin 
+---
+To: 
+Objet: 
+---
+
+
+
+
+[GAMENAME]
+Cellule libre 
+L'objet d'un jeu est de mettre toutes les cartes 
+dans de bons endroits du haut 4 commenÃ§ant par l'as des clubs, 
+as des diamants, as des coeurs et as des cosses 
+dans chacun de 4 endroits. 
+
+[GAMENAME]
+Quatre saisons 
+Mettez toutes les cartes dans les coins commenÃ§ant par des as 
+dans chaque coin. Il y a 5 cartes en positions du milieu 5 
+et d'autres cartes dans le paquet. Utilisez les positions moyennes a 
+enregistrez les cartes. Vous pouvez dÃ©placer des cartes du paquet a l'endroit 
+pres du paquet ou dans 5 positions moyennes. 
+
+[GAMENAME]
+Golf 
+L'objet du jeu est de dÃ©placer toutes les cartes du 
+paquet et de 7 colonnes a la serre dans croissant ou dÃ©croissant 
+ordre indÃ©pendamment de costume. 
+
+[GAMENAME]
+Remplacement 
+Construisez 4 piles dans des couleurs alternatives en montant 
+commande sur les as et ordre dÃ©croissant sur les rois. 
+Cartes d'affaire une par une, construisant si possible ou 
+jeter dans quels de quatre segments de mÃ©moire de rebut. La carte supÃ©rieure 
+de chaque segment de mÃ©moire est toujours disponible. Quand toutes les cartes 
+ont Ã©tÃ© occupÃ©s, redeal sans shufling. Deux tels redeals 
+sont laissÃ©s. 
+
+[GAMENAME]
+Canfield 
+Le but du jeu est de terminer chacune des quatre piles de base 
+a partir des as et de la construction vers le haut dans l'ordre de costume. 
+Employez les piles de tableau pour enregistrer des cartes dans l'ordre dÃ©croissant de 
+couleur alternative. Il y a quatre cartes dans le tableau a begining 
+du jeu. 
+Utilisez la carte supÃ©rieure des provisions, ou il y a 13 cartes a begining. 
+34 autres cartes sont laissÃ©es dans le paquet. Cartes de la prise 3 du paquet 
+a votre main. Seulement la carte supÃ©rieure est disponible. Quand toutes les 3 possibilitÃ©s 
+ont Ã©tÃ© jouÃ©s, retournent et jettent remamining des 3 cartes (celle 
+n'ont pas Ã©tÃ© jouÃ©s) a la serre. 
+Quand le paquet est exsausted, la serre est retournÃ© sans etre 
+brouillÃ© et devient le nouveau paquet, les cartes dans lui encore Ã©tant tournÃ© 
+au-dessus de en des paquets de trois. Il n'y a aucune limite au nombre de fois ceci 
+peut etre fait. 
+
+[GAMENAME]
+Aud Lang Syne 
+Construisez vers le haut dans le costume des as aux rois. 
+Employez le tableau pour enregistrer des cartes dans la descente 
+alternez la commande. Doublez cliquettent en fonction des provisions a redeal. 
+
+[GAMENAME]
+ChÃ¢teaux en Espagne 
+L'objet d'un jeu est de terminer chacun des quatre 
+buildig de colonnes de base des as montant 
+aux rois dans le costume. Employez le tableau pour enregistrer des cartes 
+dans la commande alternative dÃ©croissante. Double dÃ©clic 
+le visage cardent vers le bas pour le faire tourner. 
+
+[GAMENAME]
+Klondike 
+(rang: tres difficile) 
+
+Mettez toutes les cartes dans quatre colonnes de base 
+a partir des as construisant dans le costume jusqu' aux rois. 
+Employez le tableau pour enregistrer des cartes dans le remplacement dÃ©croissant 
+commande. Si l'offre d'emploi dans le tableau est crÃ©Ã©e pendant le jeu, 
+vous pouvez mettre le roi ou un ordre avec un roi comme base 
+carte. Le double visage de dÃ©clic cardent vers le bas pour la faire tourner. 
+Une fois que toutes les dÃ©marches possibles dans le tableau a Ã©tÃ© entreprises, 
+en tournez les cartes en stock un, en jouant 
+cartes qui peuvent etre jouÃ©es sur une carte appropriÃ©e dans 
+tableau ou sur sa pile de base. Cartes qui ne peuvent pas 
+soyez jouÃ© sont mis dans la serre. Un redeal de la serre 
+est laissÃ©. 
+
+[GAMENAME]
+Forme de bateau et mode de Bristol 
+Le but est d'Ã©tablir 4 bases vers le haut 
+indÃ©pendamment du costume a partir des as. 
+L'emballage dans le tableau est en bas, 
+ragardless du costume. Seulement une carte a la fois 
+peut etre jouÃ©. 
+Doublez les provisions de dÃ©clic pour s'occuper ensuite trois cartes 
+aux colonnes de rÃ©serve. 
+
+[GAMENAME]
+La bataille des dames 
+Trois plots sont exclus du paquet et sont exacts lointain mis, pres des provisions. 
+L'autre Jack est au dessus de la pyramide. Le but est de construire de 4 reines 
+vers le haut aux dix selon le costume. 
+Le nom du jeu provient de la vieille regle qui la reine 
+qui la base est terminÃ©e d'abord rÃ©clame le Jack et gagne. 
+Les cartes sur le cÃ´tÃ© de la pyramide sont construction en bas dans le remplacement 
+couleurs. Elles peuvent seulement etre dÃ©placÃ©es un. Les espaces crÃ©Ã©s sont remplis 
+par des cartes des provisions. Quand plus de mouvements ne sont possibles occupez-vous 6 
+cartes des provisions aux cÃ´tÃ©s de la pyramide par double cliqueter sur des provisions. 
+Quand les provisions sont exsausted, des cartes des cÃ´tÃ©s de pyramide sont prises et 
+redealed. On permet deux tels redeals. Au double dÃ©clic redeal 
+Carte de Jack au dessus de la pyramide. 
+
+[GAMENAME]
+Fils de la fortune 
+Le but est de terminer des colonnes de base des as 
+aux rois construisant dans le costume. 
+Employez deux lignes dans le tableau pour enregistrer des cartes dans la descente 
+convenez a la commande assortie. 
+Cartes qui ne peuvent pas etre jouÃ©es des provisions a la base ou au tableau 
+sont mis pour gaspiller la colonne (vous pouvez doubler pour cliqueter en fonction des provisions pour faire ainsi). 
+La carte supÃ©rieure de la colonne de rebut est toujours disponible. 
+Toutes les vacances d'emploi qui sont crÃ©Ã©es dans le tableau sont remplies 
+de la pile de rebut ou, si elle est vide, des provisions. 
+
+[GAMENAME]
+Le ChÃ¢teau CernÃ© 
+(rang: tres difficile) 
+
+Le but du jeu est de terminer 4 piles de base 
+bÃ¢timent des as aux rois. Utilisez 8 colonnes latÃ©rales a 
+enregistrez les cartes dans la commande alternative dÃ©croissante. 
+
+[GAMENAME]
+Bisley 
+(rang: tres difficile) 
+
+Construction en bas dans le costume commenÃ§ant par des rois. 
+La carte de tableau peut etre dÃ©placÃ©e a une carte cela 
+les allumettes dans le costume et est a cÃ´tÃ© de lui dans le grade (huit 
+des clubs a pu aller a neuf ou a sept de clubs). 
+
+[GAMENAME]
+Forteresse 
+(rang: tres difficile) 
+
+Construisez quatre piles vers le haut dans le costume a partir des as. 
+Les cartes latÃ©rales peuvent etre dÃ©placÃ©es a une carte cela 
+les allumettes dans le costume et est a cÃ´tÃ© de lui dans le grade (huit 
+des clubs a pu aller a neuf ou a sept de clubs). 
+
+[GAMENAME]
+Horloge de Grandpa 
+Il y a 12 colonnes de base formant une horloge. 
+Vous devez vous accumuler dans le costume sur chacun, commenÃ§ant en fonction 
+carte et bÃ¢timent de base jusqu' aux extensions d'ordre 
+le nombre d'heures auxou la carte de base se repose. 
+Employez cinq lignes de tableau pour enregistrer des cartes dans l'ordre dÃ©croissant 
+indÃ©pendamment du costume. Double dÃ©clic la carte de tableau a tourner 
+il plus de. 
+
+[GAMENAME]
+Princ Albert 
+Construction vers le haut dans le costume a partir des as. 
+Employez le tableau (9 colonnes) pour enregistrer des cartes dedans 
+alternez l'ordre dÃ©croissant. 
+Sept cartes de la rÃ©serve peuvent etre jouÃ©es 
+sur la base ou le tableau mais pas de nouveau au 
+rÃ©serve. 
+
+[GAMENAME]
+Quadrille 
+Vous pouvez jouer ce jeu par double cliqueter sur des provisions. 
+
+(des cartes sont tournÃ©es vers le haut des provisions une par une. 
+Les cartes de base sont des fives et des sixes. Fives disparaissent 
+sur le nord, occidental, l'est et les positions du sud, les sixes vont 
+entre eux. Sur des fives vous pouvez construire vers le bas dans le costume 
+aux as, sur des sixes que vous pouvez augmentent jusqu'a des plots. Reines 
+ne jouez aucun rÃ´le dans le jeu. Quand ils tournent vers le haut, ils 
+sont mis dans la position moyenne. 
+On permet deux redeals apres que les provisions soient exsausted.) 
+
+[GAMENAME]
+Raglan 
+Le but est d'Ã©tablir quatre bases des as 
+aux rois. 
+Employez le tableau pour enregistrer des cartes dans l'ordre dÃ©croissant alternatif. 
+Doublez la carte de facedown de dÃ©clic pour la faire tourner. 
+Les six cartes de la rÃ©serve peuvent etre mises a la base 
+mais ne peut pas etre mis au tableau. 

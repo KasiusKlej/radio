@@ -1,0 +1,296 @@
+Jogos Do Cartao 
+mau funcionamento. 
+Voce ganhou. 
+Voce perdeu. 
+Card jogos para um jogador para os Windows (c) setembro 2000 (p) miha11@yahoo.com 
+
+Este jogo Ã© shareware. Se voce quiser mais do que por favor 
+registo em http://abulafia.ijs.si/bbxmih/games / 
+Ganhado: 
+Perdido: 
+Jogado: 
+Por cento: 
+Alfa dos por cento: 
+--- 
+&Jogo novo 
+&Zoom 
+&OpÃ§oes 
+&Ajuda 
+&SaÃ­da 
+Zoom &dentro 
+Zoom &para fora 
+Zoom mÃ¡&ximo 
+Zoom mÃ­&nimo 
+&Autoplay 
+Cartoes de &Resizable 
+&Carregue outros cartoes 
+&Statistcs 
+Statistics &totais 
+&RÃ©guas 
+&Sobre... 
+--- 
+APROVAÃAO 
+Cancelamento 
+--- 
+APROVAÃAO 
+Legenda: 
+ganhado 
+unfinished 
+perdido 
+--- 
+&LÃ­ngua...
+&Customising...
+&Registe...
+------
+-------
+Este jogo Ã© shareware. 
+Se voce quiser mais do que registe por favor. 
+Visite http://abulafia.ijs.si/bbxmih/games / 
+Visite http://abulafia.ijs.si/bbxmih/page2.html 
+------
+--------
+[Registration form]
+FormulÃ¡rio de registo 
+---
+Voce nao Ã© usuÃ¡rio ainda inteiramente registado de jogos do cartao. 
+Voce nao pode poder jogar todos os jogos a menos que voce registar. 
+Voce pode registar para 18$ ou menos. 
+Para registar, emita-nos um pedido.  
+Se voce allready payed para os jogos do cartao e receber o nÃºmero de sÃ©rie, 
+entao voce pode incorporar o nÃºmero de sÃ©rie e transformar-se o jogador registado. 
+Voce pode tambÃ©m visitar http://abulafia.ijs.si/bbxmih/games / 
+---
+Eu quero comprar jogos do cartao 
+
+Eu pagarei com 
+dinheiro
+ordem
+cheque
+cartao crÃ©d.
+VISTO 
+Mastercard 
+outro... 
+
+Eu quero receber 
+NÃºmero De sÃ©rie
+3.5" Disco
+Cd-rom
+
+Eu quero receber o produto 
+correio
+E-mail
+Meu endereÃ§o 
+Meu E-mail 
+Nome:  
+Rua:  
+Cidade:  
+CÃ³digo de FECHO DE CORRER (E. U. somente) 
+Estado (E. U. somente) 
+PaÃ­s:  
+
+Eu nao quero todos os jogos 
+(isto reduzirÃ¡ o preÃ§o) 
+
+Uma quantidade
+Custo do shipment
+Quantid. total
+--- 
+FormulÃ¡rio de registo da cÃ³pia 
+Emita a ordem pelo correio 
+Para emitir a ordem pelo correio, imprima o formulÃ¡rio de registo e emita-o ao endereÃ§o acima. 
+Emita a ordem pelo E-mail 
+Incorpore o nÃºmero de sÃ©rie 
+OK
+Fim
+--- 
+To: 
+Assunto: 
+--- 
+
+
+
+
+
+
+[GAMENAME]
+Pilha livre 
+O objeto de um jogo Ã© pÃ´r todos os cartoes 
+nos lugares direitos da parte superior 4 que comeÃ§am com o ace dos clubes, 
+ace dos diamantes, ace dos coraÃ§oes e ace das pÃ¡s 
+em cada um de 4 lugares. 
+
+[GAMENAME]
+Quatro estaÃ§oes 
+Ponha todos os cartoes nos cantos que comeÃ§am com aces 
+em cada canto. HÃ¡ 5 cartoes em posiÃ§oes do meio 5 
+e outros cartoes na plataforma. Use posiÃ§oes mÃ©dias a 
+armazene cartoes. Voce pode mover cartoes da plataforma para o lugar 
+perto da plataforma ou a 5 posiÃ§oes mÃ©dias. 
+
+[GAMENAME]
+Golf 
+O objeto do jogo Ã© mover todos os cartoes do 
+plataforma e de 7 colunas ao talon em ascending ou em descendente 
+seqÃ¼encia nao obstante o terno. 
+
+[GAMENAME]
+SubstituiÃ§ao 
+Construa 4 pilhas em cores alternas em ascending 
+ordem nos aces e ordem descendente nos reis. 
+NegocÃ­e cartoes um de cada vez, construindo onde possÃ­vel ou 
+rejeitar em alguns de quatro heaps waste. O cartao superior 
+de cada heap estÃ¡ sempre disponÃ­vel. Quando todos os cartoes 
+foram negociados, redeal sem shufling. Dois tais redeals 
+sao reservados. 
+
+[GAMENAME]
+Canfield 
+O objetivo do jogo Ã© terminar todas as quatro pilhas da fundaÃ§ao 
+partir dos aces e da configuraÃ§ao para cima na seqÃ¼encia do terno. 
+Use pilhas do tableau armazenar cartoes em seqÃ¼encia descendente de 
+cor alterna. HÃ¡ quatro cartoes no tableau em begining 
+do jogo. 
+Use o cartao superior do estoque, onde hÃ¡ 13 cartoes em begining. 
+Outros 34 cartoes sao deixados na plataforma. Cartoes da tomada 3 da plataforma 
+a sua mao. Somente o cartao superior estÃ¡ disponÃ­vel. Quando todas as 3 possibilidades 
+foram jogados, viram e rejeitam remamining dos 3 cartoes (aquele 
+nao foram jogados) ao talon. 
+Quando a plataforma Ã© exsausted, o talon estÃ¡ virado sem ser 
+baralhada e torna-se a plataforma nova, os cartoes nela outra vez que estÃ¡ sendo girada 
+sobre em pacotes de tres. Nao hÃ¡ nenhum limite ao nÃºmero das Ã©pocas isto 
+pode ser feito. 
+
+[GAMENAME]
+Aud Lang Syne 
+Construa para cima no terno dos aces aos reis. 
+Use o tableau armazenar cartoes em descer 
+alterne a ordem. Dobre estalam sobre o estoque a redeal. 
+
+[GAMENAME]
+Castelos em spain 
+O objeto de um jogo Ã© terminar todos os quatro 
+buildig das colunas da fundaÃ§ao dos aces que ascending 
+aos reis no terno. Use o tableau armazenar cartoes 
+em ordem alterna descendente. Clique dobro 
+a cara card para baixo para virÃ¡-lo. 
+
+[GAMENAME]
+Klondike 
+(Rank: muito difÃ­cil) 
+
+Ponha todos os cartoes em quatro colunas da fundaÃ§ao 
+partir dos aces que constroem no terno atÃ© reis. 
+Use o tableau armazenar cartoes em substituiÃ§ao descendente 
+ordem. Se a vacÃ¢ncia no tableau for criada durante o jogo, 
+voce pode pÃ´r o rei ou uma seqÃ¼encia com um rei como a base 
+cartao. A cara dobro do clique card para baixo para virÃ¡-lo. 
+Uma vez que todos os movimentos possÃ­veis no tableau foram feitos, 
+gire os cartoes no estoque um por um, jogando alguns 
+cartoes que podem ser jogados em um cartao apropriado no 
+tableau ou em sua pilha da fundaÃ§ao. Cartoes que nao podem 
+seja jogado sao postos no talon. Um redeal do talon 
+Ã© reservado. 
+
+[GAMENAME]
+Forma do navio e forma de Bristol 
+O objetivo Ã© construir para cima 4 fundaÃ§oes 
+nao obstante o terno que parte dos aces. 
+Embalar dentro do tableau estÃ¡ para baixo, 
+ragardless do terno. Somente um cartao de cada vez 
+pode ser jogado. 
+Dobre o estoque do clique para negociar em seguida tres cartoes 
+as colunas da reserva. 
+
+[GAMENAME]
+A batalha das senhoras 
+Tres jaques sao excluÃ­dos do bloco e sao direitos distante posto, perto do estoque. 
+O outro Jack estÃ¡ no alto da pirÃ¢mide. O objetivo Ã© construir de 4 rainhas 
+para cima aos dez de acordo com o terno. 
+O nome do jogo origina da rÃ©gua velha que a rainha 
+quem a fundaÃ§ao Ã© terminada primeiramente reivindicam o Jack e ganham-no. 
+Os cartoes no lado da pirÃ¢mide sao configuraÃ§ao para baixo na substituiÃ§ao 
+cores. Podem somente ser movidos um por um. Os espaÃ§os criados sao enchidos 
+por cartoes do estoque. Quando nao mais movimento nao Ã© possÃ­vel negocÃ­e 6 
+cartoes do estoque aos lados da pirÃ¢mide estalar dobro no estoque. 
+Quando o estoque Ã© exsausted, os cartoes dos lados da pirÃ¢mide sao feitos exame e 
+redealed. Dois tais redeals sao permitidos. Ao clique dobro redeal 
+Cartao de Jack no alto da pirÃ¢mide. 
+
+[GAMENAME]
+Filho da fortuna 
+O objetivo Ã© terminar colunas da fundaÃ§ao dos aces 
+aos reis que constroem no terno. 
+Use duas fileiras no tableau armazenar cartoes em descer 
+sirva a ordem combinando. 
+Cartoes que nao podem ser jogados do estoque a fundaÃ§ao ou ao tableau 
+sao postos para desperdiÃ§ar a coluna (voce pode dobrar para estalar sobre o estoque para fazer assim). 
+O cartao superior da coluna waste estÃ¡ sempre disponÃ­vel. 
+Todas as vacÃ¢ncias que forem criadas no tableau sao enchidas 
+da pilha waste ou, se estiver vazia, do estoque. 
+
+[GAMENAME]
+O Castelo Beleaguered 
+(Rank: muito difÃ­cil) 
+
+O alvo do jogo Ã© terminar 4 pilhas da fundaÃ§ao 
+edifÃ­cio dos aces aos reis. Use 8 colunas laterais a 
+armazene cartoes em ordem alterna descendente. 
+
+[GAMENAME]
+Bisley 
+(Rank: muito difÃ­cil) 
+
+ConfiguraÃ§ao para baixo no terno que comeÃ§a com reis. 
+O cartao do tableau pode ser movido para um cartao isso 
+os fÃ³sforos no terno e sao ao lado dele no Rank (oito 
+dos clubes podia ir a nove ou a sete dos clubes). 
+
+[GAMENAME]
+Fortress 
+(Rank: muito difÃ­cil) 
+
+Construa quatro pilhas para cima no terno que parte dos aces. 
+Os cartoes laterais podem ser movidos para um cartao isso 
+os fÃ³sforos no terno e sao ao lado dele no Rank (oito 
+dos clubes podia ir a nove ou a sete dos clubes). 
+
+[GAMENAME]
+Pulso de disparo de Grandpa 
+HÃ¡ 12 colunas da fundaÃ§ao que dao forma a um pulso de disparo. 
+Voce deve construir acima no terno em cada um, comeÃ§ando sobre 
+cartao e edifÃ­cio da fundaÃ§ao atÃ© alcances da seqÃ¼encia 
+o nÃºmero das horas em que o cartao da fundaÃ§ao se senta. 
+Use cinco fileiras do tableau armazenar cartoes em ordem descendente 
+nao obstante o terno. Clique dobro o cartao do tableau a girar 
+ele sobre. 
+
+[GAMENAME]
+Princ Albert 
+ConfiguraÃ§ao para cima no terno que parte dos aces. 
+Use o tableau (9 colunas) armazenar dentro cartoes 
+alterne ordem descendente. 
+Sete cartoes da reserva podem ser jogados 
+na fundaÃ§ao ou no tableau mas nao suporte ao 
+reserva. 
+
+[GAMENAME]
+Quadrille 
+Voce pode jogar este jogo estalar dobro no estoque. 
+
+(os cartoes sao girados acima do conservado em estoque de cada vez. 
+Os cartoes da fundaÃ§ao sao fives e sixes. Fives vai 
+no norte, ocidental, no leste e em posiÃ§oes sul, os sixes vao 
+entre eles. Em fives voce pode construir para baixo no terno 
+aos aces, em sixes voce pode construir atÃ© jaques. Rainhas 
+nao jogue nenhuma parte no jogo. Quando girarem acima, eles 
+sao postos na posiÃ§ao mÃ©dia. 
+Dois redeals sao permitidos depois que o estoque Ã© exsausted.) 
+
+[GAMENAME]
+Raglan 
+O objetivo Ã© construir quatro fundaÃ§oes dos aces 
+aos reis. 
+Use o tableau armazenar cartoes na ordem descendente alterna. 
+Dobre o cartao do facedown do clique para virÃ¡-lo. 
+Os seis cartoes da reserva podem ser postos a fundaÃ§ao 
+mas nao pode ser posto ao tableau. 

@@ -1,0 +1,53 @@
+<ul class="menu-root">
+
+    <li class="menu-item">Game
+        <ul class="dropdown">
+            {% for g in games %}
+            <li onclick="location.href='/play/{{ g.id }}'">
+                {{ g.name }}
+            </li>
+            {% endfor %}
+            <li class="separator"></li>
+            <li onclick="location.href='/exit'">Exit</li>
+        </ul>
+    </li>
+
+    <li class="menu-item">Zoom
+        <ul class="dropdown">
+            <li>Zoom In</li>
+            <li>Zoom Out</li>
+            <li>Max</li>
+            <li>Min</li>
+        </ul>
+    </li>
+
+    <li class="menu-item">Options
+        <ul class="dropdown">
+            <li class="checkable" id="menu-autoplay">Autoplay</li>
+            <li>Resizable</li>
+            <li>Other Cards</li>
+            <li>Statistics</li>
+            <li>Overall</li>
+        </ul>
+    </li>
+
+    <li class="menu-item">Help
+        <ul class="dropdown">
+            <li onclick="showRules()">Rules</li>
+            <li>Customizing</li>
+            <li>About</li>
+            <li>Register</li>
+        </ul>
+    </li>
+
+    <li class="menu-item">Language
+        <ul class="dropdown">
+            {% for code in ["eng","slo","ger","fr","it","spa","por","chn","jap","kor","yu"] %}
+            <li onclick="location.href='/set-language/{{ code }}'">
+                {{ code.upper() }}
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+
+</ul>
