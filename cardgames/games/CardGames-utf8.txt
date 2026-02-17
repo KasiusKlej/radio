@@ -1,9 +1,9 @@
 [GAMENAME]
 Prosta celica (Free cell)
   Cilj igre je spraviti vse karte na 4 bazne pozicije
-zgoraj desno zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevim, karinim, srĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤evim in 
+zgoraj desno začenši s križevim, karinim, srčevim in 
 pikovim asom. Karte, ki sledijo asom, morajo ustrezati 
-barvi in naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤emu zaporedju.
+barvi in naraščajočemu zaporedju.
 
 [START]
 [DECK]
@@ -258,13 +258,13 @@ empty_columns=8,9,10,11,12,13,14,15
 
 
 [GAMENAME]
-Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â tirje letni Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤asi (Four seasons)
-  Spravi vse karte v kote zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asom v vsakem kotu
-in gradi v naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju.
+Štirje letni časi (Four seasons)
+  Spravi vse karte v kote začenši z asom v vsakem kotu
+in gradi v naraščajočem zaporedju.
   Pet kart je na srednjih petih pozicijah, ostale pa so 
 v kupu. Srednjih pet pozicij uporabi za hranjenje kart
-v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju.
-  Iz kupa kart lahko premakneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ karto v talon (kupĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ek poleg)
+v padajočem zaporedju.
+  Iz kupa kart lahko premakneš karto v talon (kupček poleg)
 ali na ustrezno pozicijo na tabli.
 
 [START]
@@ -397,8 +397,8 @@ empty_columns=0,1,6,7,8,9,10
 [GAMENAME]
 Golf
 Cilj igre je spraviti vse karte iz kupa in sedmih stolpcev
-v talon. Karta ustreza talonu, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e se ujema v naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em ali 
-padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu, ne glede na barvo. 
+v talon. Karta ustreza talonu, če se ujema v naraščajočem ali 
+padajočem redu, ne glede na barvo. 
 
 [START]
 [DECK]
@@ -494,13 +494,13 @@ empty_columns=0
 
 [GAMENAME]
 Alternacija (Alternate)
-  Zgradi 4 kupe v izmenjujoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤i barvi (alternacija) v 
-naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu na ase in padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu na kralje.
-  Jemlji po eno karto, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e karta ne ustreza bazi, gre
-na kateregakoli od Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tirih rezervnih stolpcev (desno).
+  Zgradi 4 kupe v izmenjujoči barvi (alternacija) v 
+naraščajočem redu na ase in padajočem redu na kralje.
+  Jemlji po eno karto, če karta ne ustreza bazi, gre
+na kateregakoli od štirih rezervnih stolpcev (desno).
 Vrhnja karta vsakega rezervnega kupa je vedno dostopna.
   Ko v kupu zmanjka kart, poberi karte iz rezervnih kupov
-in jih brez meÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡anja ponovno razdeli. MoÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľni sta dve 
+in jih brez mešanja ponovno razdeli. Možni sta dve 
 ponovni delitvi.
 
 [START]
@@ -595,16 +595,16 @@ empty_columns=4,5,6,7,8
 
 [GAMENAME]
 Kenfild (Canfield)
-  Cilj igre je napolniti vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi
-gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e in v barvi.
-  Uporabi 4 tabelne stolpce za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em zaporedju
-in barvno alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e. V tabelnih stolpcih so na zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤etku 4 karte.
-  Uporabi zgornjo karto iz zaloge, kjer je na zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤etku 13 kart.
+  Cilj igre je napolniti vse štiri bazne stolpce začenši z asi
+gradeč naraščajoče in v barvi.
+  Uporabi 4 tabelne stolpce za hranjenje kart v padajočem zaporedju
+in barvno alternirajoče. V tabelnih stolpcih so na začetku 4 karte.
+  Uporabi zgornjo karto iz zaloge, kjer je na začetku 13 kart.
   Ostalih 34 kart je v kupu. Vzemi 3 karte iz kupa v roko. Samo 
-zgornja karta v roki je dostopna. Ko si odigral vse tri moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľne karte,
+zgornja karta v roki je dostopna. Ko si odigral vse tri možne karte,
 vzemi preostanek treh kart (karte ki niso odigrane) in jih premakni
 v talon (spodaj).
-  Ko v kupu zmanjka kart, se obrne talon, ki brez meÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡anja postane 
+  Ko v kupu zmanjka kart, se obrne talon, ki brez mešanja postane 
 nov kup, iz katerega se spet jemlje po 3 karte. Ni omejitve kolikokrat
 se to lahko stori.
 
@@ -774,10 +774,10 @@ trymovepile=52,selected-11
 empty_columns=0,1,2,3,8,9,10,11
 
 [GAMENAME]
-V starih Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤asih (Aud Lang Syne)
-Gradi naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi od asov do kraljev.
-Uporabi tablo za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
-alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Dvoklikni na zalogi kart 
+V starih časih (Aud Lang Syne)
+Gradi naraščajoče v barvi od asov do kraljev.
+Uporabi tablo za hranjenje kart v padajočem 
+alternirajočem redu. Dvoklikni na zalogi kart 
 za ponovno delitev. 
 
 [START]
@@ -914,12 +914,12 @@ trymovepile=parameter01,selected-7
 empty_columns=4,5,6,7,8
 
 [GAMENAME]
-Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â panski gradovi (Castles in Spain)
-  Cilj igre je kompletirati vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce
-zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
-  Uporabi tablo za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
-alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Dvoklikni na pokriti karti, 
-da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡. 
+Španski gradovi (Castles in Spain)
+  Cilj igre je kompletirati vse štiri bazne stolpce
+začenši z asi gradeč naraščajoče v barvi do kraljev.
+  Uporabi tablo za hranjenje kart v padajočem 
+alternirajočem redu. Dvoklikni na pokriti karti, 
+da jo obrneš. 
 
 [START]
 [DECK]
@@ -1175,17 +1175,17 @@ empty_columns=0,1,2,3,4,5,6,7,8,9,10,11,12
 
 [GAMENAME]
 Klondajk (Klondike)
-(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+(stopnja: zelo težka)
 
-  Cilj igre je kompletirati vse Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tiri bazne stolpce
-zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
-  Uporabi stolpce na tabli za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em 
-alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu. Ă„â€šĂ˘â‚¬ĹľĂ„Ä…ÄąË‡e je tabelni stolpec izĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤rpan, 
-lahko nanj poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„ÄľiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ kralja ali sekvenco kart s kraljem
-kot bazo. Dvoklikni pokrito karto, da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡. 
-  Ko si odigral vse moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľne poteze na tabli, odpiraj
-karte iz zaloge eno po eno, gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ na bazo ali na tablo
-ali v talon, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e poteza ni moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľna. 
+  Cilj igre je kompletirati vse štiri bazne stolpce
+začenši z asi gradeč naraščajoče v barvi do kraljev.
+  Uporabi stolpce na tabli za hranjenje kart v padajočem 
+alternirajočem redu. Če je tabelni stolpec izčrpan, 
+lahko nanj položiš kralja ali sekvenco kart s kraljem
+kot bazo. Dvoklikni pokrito karto, da jo obrneš. 
+  Ko si odigral vse možne poteze na tabli, odpiraj
+karte iz zaloge eno po eno, gradeč na bazo ali na tablo
+ali v talon, če poteza ni možna. 
   Dovoljena je ena ponovna delitev talona.
 
 [START]
@@ -1369,11 +1369,11 @@ empty_columns=0,1,2,3,4,5,6,7,12
 
 [GAMENAME]
 Ladijski kroj in Bristolska moda (Ship shape and Bristol fashion)
-  Cilj je zgraditi 4 bazne stolpce naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e, 
-ne glede na barvo, zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi.
-  Grajenje v tabelnih stolpcih je padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e,
-ne glede na barvo. PremikaÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ lahko po eno karto.
-  Dvoklikni na zalogi, da razdeliÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ naslednje
+  Cilj je zgraditi 4 bazne stolpce naraščajoče, 
+ne glede na barvo, začenši z asi.
+  Grajenje v tabelnih stolpcih je padajoče,
+ne glede na barvo. Premikaš lahko po eno karto.
+  Dvoklikni na zalogi, da razdeliš naslednje
 tri karte na rezervne stolpce.
 
 [START]
@@ -1536,14 +1536,14 @@ empty_columns=0,1,2,3,4,5,6,7,8,9,10,11
 
 [GAMENAME]
 Bitka dam (The Battle of Ladies)
-  Trije pobi so izvzeti in poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeni skrajno desno, poleg zaloge.
-Preostali (srĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ev) poba se nahaja na vrhu piramide. Cilj je 
-graditi na Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tirih damah do desetic naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
+  Trije pobi so izvzeti in položeni skrajno desno, poleg zaloge.
+Preostali (srčev) poba se nahaja na vrhu piramide. Cilj je 
+graditi na štirih damah do desetic naraščajoče v barvi.
   Ime igre izvira iz pravila, da prva dama, ki zgradi do desetice,
 pobere poba z vrha piramide in zmaga.
-  Stolpci na straneh piramide se gradijo padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤i
-barvi. PremikaÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ lahko samo po eno. Nastale praznine se zapolnijo
-s kartami iz zaloge. Ko ni veĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ moÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľnih potez, razdeli 6 kart iz
+  Stolpci na straneh piramide se gradijo padajoče v alternirajoči
+barvi. Premikaš lahko samo po eno. Nastale praznine se zapolnijo
+s kartami iz zaloge. Ko ni več možnih potez, razdeli 6 kart iz
 zaloge na strani piramide z dvoklikom na zalogi.
   Ko je zaloga izpraznjena, se poberejo karte s strani piramide
 in se ponovno razdelijo. Za ponovno delitev dvoklikni poba na
@@ -1707,17 +1707,17 @@ increase(parameter01)
 empty_columns=0
 
 [GAMENAME]
-SreĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤koviĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ (Son of Fortune)
-  Cilj je kompletirati bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi in 
-gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do kraljev.
+Srečkovič (Son of Fortune)
+  Cilj je kompletirati bazne stolpce začenši z asi in 
+gradeč naraščajoče v barvi do kraljev.
   Uporabi dve vrsti kart na tabli za hranjenje kart v 
-padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu v ujemajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
-  Karte iz zaloge, ki jih ni mogoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e odigrati na tablo 
-ali bazo, gredo v rezervni stolpec (za to lahko dvoklikneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡
+padajočem redu v ujemajoče v barvi.
+  Karte iz zaloge, ki jih ni mogoče odigrati na tablo 
+ali bazo, gredo v rezervni stolpec (za to lahko dvoklikneš
 zalogo).
   Vrhnja karta rezervnega stolpca je vedno dostopna.
   Vsaka nastala praznina na tabli se zapolni iz rezervnega
-stolpca ali, Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e je ta prazen, iz zaloge.
+stolpca ali, če je ta prazen, iz zaloge.
 
 [START]
 [DECK]
@@ -1892,11 +1892,11 @@ empty_columns=0,5,6,7,8,9,10,11,12,13,14,15,16,17
 
 [GAMENAME]
 Oblegan grad (The Beleaguered Castle)
-(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+(stopnja: zelo težka)
 
-Cilj igre je kompletirati 4 bazne stolpce gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤
+Cilj igre je kompletirati 4 bazne stolpce gradeč
 od asov do kraljev. Uporabi 8 stranskih stolpcev
-za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
+za hranjenje kart v padajočem alternirajočem redu.
 
 [START]
 [DECK]
@@ -2041,13 +2041,13 @@ empty_columns=4,5,6,7,8,9,10,11
 
 [GAMENAME]
 Bizli (Bisley)
-(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+(stopnja: zelo težka)
 
-  Gradi navzdol v barvi zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s kralji.
+  Gradi navzdol v barvi začenši s kralji.
 Karta iz tablenega stolpca sme na karto, ki
 se ujema v barvi in je sosednja v vrednosti
-(kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeva osmica sme na kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo sedmico in 
-kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo devetico).
+(križeva osmica sme na križevo sedmico in 
+križevo devetico).
 
 [START]
 [DECK]
@@ -2221,13 +2221,13 @@ empty_columns=4,5,6,7,8,9,10,11,12
 
 [GAMENAME]
 Trdnjava (Fortress)
-(stopnja: zelo teÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľka)
+(stopnja: zelo težka)
 
-  Zgradi 4 bazne stolpce zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi, gradeĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤
-naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi.
+  Zgradi 4 bazne stolpce začenši z asi, gradeč
+naraščajoče v barvi.
   Stranske karte smejo na karto, ki se ujema 
-v barvi in je sosednja v vrednosti (kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľeva 
-osmica sme na kriÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľevo sedmico in devetico).
+v barvi in je sosednja v vrednosti (križeva 
+osmica sme na križevo sedmico in devetico).
 
 [START]
 [DECK]
@@ -2408,12 +2408,12 @@ empty_columns=4,5,6,7,8,9,10,11,12,13
 [GAMENAME]
 Dedkova ura (Grandpa's clock)
   Dvanajst baznih stolpcev oblikuje uro. Na vsakem
-gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi, zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s tamkajÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡njo karto
-in konĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤avÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i s karto, ki doseÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľe Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡tevilko ure na tej 
+gradiš naraščajoče v barvi, začenši s tamkajšnjo karto
+in končavši s karto, ki doseže številko ure na tej 
 poziciji (od 1 do 12).
-  Pet stolpcev na tabli lahko uporabiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ za hranjenje kart 
-v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu ne glede na barvo. Dvoklikni pokrito karto,
-da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡.
+  Pet stolpcev na tabli lahko uporabiš za hranjenje kart 
+v padajočem redu ne glede na barvo. Dvoklikni pokrito karto,
+da jo obrneš.
 
 [START]
 [DECK]
@@ -2597,9 +2597,9 @@ empty_columns=12,13,14,15,16
 
 [GAMENAME]
 Princ Albert - Dolga salonska suknja (Prince Albert)
-  Gradi naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi zaĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤enÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡i z asi.
+  Gradi naraščajoče v barvi začenši z asi.
   Uporabi tablo (9 stolpcev) za hranjenje kart v 
-padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
+padajočem alternirajočem redu.
   Sedem kart iz rezerve sme na bazo, na tablo, vendar 
 ne nazaj na rezervo.
 
@@ -2868,14 +2868,14 @@ every_turn=19-3
 empty_columns=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
 
 [GAMENAME]
-Ă„â€šĂ˘â‚¬ĹľĂ„Ä…ÄąË‡etvorka (Quadrille)
-  To igro lahko igraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ z dvoklikanjem na zalogi.
+Četvorka (Quadrille)
+  To igro lahko igraš z dvoklikanjem na zalogi.
 
   (Karte se jemljejo iz zaloge po eno. Bazne karte so
-petice in Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice. Petice gredo na sever, jug, vzhod, 
-zahod poloÄ‚â€žĂ„â€¦Ä‚â€žĂ„Äľaje, Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice pa gredo med petice. Na petice
-gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e v barvi do asov, na Ä‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡estice pa gradiÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡
-naraÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡Ă„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤ajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤e do pobov. Dame v tej igri nimajo vloge. Ko
+petice in šestice. Petice gredo na sever, jug, vzhod, 
+zahod položaje, šestice pa gredo med petice. Na petice
+gradiš padajoče v barvi do asov, na šestice pa gradiš
+naraščajoče do pobov. Dame v tej igri nimajo vloge. Ko
 se pojavijo, jih odstrani na sredino table. Dve delitvi
 sta dovoljeni kadar zmanjka kart v zalogi.)
 
@@ -3018,12 +3018,12 @@ increase(parameter01)
 empty_columns=8,9
 
 [GAMENAME]
-PovrÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡nik (Raglan)
+Površnik (Raglan)
   Cilj je zgraditi 4 bazne stolpce od asov do kraljev.
-  Uporabi tabelne stolpce za hranjenje kart v padajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em
-alternirajoĂ„â€šĂ˘â‚¬ĹľĂ„Ä…Ă‚Â¤em redu.
-  Dvoklikni pokrito karto, da jo obrneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡.
-  Ä‚â€žĂ„â€¦Ä‚â€šĂ‚Â est kart iz rezerve laho premakneÄ‚â€žĂ„â€¦Ä‚â€ąĂ˘â‚¬Ë‡ na bazo, ne pa 
+  Uporabi tabelne stolpce za hranjenje kart v padajočem
+alternirajočem redu.
+  Dvoklikni pokrito karto, da jo obrneš.
+  Šest kart iz rezerve laho premakneš na bazo, ne pa 
 tudi na tablo.
 
 [START]

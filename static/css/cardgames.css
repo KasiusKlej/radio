@@ -1,263 +1,146 @@
-/* =========================
-   VARIABLES
-   ========================= */
+/* ============================================================
+   WINDOWS 95 SYSTEM STYLE (CLEAN REWRITE)
+   ============================================================ */
 :root {
+    --win-gray: #c0c0c0;
+    --win-white: #ffffff;
+    --win-dark-gray: #808080;
+    --win-black: #000000;
+    --win-blue: #000080;
+    --win-blue-light: #1084d0;
     --table-green: #0b6b2e;
-
-    --card-width: 80px;
-    --card-height: 120px;
-
-    --slot-width: 80px;
-    --slot-height: 120px;
-
-    --outline-dark: #000;
-    --outline-muted: #666;
-    --foundation-fill: #888;
-
-    /* visual spacing */
-    --table-padding: 10px;
-    --column-gap: 5px;
 }
 
-
-/* =========================
-   BODY
-   ========================= */
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--table-green);
-    font-family: sans-serif;
-    overflow: hidden;
-}
-body.busy {
-    cursor: wait;
+html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; font-family: "Tahoma", sans-serif;
+    display: flex; flex-direction: column;
 }
 
-html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}
-
-
-/* =========================
-   TABLE
-   ========================= */
-#game-table {
-    position: relative;
-
-    /* JS will set these dynamically */
-    min-width: 100%;
-    min-height: 100%;
-
-    padding: var(--table-padding);
-    box-sizing: border-box;
-
-    background-color: var(--table-green);
-}
-
-#table-scroll {
-    position: fixed;
-    inset: 0;
-    overflow: auto;          /* 🔒 THIS IS THE SCROLLBAR */
-    background: var(--table-green);
-}
-
-
-/* =========================
-   ROWS
-   ========================= */
-/* Rows are positioned by JS — CSS must NOT add vertical spacing */
-.row {
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    gap: var(--column-gap);
-    left: 0;
-    top: 0;
-    margin: 0;
-    padding: 0;
-}
-
-/* =========================
-   SLOTS
-   ========================= */
-.slot {
-    position: relative;
-    width: var(--slot-width);
-    height: var(--slot-height);
-    flex: 0 0 auto;
-}
-
-/* =========================
-   COLUMNS
-   ========================= */
-.column {
-    position: relative;
-    width: var(--slot-width);
-    height: var(--slot-height);
-    z-index: 10;
-}
-
-/* Empty placeholder columns (must exist, but stay under cards) */
-.column.empty-column {
-    z-index: 1;
-    box-sizing: border-box;
-    border-radius: 8px;
-    border: 2px solid var(--outline-dark);
-    background-color: var(--table-green);
-}
-
-/* Foundation slots */
-.column.empty-column.foundation {
-    background-color: var(--foundation-fill);
-}
-
-.column.empty-column.foundation::after {
-    content: "";
-    position: absolute;
-    inset: 6px;
-    border-radius: 6px;
-    border: 1px solid var(--outline-muted);
-    opacity: 0.4;
-}
-
-/* Spacer columns (reserve space only) */
-.column.spacer {
-    border: none;
-    background: none;
-    pointer-events: auto; /* allow future clicks */
-}
-
-/* =========================
-   CARDS
-   ========================= */
-.card {
-    position: absolute;
-    width: var(--card-width);
-    height: auto;
-
-    cursor: pointer;
-    display: block;
-
-    /* cards always above empty slots */
-    z-index: 100;
-
-    transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease;
-}
-
-.card.face-down {
-    opacity: 0.9;
-}
-
-.card.selected {
-    transform: translateY(-10px);
-    box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.9);
-    z-index: 1000;
-}
-
-
-/* =========================
-   TITLE BAR
-   ========================= */
+/* --- TITLE BAR --- */
 #title-bar {
-    height: 28px;
-    background: linear-gradient(to right, #000080, #0000aa);
-    color: white;
-    font-family: Tahoma, sans-serif;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    box-shadow: inset 0 -1px #404040;
+    height: 28px; flex-shrink: 0; z-index: 1000;
+    background: linear-gradient(to right, var(--win-blue), var(--win-blue-light));
+    color: white; font-size: 14px; font-weight: bold;
+    display: flex; align-items: center; padding: 0 10px;
 }
 
-.title-text {
-    font-weight: bold;
-}
-
-/* =========================
-   MENU BAR
-   ========================= */
+/* --- MENU BAR --- */
 #menu-bar {
-    background: #c0c0c0;
-    border-bottom: 2px solid #808080;
-    font-family: Tahoma, sans-serif;
-    user-select: none;
+    height: 30px; flex-shrink: 0; z-index: 2000;
+    background: var(--win-gray);
+    border-bottom: 1px solid var(--win-dark-gray);
+    box-shadow: inset 1px 1px var(--win-white);
 }
 
 .menu-root {
-    list-style: none;
-    margin: 0;
-    padding: 2px;
-    display: flex;
+    list-style: none; margin: 0; padding: 0 5px;
+    display: flex; flex-direction: row; font-size: 12px;
 }
 
 .menu-item {
-    position: relative;
-    padding: 4px 10px;
-    cursor: default;
+    position: relative; padding: 6px 10px;
+    cursor: default; color: black;
 }
 
-.menu-item:hover {
-    background: #000080;
-    color: white;
-}
+.menu-item:hover { background: var(--win-blue); color: white; }
 
-/* =========================
-   DROPDOWNS
-   ========================= */
 .dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #c0c0c0;
-    border: 2px solid #808080;
-    box-shadow:
-        inset -1px -1px #404040,
-        inset 1px 1px #ffffff;
-    list-style: none;
-    padding: 2px;
-    min-width: 160px;
-    z-index: 2000;
+    display: none; position: absolute; top: 100%; left: 0;
+    background: var(--win-gray); list-style: none; padding: 2px;
+    min-width: 160px; z-index: 5000;
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-dark-gray);
+    border-bottom: 2px solid var(--win-dark-gray);
 }
 
-.menu-item:hover .dropdown {
-    display: block;
-}
+.menu-item:hover .dropdown { display: block; }
 
-.dropdown li {
-    padding: 4px 20px 4px 8px;
-    white-space: nowrap;
-}
-
-.dropdown li:hover {
-    background: #000080;
-    color: white;
-}
+.dropdown li { padding: 5px 20px; color: black; white-space: nowrap; }
+.dropdown li:hover { background: var(--win-blue); color: white !important; }
 
 .separator {
-    height: 1px;
-    background: #808080;
-    margin: 4px 2px;
+    height: 1px; background: var(--win-dark-gray);
+    margin: 4px 2px; border-bottom: 1px solid var(--win-white);
 }
 
-/* =========================
-   CHECKABLE ITEMS
-   ========================= */
-.checkable::before {
-    content: "✓ ";
-    visibility: hidden;
+/* --- GAME AREA --- */
+#table-scroll {
+    flex-grow: 1; position: relative;
+    overflow: auto; background-color: var(--table-green);
 }
 
-.checkable.checked::before {
-    visibility: visible;
+#game-table { position: relative; padding: 20px; min-width: 100%; min-height: 100%; }
+
+.card { position: absolute; width: 89px; z-index: 50; }
+
+.checkable::before { content: "✓"; display: inline-block; width: 15px; visibility: hidden; }
+.checkable.checked::before { visibility: visible; }
+
+/* --- DIALOG / MSG BOX --- */
+#win95-modal-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
 }
 
+.win95-dialog { width: 400px; padding: 2px; background: var(--win-gray); }
+
+.win95-dialog-body { padding: 20px; font-size: 13px; color: black; }
+
+.win95-bevel-out {
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-dark-gray);
+    border-bottom: 2px solid var(--win-dark-gray);
+}
+
+.card {
+    position: absolute;
+    width: 89px;   /* Matches your orig_card_x_size */
+    height: 132px; /* Matches your orig_card_y_size */
+    background-color: white; /* Fallback if image fails */
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.column {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    /* Optional: add a border to see where columns are during debug */
+    /* border: 1px dashed rgba(255,255,255,0.2); */
+}
+
+/* The Default Suit: Green Placeholder */
+.column-requisite {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Thin black border */
+    background-color: rgba(0, 0, 0, 0.15); /* Dark green tint on green table */
+    z-index: 1;
+}
+
+/* The Grey Suit (Backcolor 8) */
+.column-requisite.style-grey {
+    background-color: #395f37; /* Classic Win95 Silver/Grey */   
+    border: 1px solid #000000;
+}
+
+/* ShapeSelektor costume (Black see-through net) */
+.selection-box {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    pointer-events: none;
+    background-image: radial-gradient(#000 10%, transparent 20%);
+    background-size: 3px 3px; /* Creating a "Net" or "Dither" effect */
+    border: 2px solid black;
+    z-index: 1000;
+    opacity: 0.5;
+}

@@ -1,292 +1,143 @@
 # model.py
-# ----------------------------------------------------------------
-# VB GLOBAL DATA MODEL
-# ----------------------------------------------------------------
-# This module mirrors VB's global variable scope.
-# All values here are first-class citizens and may be read/written
-# by any module (engine, dealer, shuffler, renderer, UI).
+# ================================================================
+# DATA MODEL PORTED FROM VISAL BASIC'S Card Games
+# ================================================================
+# This module bridges VB's global variable scope environment
+# into the web based environment
+# GameState represents a thing that was for VB single player 
+# one "state of the game" and is here on web many states for many players
 # ----------------------------------------------------------------
 from pathlib import Path
 
 # ================================================================
-# GEOMETRY & LAYOUT (VB globals)
+# STATIC CONSTANTS (Shared by all players - Thread Safe)
 # ================================================================
-
-# Reserve 69 possible column positions (VB: columnX(), columnY())
-columnX = [0] * 69
-columnY = [0] * 69
-
-# Card graphics (pixels)
-orig_card_x_size = 80
+orig_card_x_size = 80       
 orig_card_y_size = 120
-
-# Gaps between cards / columns
-gap_x = 20
+gap_x = 20                  
 gap_y = 30
+LANG_DIR = Path(__file__).parent.parent / "games"
 
-# Zoom factors (obsolete but preserved for VB compatibility)
-zoom = 1.0
-zoom2 = 1.0
-
-# Default overlaps (VB system values)
-default_overlap_x = 20
-default_overlap_y = 30
-
-
-# ================================================================
-# GAME SCRIPT & DECK (VB ListBox equivalents)
-# ================================================================
-
-# Loaded game script lines (VB: ListGame)
-LIST_GAME_LINES = []
-
-# Deck of cards (VB: ListDeck) – list of card codes ("c01", "h13", ...)
-LIST_DECK = []
-
-# Current game name (VB: gamename)
-GAME_NAME = ""
-
-
-# ================================================================
-# GAME STATE / ENGINE FLAGS (FIRST-CLASS CITIZENS)
-# ================================================================
-
-# Tutorial / animation
-timerNumRepeats = 0
-
-# Generic parameter array (VB: parameter(20))
-parameter = [0] * 21
-
-# Statistics
-numOfGames = 0
-
-# Column / card usage
-usedColumns = 0
-usedFaceDowns = 0           # facedown cards currently used
-
-# User interaction modes
-usermode = 0                # 1=column selected, 2=move to column
-selectedCard = None
-selectedColumn = None
-destinationColumn = None
-
-simulateClickMode = False   # autoplay (hides selector)
-singleClickMode = True      # usual mode
-doubleClickMode = False     # trying move
-actionMode = False          # enforce move
-
-# Game outcome flags
-youWon = False              # report win only once
-clickModeSuceededSoTryAgain = False
-cardJustMoved = False
-
-# Facedown card handling
-# VB: imageFaceDown(), ShapeSelektor
-imageFaceDown = []      # list[FaceDownOverlay]
-nextAvailableFaceDown = 0
-ShapeColumns = []        # list[ColumnSlot]
-
-
-
-# ================================================================
-# OBSOLETE / UI / LANGUAGE RESOURCES (PRESERVED)
-# ================================================================
-
-# model.py
-# ===============================
-# Language / UI constants
-# ===============================
-
-# application
-lang_app = "Card Games for One"
-lang_msg = " malfunction."
-
-# game result messages
-lang_youwon = "You won!"
-lang_youlost = "You lost!"
-
-# logos / splash
-lang_logo1 = "Card Games for One Player"
-lang_logo2 = "           for Windows"
-lang_logo3 = "  (c) september 2000"
-lang_logo4 = "  (p) miha11@yahoo.com"
-
-# statistics labels
-lang_statWon = "Won: "
-lang_statLost = "Lost: "
-lang_statPlayed = "Played: "
-lang_statPct = "Percent: "
-lang_statPctalfa = "Percent alfa: "
-
-# form / popup captions
-frmc1 = "OK"
-frmc2 = "Cancel"
-frmc3 = "OK"
-frmc4 = "Legend:"
-frmc5 = "won"
-frmc6 = "unfinished"
-frmc7 = "lost"
-
-# (reserved for future use)
-# lang_filename = "\\cardgame - eng.txt"
-
-# interface related
-zap_st_igre: int = 1
-
-# unused (statistics page?)
-lang_Legend = ""
-lang_won = ""
-lang_unf = ""
-lang_lost = ""
-
-# bridge
+# Shared menu lists (populated once at startup)
 menu_items_slo: list[str] = []
 menu_items_eng: list[str] = []
 
-CURRENT_LANGUAGE = "eng"
-AUTOPLAY_ENABLED = False
-LANG_DIR = Path(__file__).parent.parent / "games"
-DEFAULT_LANG = "eng"
-
-# types
-
-# This mirrors VB's columnType exactly
-class Column:
-    def __init__(self):
-        # identity
-        self.cId = ""
-        self.column_name = ""
-        self.position = ""
-        self.num_cards = ""
-        self.shufle_any_cards = ""
-
-        # rules
-        self.max_cards = ""
-        self.suit = ""
-        self.card_value = ""
-        self.alternate = ""
-        self.suit_or_card = ""
-        self.always_allowed_from_columns = ""
-
-        # geometry
-        self.custom_x = ""
-        self.custom_y = ""
-        self.overlap_x = ""
-        self.overlap_y = ""
-        self.overlap = ""
-
-        # cards in this column
-        self.contents_str = ""          # VB-style serialized form  "c01,c02,c13"
-        self.contents = []              # Engine/runtime form       list[Card]
-        self.contents_at_start = ""     # Legacy                    VB semantics
-
-        # permissions
-        self.player_can_put_card = ""
-        self.player_can_put_card_if_empty = ""
-        self.player_can_take_card = ""
-
-        # state
-        self.contents_at_start = ""
-        self.cards_face_up = ""
-
-        # actions
-        self.dblclick_moves_to = ""
-        self.allways_facedown = ""
-        self.after_move_action = ""
-        self.attempted_move_action = ""
-        self.after_playermove_action = ""
-        self.attempted_playermove_action = ""
-        self.use_facedown = ""
-        self.aces_on_kings = ""
-
-        # visuals
-        self.backstyle = ""
-        self.backcolor = ""
-
-        # runtime
-        self.contents = []   # actual cards
-        self.weight = 0
-
+# ================================================================
+# OBJECT DEFINITIONS (Blueprints)
+# ================================================================
 
 class Card:
-    """
-    Runtime card entity.
-    Replaces VB card(i).
-    """
-    def __init__(self, code, face_up=True, image=None):
-        self.code = code        # e.g. 's13'
+    def __init__(self, code, face_up=True):
+        self.code = code        # e.g. 'c01'
         self.face_up = face_up
-        self.image = image
         self.column_index = None
+        # Position (used for animations)
+        self.x = 0
+        self.y = 0
+
+    def to_dict(self):
+        """This is what the JavaScript sees"""
+        return {
+            "code": self.code,
+            "face_up": self.face_up,
+            "x": self.x,
+            "y": self.y,
+            # FAITHFUL TO YOUR FILENAMES:
+            "image": f"1024x768{self.code}.png" 
+        }
+    
+
+class Column:
+    def __init__(self, index=0):
+        self.index = index
+        self.cId = index
+        self.column_name = ""
+        self.position = ""
+        self.num_cards = 0
+        
+        # --- The Missing Attribute ---
+        # Ensure the spelling matches exactly what prepareRequisites looks for
+        self.allways_facedown = "-1" 
+        
+        # --- Other Defaults to prevent further AttributeErrors ---
+        self.player_can_put_card = "-1"
+        self.player_can_put_card_if_empty = "-1"
+        self.player_can_take_card = "-1"
+        self.cards_face_up = ""
+        self.backstyle = "-1"
+        self.backcolor = "-1"
+        self.overlap_x = -1
+        self.overlap_y = -1
+        self.custom_x = -1
+        self.custom_y = -1
+        
+        # Coordinates (resolved during geometry phase)
+        self.x = 0
+        self.y = 0
+        
+        # Card storage
+        self.contents = [] # List of Card objects
+        self.contents_str = ""
+        self.weight = 0
+
+    def to_dict(self):
+        # 🛡️ Safety check: ensure cards are objects before serializing
+        processed_cards = []
+        for c in self.contents:
+            if hasattr(c, 'to_dict'):
+                processed_cards.append(c.to_dict())
+            else:
+                # If it's just a string "s13", wrap it in a temporary dict
+                processed_cards.append({"code": str(c), "face_up": True})
+
+        return {
+            "index": self.index,
+            "name": self.column_name,
+            "x": self.x,
+            "y": self.y,
+            "overlap_x": self.overlap_x,
+            "overlap_y": self.overlap_y,
+            "allways_facedown": self.allways_facedown,
+            "cards": processed_cards,
+            "weight": self.weight,
+            "backstyle": int(self.backstyle) if str(self.backstyle).isdigit() else -1,
+            "backcolor": int(self.backcolor) if str(self.backcolor).isdigit() else -1
+        }
 
 
 class TableObject:
-    """
-    Base class for all visual / interactive objects on the table.
-    Mirrors VB Image / Shape controls.
-    """
     def __init__(self):
         self.left = 0
         self.top = 0
         self.visible = False
         self.enabled = True
-        self.image = None     # path or image id
-        self.z_index = 0      # rendering order (optional)
 
     def to_dict(self):
-        return {
-            "left": self.left,
-            "top": self.top,
-            "visible": self.visible,
-            "enabled": self.enabled,
-            "image": self.image,
-            "z": self.z_index,
-        }
-
-
-class FaceDownOverlay(TableObject):
-    """
-    Visual overlay that hides a card (VB imageFaceDown).
-    """
-    def __init__(self):
-        super().__init__()
-        self.card_code = None   # VB Tag = crd (e.g. "s13")
-
-    def to_dict(self):
-        d = super().to_dict()
-        d["card_code"] = self.card_code
-        return d
-
-
-class SelectionOverlay(TableObject):
-    """
-    Visual selector (VB ShapeSelektor).
-    """
-    def __init__(self):
-        super().__init__()
-        self.target_column = None
-        self.target_card_code = None
-
-ShapeSelektor = SelectionOverlay()
-
+        return {"left": self.left, "top": self.top, "visible": self.visible, "enabled": self.enabled}
+    
 
 class ColumnSlot(TableObject):
-    """
-    Visual representation of a column slot (VB ShapeColumn).
-    """
-    def __init__(self, column_index):
+    def __init__(self, column_index=0):
         super().__init__()
         self.column_index = column_index
-        self.backstyle = 0
-        self.backcolor = None
+        self.backstyle = -1         # -1 means "Not Set / Use Default Green"
+        self.backcolor = -1
+    def to_dict(self):
+        d = super().to_dict()
+        d["backstyle"] = self.backstyle
+        d["backcolor"] = self.backcolor
+        return d
 
+class FaceDownOverlay(TableObject):
+    def __init__(self):
+        super().__init__()
+        self.card_code = ""
 
-kup: list[ColumnSlot] = []  # VB: Dim kup() As columnType
+class SelectionOverlay(TableObject):
+    def __init__(self):
+        super().__init__()
+        self.target_column = -1
 
-
-# -------------------------------------------------        
-# Timer            
-# -------------------------------------------------
 class EngineTimer:
     def __init__(self, interval, repeats, callback):
         self.interval = interval
@@ -295,19 +146,122 @@ class EngineTimer:
         self.accum = 0.0
         self.enabled = True
 
-def tick(self, dt):
-    for timer in self.timers:
-        if not timer.enabled:
-            continue
+# ================================================================
+# THE BIG MOVE: GameState Encapsulation
+# ================================================================
 
-        timer.accum += dt
-        while timer.accum >= timer.interval:
-            timer.accum -= timer.interval
-            timer.callback()
-            timer.repeats -= 1
-            if timer.repeats <= 0:
-                timer.enabled = False
+class GameState:
+    def __init__(self, game_id, session_id):
+        # Identity
+        self.game_id = game_id
+        self.session_id = session_id
+        self.GAME_NAME = ""
+        
+        # VB GLOBALS moved to INSTANCE variables
+        self.zap_st_igre = 1
+        self.CURRENT_LANGUAGE = "eng"
+        self.zoom = 1.0
+        self.animate_enabled = True
+        self.autoplay_enabled = False
+        self.is_busy = False
+        
+        # Logic Structures
+        # This is the "kup" move: it belongs to the player
+        self.kup = [Column(i) for i in range(70)] 
+        
+        # Visual/Interface Objects
+        self.ShapeSelektor = SelectionOverlay()
+        self.imageFaceDown = [FaceDownOverlay() for _ in range(53)]
+        
+        # Lists and Buffers
+        self.LIST_GAME_LINES = []
+        self.LIST_DECK = []
+        self.animation_queue = []
+        self.timers = []
+        self.parameter = [0] * 21
+        
+        # VB Engine Flags
+        self.columnX = [0] * 70
+        self.columnY = [0] * 70
+        self.usermode = 0
+        self.selectedCard = None
+        self.selectedColumn = None
+        self.destinationColumn = None
+        self.youWon = False
+        self.timer_repeats = 0
+
+        # UI Language Constants
+        self.lang_app = "Card Games for One"
+        self.lang_youwon = "You won!"
+        self.default_overlap_x = 0
+        self.default_overlap_y = 25
+
+        # --- THE LATEST PATCH: Engine State Flags ---
+        self.usermode = 0           # 0=Selecting, 1=Moving
+        self.simulateClickMode = False 
+        self.actionMode = False     # Enforce move regardless of rules
+        self.cardJustMoved = False
+        self.clickModeSuceededSoTryAgain = False
+        
+        # The Brazilian Guy's Wish
+        self.rules_of_currently_played_game = "No rules loaded."
 
 
+    # ----------------------------------------------------------------
+    # TIMER ENGINE (Ported into Class)
+    # ----------------------------------------------------------------
+    def tick(self, dt):
+        """Processes any active backend timers for this specific player."""
+        for timer in self.timers:
+            if not timer.enabled:
+                continue
 
+            timer.accum += dt
+            while timer.accum >= timer.interval:
+                timer.accum -= timer.interval
+                timer.callback()
+                timer.repeats -= 1
+                if timer.repeats <= 0:
+                    timer.enabled = False
 
+    def gather_cards(self):
+        """Prepares animation sequence based on player's animation setting."""
+        if not self.animate_enabled:
+            self._gather_instant()
+            return
+
+        self.timer_repeats = 3 * 24
+        for _ in range(self.timer_repeats):
+            # This logic would be moved into a method that modifies self
+            move_data = self._calculate_one_gather_step()
+            self.animation_queue.append(move_data)
+
+    def _calculate_one_gather_step(self):
+        # Placeholder for your physics logic
+        return {"card": "s13", "x": 10, "y": 10}
+
+    def _gather_instant(self):
+        # Logic to skip animation and just update kup positions
+        pass
+
+    def to_dict(self):
+        """
+        THE FULL SNAPSHOT: Includes cards AND visual actors (Requisites).
+        REMINDER: Every time you add a variable to __init__, 
+        it MUST be added here so the Frontend can see it.
+        """
+        return {
+            "game_id": self.game_id,
+            "name": self.GAME_NAME,
+            "usermode": self.usermode,
+            "simulateClickMode": self.simulateClickMode,
+            "actionMode": self.actionMode,
+            "rules": self.rules_of_currently_played_game,
+            "selected_card_code": self.selectedCard if self.selectedCard != -1 else None,
+            # ... cards and actors as before ...
+            "kup": [col.to_dict() for col in self.kup if col.column_name != "" or col.weight > 0],
+            "actors": {
+                "slots": [s.to_dict() for s in self.ShapeColumns],
+                "selector": self.ShapeSelektor.to_dict()
+            }
+        }

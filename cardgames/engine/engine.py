@@ -1,1296 +1,1221 @@
 # engine.py 
-# here are the collected constants, variables,functions and procedures that run a state machine for Card Games 
-from .model import columnX, columnY, orig_card_x_size, orig_card_y_size, gap_x, gap_y, zoom, zoom2, default_overlap_x, default_overlap_y
-from .model import LIST_GAME_LINES, LIST_DECK, GAME_NAME, CURRENT_LANGUAGE, AUTOPLAY_ENABLED, LANG_DIR, DEFAULT_LANG
-from .model import timerNumRepeats, parameter, numOfGames, kup, usedColumns, usedFaceDowns, usermode, selectedCard
-from .model import selectedColumn, destinationColumn, simulateClickMode, singleClickMode, doubleClickMode, actionMode, youWon, clickModeSuceededSoTryAgain, cardJustMoved, nextAvailableFaceDown
-from .model import zap_st_igre
-from .model import Column, Card, TableObject
-from .model import FaceDownOverlay, SelectionOverlay, ColumnSlot 
-from .model import imageFaceDown, ShapeSelektor, ShapeColumns
-from .model import menu_items_slo, menu_items_eng, EngineTimer
-from .model import lang_app, lang_msg, lang_youwon, lang_youlost, lang_logo1, lang_logo2, lang_logo3, lang_logo4, lang_statWon, lang_statLost, lang_statPlayed, lang_statPct, lang_statPctalfa
-from .model import frmc1, frmc2, frmc3, frmc4, frmc5, frmc6, frmc7
-
-from .parser import load_games, language_parser, load_game_rules, load_game_names
-
+from .model import GameState, orig_card_x_size,orig_card_y_size, gap_x, gap_y, LANG_DIR, menu_items_slo, menu_items_eng
+from .parser import load_games2, language_parser, load_game_rules, load_game_names
 import random
 
-# dual representation functions
-# String → Cards (during deal)
-def parse_contents_str(contents_str, card_lookup):
+####################################################
+# rewriten functions to accept "State". Or "Game."
+####################################################
+
+def moveColumn(game, c_source_idx, c_dest_idx, n):
+    """
+    VB Port: Function moveColumn
+    game: The CardGame instance (The Captain)
+    """
+    s = game.state
+    try:
+        if n <= 0:
+            return False
+
+        source_col = s.kup[c_source_idx]
+        
+        # Take the last 'n' cards (The 'Pile')
+        cards_to_move = source_col.contents[-n:]
+        
+        # Important: We must record the IDs because column_click might 
+        # modify the list as we iterate.
+        card_codes = [c.code for c in cards_to_move]
+        
+        success = False
+
+        # Simulate the 'Double Click' logic for each card in the pile
+        for code in card_codes:
+            # --- FIRST CLICK (Select) ---
+            s.usermode = 0
+            s.simulateClickMode = True
+            s.actionMode = True
+            
+            from .engine import column_click
+            # We pass the 'game' controller now!
+            column_click(game, c_source_idx, code)
+
+            # --- SECOND CLICK (Move) ---
+            s.usermode = 1
+            s.simulateClickMode = True
+            s.actionMode = True
+            column_click(game, c_dest_idx, code)
+
+            if s.cardJustMoved:
+                success = True
+
+        # Reset flags after the automated sequence
+        s.simulateClickMode = False
+        s.actionMode = False
+        
+        return success
+
+    except Exception as e:
+        print(f"CRITICAL ERROR in {s.name} moveColumn: {e}")
+        return False
+
+
+def card_is_face_up(state, card_code):
+    """
+    VB-style face-up detection.
+    Returns True if card is visible (face up).
+    """
+    # VB: If nextAvailableFaceDown = 0 Then r = True
+    # Now we check the specific player's state
+    if state.nextAvailableFaceDown == 0:
+        return True
+
+    # VB loop: check facedown overlays
+    # We iterate only up to the number of face-down cards currently in play
+    for i in range(state.nextAvailableFaceDown):
+        
+        # Access the player's specific FaceDown array
+        fd = state.imageFaceDown[i]
+        
+        # In VB, you used the .Tag property (e.g., fd.Tag = "s13").
+        # In your Python model.py, you defined this as either 'card_code' or 'tag'.
+        # We will check both just to be safe, but you should standardize it!
+        fd_identifier = getattr(fd, 'card_code', getattr(fd, 'tag', None))
+
+        # If the overlay is visible and assigned to this specific card, it's face down
+        if fd.visible and fd_identifier == card_code:
+            return False
+
+    # If no visible overlay matched this card, it must be face up
+    return True
+
+
+# Core engine event functions
+def get_column_of_card(state, card_code):
+    """Helper: Finds the index of the column containing the specific card_code."""
+    for i, col in enumerate(state.kup):
+        for card in col.contents:
+            if card.code == card_code:
+                return i
+    return -1
+
+def card_Click(state, card_code):
+    """
+    VB: Private Sub card_Click(Index As Integer)
+    Handles selecting a card, deselecting, or starting a move.
+    """
+    if not card_code:
+        return
+
+    # Find which column this card is currently in
+    col_idx = get_column_of_card(state, card_code)
+    
+    if col_idx != -1:
+        state.singleClickMode = True
+        # Call the heart of the engine
+        from .engine import column_click
+        column_click(state, col_idx, card_code)
+        state.singleClickMode = False
+
+def card_DblClick(state, card_code):
+    """
+    VB: Private Sub card_DblClick(Index As Integer)
+    AUTOPLAY - Forces a move to possible destinations.
+    """
+    try:
+        if state.singleClickMode:
+            return
+
+        csour_idx = get_column_of_card(state, card_code)
+        if csour_idx == -1:
+            return
+
+        # Check if the game script defines destination columns for double-click
+        d_str = state.kup[csour_idx].dblclick_moves_to
+        
+        if d_str != "-1":
+            from .engine import column_click
+            
+            # Split comma-separated destinations (e.g., "1,2,3")
+            destinations = d_str.split(",")
+            found_match = False
+
+            for d_val in destinations:
+                if not d_val.strip(): continue
+                cdest_idx = int(d_val.strip())
+
+                # Save current state of source column to see if card actually moves
+                original_contents = state.kup[csour_idx].contents_str
+                
+                # --- Simulate Clicks ---
+                state.usermode = 0
+                state.selectedCard = ""
+                state.selectedColumn = -1
+                state.simulateClickMode = True
+                state.doubleClickMode = True
+                
+                # 1. Select the card
+                column_click(state, csour_idx, card_code)
+                # 2. Try to move to destination
+                column_click(state, cdest_idx, card_code)
+                
+                # Check if move happened
+                from .engine import sync_column_contents
+                sync_column_contents(state.kup[csour_idx])
+                
+                if original_contents != state.kup[csour_idx].contents_str:
+                    found_match = True
+                
+                state.simulateClickMode = False
+                state.doubleClickMode = False
+
+                if found_match:
+                    break
+
+        # Hide selector after action
+        state.ShapeSelektor.visible = False
+
+    except Exception as e:
+        print(f"Error in {state.GAME_NAME} dblclick: {e}")
+        raise RuntimeError(f"{state.GAME_NAME} logic malfunction.")
+    
+
+# engine/engine.py
+
+def column_click(game, col_idx, card_code):
+    """
+    VB Port: Sub column_click
+    Receives 'game' (the CardGame instance) to access class methods.
+    """
+    # 1. Imports from the current module (Local Math/Rule Helpers)
+    from .engine import (
+        move_condition, match_specificCol, 
+        sync_column_contents, check_allways_facedown_columns
+    )
+
+    s = game.state  
+    target_col = s.kup[col_idx]
+
+    # ---------------------------------------------------------
+    # MODE 0: SELECT CARD
+    # ---------------------------------------------------------
+    if s.usermode == 0:
+        # Check if column is not empty and allows taking cards
+        cond = (target_col.weight > 0)
+        cond = cond and (target_col.player_can_take_card == "yes")
+        
+        # VB: can only select top card
+        if target_col.contents:
+            top_card = target_col.contents[-1]
+            cond = cond and (top_card.code == card_code)
+
+        if cond or s.actionMode:
+            if not s.simulateClickMode:
+                s.ShapeSelektor.visible = True
+                s.ShapeSelektor.target_column = col_idx
+
+            s.usermode = 1
+            s.selectedCard = card_code
+            s.selectedColumn = col_idx
+            s.destinationColumn = -1
+
+    # ---------------------------------------------------------
+    # MODE 1: DESELECT OR MOVE
+    # ---------------------------------------------------------
+    else:
+        # A. DESELECT
+        if s.usermode == 1 and s.selectedColumn == col_idx:
+            if not s.simulateClickMode:
+                s.ShapeSelektor.visible = False
+                s.usermode = 0
+                s.selectedCard = ""
+                s.selectedColumn = -1
+
+        # B. MOVE
+        elif s.usermode == 1 and s.selectedColumn != col_idx and s.selectedCard != "":
+            
+            # Use standalone helper from this module
+            cond = move_condition(s, s.selectedCard, s.selectedColumn, col_idx)
+            s.destinationColumn = col_idx
+            
+            sc_idx = s.selectedColumn
+            success = False
+
+            # --- PRE-MOVE ACTIONS (Attempted Move) ---
+            action_key = "attempted_playermove_action" if not s.actionMode else "attempted_move_action"
+            action_val = getattr(target_col, action_key, "-1")
+
+            if action_val != "-1":
+                parts = action_val.split("-")
+                specifCol, ac_name = parts[0], parts[1]
+                if match_specificCol(s, specifCol, sc_idx):
+                    # CALL THE CAPTAIN: use game.do_whole_action (the class method)
+                    success = game.do_whole_action(ac_name)
+                    if success:
+                        cond = False # Action overrode the move
+
+            s.cardJustMoved = cond
+
+            # --- EXECUTE ACTUAL MOVE ---
+            if (cond or s.actionMode) and s.selectedCard != "":
+                source_col = s.kup[sc_idx]
+                
+                moving_card = None
+                for i, c in enumerate(source_col.contents):
+                    if c.code == s.selectedCard:
+                        moving_card = source_col.contents.pop(i)
+                        break
+                
+                if moving_card:
+                    target_col.contents.append(moving_card)
+                    s.cardJustMoved = True
+                    
+                    source_col.weight = len(source_col.contents)
+                    target_col.weight = len(target_col.contents)
+                    
+                    # Sync list to VB strings
+                    sync_column_contents(s, source_col)
+                    sync_column_contents(s, target_col)
+
+                # --- POST-MOVE PROCESSING (Call class methods) ---
+                game.try_seek_Parameter_actions()
+                
+                s.usermode = 0
+                prev_selected_col = s.selectedColumn
+                s.selectedCard = ""
+                s.selectedColumn = -1
+                s.ShapeSelektor.visible = False
+                
+                if s.simulateClickMode:
+                    s.clickModeSuceededSoTryAgain = True
+
+                # --- IMMEDIATELY AFTER MOVE ACTIONS ---
+                post_action_key = "after_playermove_action" if not s.actionMode else "after_move_action"
+                post_action_val = getattr(target_col, post_action_key, "-1")
+
+                if post_action_val != "-1":
+                    parts = post_action_val.split("-")
+                    specifCol, ac_name = parts[0], parts[1]
+                    if match_specificCol(s, specifCol, prev_selected_col):
+                        game.do_whole_action(ac_name)
+
+                # Chain reactions (Autoplay, Win checks)
+                if not s.actionMode:
+                    game.try_every_turn_actions()
+                    check_allways_facedown_columns(s)
+                    game.check_end_of_game()
+                
+            else:
+                if s.simulateClickMode:
+                    s.usermode = 0
+                    s.selectedCard = ""
+                    s.selectedColumn = -1
+
+    # Argonauts don't need to call sync_visual_actors here anymore
+    # because the Route calls it once at the end of the voyage.
+
+
+def Form_MouseDown(state, col_idx):
+    """
+    VB: Private Sub Form_MouseDown(...)
+    In Web, this is called when a player clicks an empty slot or the 'table' background
+    near a column.
+    """
+    if not (len(state.ShapeColumns) > 0):
+        return
+
+    # In Web, the 'col_idx' is determined by the frontend hit-detection
+    if col_idx == -1:
+        return
+    
+    # Try to move the currently selected card to this column
+    from .engine import column_click, cardId
+    # Note: selectedCard in our model stores the card code string
+    column_click(state, col_idx, state.selectedCard)
+
+def imageFaceDown_Click(state, fd_index):
+    """
+    VB: Private Sub imageFaceDown_Click(Index As Integer)
+    Handles clicking a face-down overlay.
+    """
+    # Find the card hidden under this overlay
+    fd = state.imageFaceDown[fd_index]
+    card_code = fd.card_code # or fd.tag depending on your model
+
+    col_idx = get_column_of_card(state, card_code)
+    if col_idx == -1: return
+
+    if state.kup[col_idx].allways_facedown == "1":
+        # Card is in 'playable' face-down mode
+        card_Click(state, card_code)
+    else:
+        # Cannot play this yet - typically requires a double click to turn
+        pass
+
+def imageFaceDown_DblClick(state, fd_index):
+    """
+    VB: Private Sub imageFaceDown_DblClick(Index As Integer)
+    Handles double-clicking to flip a card or auto-play a face-down card.
+    """
+    fd = state.imageFaceDown[fd_index]
+    card_code = fd.card_code
+    col_idx = get_column_of_card(state, card_code)
+    if col_idx == -1: return
+
+    if state.kup[col_idx].allways_facedown == "1":
+        # Redirect to standard double-click logic
+        card_DblClick(state, card_code)
+    else:
+        # Check if the dbl-clicked card is the top card of the column
+        # and flip it if the rules allow.
+        source_col = state.kup[col_idx]
+        
+        # Get the code of the last card in this column
+        if source_col.contents:
+            top_card_code = source_col.contents[-1].code
+            
+            if top_card_code == card_code:
+                # Flip the card!
+                fd.visible = False
+                source_col.contents[-1].face_up = True
+                
+                # Check if this flip triggers any game rules (like auto-moving to foundation)
+                from .engine import try_every_turn_actions
+                try_every_turn_actions(state)
+
+
+from .model import orig_card_x_size, orig_card_y_size, gap_x, gap_y
+
+# ================================================================
+# DUAL REPRESENTATION & INTEGRITY
+# ================================================================
+def sync_column_contents(state, col):
+    """
+    The 'Animal Killer': Prevents column mismatches.
+    """
+    # Safety: get session ID if state exists, otherwise use 'Unknown'
+    sid = getattr(state, 'session_id', 'Unknown_Session')
+
+    # ---- ENGINE (List) → VB (String) ----
+    if isinstance(col.contents, list):
+        for i, card in enumerate(col.contents):
+            # Check if it's a real Card object
+            if not hasattr(card, "code"):
+                raise RuntimeError(
+                    f"CARD CORRUPTION in session {sid}, column {getattr(col, 'index', '?')}: "
+                    f"contents[{i}] is {type(card)} ({card!r})"
+                )
+
+        # Update the serialized string and the weight count
+        col.contents_str = ",".join(card.code for card in col.contents)
+        col.weight = len(col.contents)
+        return
+
+    raise RuntimeError(
+        f"ENGINE CORRUPTION: col.contents in session {sid} is invalid type {type(col.contents)}"
+    )
+
+
+def assert_cards_are_objects(state, col):
+    """Safety check to ensure cards haven't been downgraded to strings."""
+    for i, card in enumerate(col.contents):
+        if not hasattr(card, "code"):
+            raise RuntimeError(
+                f"CARD INVARIANT VIOLATION in session {state.session_id}: "
+                f"Column {col.index}, card {i} is {type(card)}, expected Card object"
+            )
+
+def parse_contents_str(state, contents_str, card_lookup):
+    """Converts a VB comma-separated string into a list of Card objects."""
     if not contents_str:
         return []
 
     cards = []
     for code in contents_str.split(","):
-        cards.append(card_lookup[code])
+        # We find the card object from the state's master deck/lookup
+        if code in card_lookup:
+            cards.append(card_lookup[code])
     return cards
 
-# Cards → String (after moves)
-def serialize_contents(cards):
+def serialize_contents(state, cards):
+    """Pure utility to convert card objects back to 's10,h12' format."""
     return ",".join(card.code for card in cards)
 
-# Animal killer, prevents column mismatches, call him: after dealing, after moves, before serialization, after deserialization
-def sync_column_contents(col):
-    # ---- ENGINE → VB ----
-    if isinstance(col.contents, list):
-        for i, card in enumerate(col.contents):
-            if not hasattr(card, "code"):
-                raise RuntimeError(
-                    f"CARD CORRUPTION in column {col.cId}: "
-                    f"contents[{i}] is {type(card)} ({card!r})"
-                )
 
-        col.contents_str = ",".join(card.code for card in col.contents)
-        col.weight = len(col.contents)
-        return
+# ================================================================
+# RULES & LOGIC
+# ================================================================
 
-    if isinstance(col.contents, str):
-        raise RuntimeError(
-            f"ENGINE INVARIANT VIOLATION: col.contents is str ({col.contents})"
-        )
-
-    raise RuntimeError(
-        f"ENGINE CORRUPTION: col.contents invalid type {type(col.contents)}"
-    )
-
-# Another Animal killer that prevents card type mismatches
-def assert_cards_are_objects(col):
-    for i, card in enumerate(col.contents):
-        if not hasattr(card, "code"):
-            raise RuntimeError(
-                f"CARD INVARIANT VIOLATION in column {col.cId}: "
-                f"contents[{i}] is {type(card)} ({card!r}), expected Card"
-            )
-
-
-
-
-#-----------------------------------------------------------
-# helper functions
-def card_faces_up(self, rule, index):
+def card_faces_up(state, rule_str, card_index):
     """
     Mirrors VB card_faces_up().
-    rule: Variant string
-    index: 1-based card index
+    Determines if a card at a certain depth should be visible.
     """
-
-    if rule in ("", None):
+    if rule_str in ("", None):
         return True
 
     try:
-        return int(rule) >= index
+        # VB Logic: If rule is "3", then cards 1, 2, and 3 are face up.
+        return int(rule_str) >= card_index
     except ValueError:
+        # If it's a binary string like '0011', handle it here or default to True
         return True
 
 
-def calcColumnXY():
+# ================================================================
+# GEOMETRY & MATH
+# ================================================================
+
+def calcColumnXY(state):
     """
     VB-compatible column position calculator.
-    Must be called once per session.
+    Updated to write into the player-specific state arrays.
     """
-    global columnX, columnY
-
+    # Use module-level constants (shared) to calculate state-level geometry (private)
     dx = int(orig_card_x_size) + int(gap_x)
     dy = int(orig_card_y_size) + int(gap_y)
 
-    for i in range(10):
-        for j in range(5):
+    for i in range(10): # 10 columns wide
+        for j in range(5): # 5 rows deep
             idx = i + j * 10
             if idx >= 69:
                 continue
 
-            columnX[idx] = int((i * dx + gap_x) * zoom2)
-            columnY[idx] = int((j * dy + gap_y) * zoom2)
+            # We write into the state's private memory
+            # zoom2 is obsolete (1.0), so we multiply by 1
+            state.columnX[idx] = int((i * dx + gap_x) * 1)
+            state.columnY[idx] = int((j * dy + gap_y) * 1)
 
 
-def card_is_face_up(card_code):
+def _resolve_value(state, val_input):
     """
-    VB-style face-up detection.
-    Returns True if card is visible (face up).
+    Resolves VB-style values.
+    Supports raw numbers or 'parameterXX' looking up state.parameter[XX].
     """
-
-    # VB: If nextAvailableFaceDown = 0 Then r = True
-    if nextAvailableFaceDown == 0:
-        return True
-
-    # VB loop: check facedown overlays
-    for i in range(nextAvailableFaceDown):
-        fd = IMAGE_FACEDOWNS[i]
-        if fd.visible and fd.tag == card_code:
-            return False
-
-    return True
-
-
-    from .model import parameter
+    if isinstance(val_input, str) and val_input.startswith("parameter"):
+        try:
+            # Extract index from 'parameter05' -> 5
+            idx = int(val_input[9:11])
+            return state.parameter[idx]
+        except (ValueError, IndexError):
+            return 0
+    
+    try:
+        return int(val_input)
+    except (ValueError, TypeError):
+        return 0
 
 
-def _resolve_value(s):
-    """
-    Resolves VB-style value:
-    - number
-    - parameterXX
-    """
-    if isinstance(s, str) and s.startswith("parameter"):
-        idx = int(s[9:11])
-        return parameter[idx]
-    return int(s)
-
-
-def minmax(mode, s1, s2):
+def minmax(state, mode, val1, val2):
     """
     VB-style min/max with parameter resolution.
-    mode: "min" or "max"
     """
+    a = _resolve_value(state, val1)
+    b = _resolve_value(state, val2)
 
-    a = _resolve_value(s1)
-    b = _resolve_value(s2)
+    if mode == "min":
+        return a if a < b else b
+    else:
+        return a if a > b else b
+    
+
+from .model import orig_card_x_size, orig_card_y_size, gap_x, gap_y
+
+# ================================================================
+# DUAL REPRESENTATION & INTEGRITY
+# ================================================================
+
+def sync_column_contents(state, col):
+    """
+    The 'Animal Killer': Prevents column mismatches between the 
+    object-oriented list and the VB-style string.
+    """
+    # ---- ENGINE (List) → VB (String) ----
+    if isinstance(col.contents, list):
+        for i, card in enumerate(col.contents):
+            if not hasattr(card, "code"):
+                raise RuntimeError(
+                    f"CARD CORRUPTION in session {state.session_id}, column {col.index}: "
+                    f"contents[{i}] is {type(card)} ({card!r})"
+                )
+
+        # Update the serialized string and the weight count
+        col.contents_str = ",".join(card.code for card in col.contents)
+        col.weight = len(col.contents)
+        return
+
+    raise RuntimeError(
+        f"ENGINE CORRUPTION: col.contents in session {state.session_id} is invalid type {type(col.contents)}"
+    )
+
+def assert_cards_are_objects(state, col):
+    """Safety check to ensure cards haven't been downgraded to strings."""
+    for i, card in enumerate(col.contents):
+        if not hasattr(card, "code"):
+            raise RuntimeError(
+                f"CARD INVARIANT VIOLATION in session {state.session_id}: "
+                f"Column {col.index}, card {i} is {type(card)}, expected Card object"
+            )
+
+def parse_contents_str(state, contents_str, card_lookup):
+    """Converts a VB comma-separated string into a list of Card objects."""
+    if not contents_str:
+        return []
+
+    cards = []
+    for code in contents_str.split(","):
+        # We find the card object from the state's master deck/lookup
+        if code in card_lookup:
+            cards.append(card_lookup[code])
+    return cards
+
+def serialize_contents(state, cards):
+    """Pure utility to convert card objects back to 's10,h12' format."""
+    return ",".join(card.code for card in cards)
+
+
+# ================================================================
+# RULES & LOGIC
+# ================================================================
+
+def card_faces_up(state, rule_str, card_index):
+    """
+    Mirrors VB card_faces_up().
+    Determines if a card at a certain depth should be visible.
+    """
+    if rule_str in ("", None):
+        return True
+
+    try:
+        # VB Logic: If rule is "3", then cards 1, 2, and 3 are face up.
+        return int(rule_str) >= card_index
+    except ValueError:
+        # If it's a binary string like '0011', handle it here or default to True
+        return True
+
+
+# ================================================================
+# GEOMETRY & MATH
+# ================================================================
+
+def calcColumnXY(state):
+    """
+    VB-compatible column position calculator.
+    Updated to write into the player-specific state arrays.
+    """
+    # Use module-level constants (shared) to calculate state-level geometry (private)
+    dx = int(orig_card_x_size) + int(gap_x)
+    dy = int(orig_card_y_size) + int(gap_y)
+
+    for i in range(10): # 10 columns wide
+        for j in range(5): # 5 rows deep
+            idx = i + j * 10
+            if idx >= 69:
+                continue
+
+            # We write into the state's private memory
+            # zoom2 is obsolete (1.0), so we multiply by 1
+            state.columnX[idx] = int((i * dx + gap_x) * 1)
+            state.columnY[idx] = int((j * dy + gap_y) * 1)
+
+
+def _resolve_value(state, val_input):
+    """
+    Resolves VB-style values.
+    Supports raw numbers or 'parameterXX' looking up state.parameter[XX].
+    """
+    if isinstance(val_input, str) and val_input.startswith("parameter"):
+        try:
+            # Extract index from 'parameter05' -> 5
+            idx = int(val_input[9:11])
+            return state.parameter[idx]
+        except (ValueError, IndexError):
+            return 0
+    
+    try:
+        return int(val_input)
+    except (ValueError, TypeError):
+        return 0
+
+
+def minmax(state, mode, val1, val2):
+    """
+    VB-style min/max with parameter resolution.
+    """
+    a = _resolve_value(state, val1)
+    b = _resolve_value(state, val2)
 
     if mode == "min":
         return a if a < b else b
     else:
         return a if a > b else b
 
-# --------------------------------------------------------
-# initial engine routines from VB
-# --------------------------------------------------------
+
+# ================================================================
+# INITIAL ENGINE ROUTINES (STATE-AWARE PORT)
+# ================================================================
 
 def getGameInfo(zap_st_igre, filepath):
     """
-    Port of VB getGameInfo.
-    zap_st_igre: 1-based game index (FreeCell=1, Golf=4, ...)
-    Returns:
-        list_game_lines: all lines of the selected game
-        list_actions: only action-related lines
+    Pure data loader. Extracts game definition lines from the master file.
+    Does not modify state directly, but returns data for state initialization.
     """
+    target_index = int(zap_st_igre)
     list_game_lines = []
     list_actions = []
 
     matched = False
     add_action = False
-    game_index = 0
+    current_game_counter = 0
 
-    with open(filepath, "r", encoding="utf-8") as f:
-        lines = [line.rstrip("\n") for line in f]
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            lines = [line.rstrip("\n") for line in f]
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Game definition file not found at: {filepath}")
 
     i = 0
     while i < len(lines):
-        if lines[i] == "[GAMENAME]":
-            game_index += 1
-            i += 1  # move to name line
+        line_content = lines[i].strip()
 
-            if game_index == zap_st_igre:
+        if line_content == "[GAMENAME]":
+            current_game_counter += 1
+
+            if current_game_counter == target_index:
                 matched = True
-
+                list_game_lines.append(lines[i])
+                if (i + 1) < len(lines):
+                    list_game_lines.append(lines[i + 1])
+                
+                i += 2
                 while i < len(lines):
-                    s = lines[i]
+                    line_val = lines[i]
+                    line_stripped = line_val.strip()
 
-                    if s == "[GAMENAME]":
-                        break  # next game starts
+                    if line_stripped == "[GAMENAME]":
+                        break 
 
-                    list_game_lines.append(s)
+                    list_game_lines.append(line_val)
 
-                    if s == "[ACTIONS]":
+                    if line_stripped == "[ACTIONS]":
                         add_action = True
-                    elif s in ("[FINISH]", "[END ACTIONS]"):
+                    elif line_stripped in ("[FINISH]", "[END ACTIONS]"):
                         add_action = False
                     elif add_action:
-                        list_actions.append(s)
-
+                        list_actions.append(line_val)
                     i += 1
-
-                break  # game found, stop scanning
+                break
         i += 1
 
     if not matched:
-        raise ValueError(f"Game with zap_st_igre={zap_st_igre} not found")
+        raise ValueError(f"Game with index {target_index} not found.")
 
     return list_game_lines, list_actions
 
 
-
-def move_condition(selectedCard, selectedColumn, col):
+def move_condition(state, selectedCard, selectedColumn_idx, target_col_idx):
     """
-    VB port of:
-    Function move_condition(selectedCard As Variant, selectedColumn As Variant, col As Variant) As Variant
-    Returns True / False
+    VB Port: Function move_condition
+    The Brain's Logic: Determines if a move is legal based on the game script.
     """
+    # Import inside to prevent circular dependency
+    from .engine import match_alternates, match_specificCol
+    
+    # Get reference to the specific column the player is trying to drop onto
+    target_col = state.kup[target_col_idx]
 
-    # player_can_always_put_card option
-    cond = (kup[col].player_can_put_card == "yes")
+    # Rule: player_can_always_put_card
+    cond = (target_col.player_can_put_card == "yes")
 
-    # allowed on empty column
+    # Rule: allowed on empty column
     cond1 = (
-        kup[col].player_can_put_card_if_empty == "yes"
-        and kup[col].weight == 0
+        target_col.player_can_put_card_if_empty == "yes"
+        and target_col.weight == 0
     )
 
-    # only certain card allowed on empty column
+    # Rule: only certain card allowed on empty column (e.g. King only)
     cond2 = (
-        kup[col].player_can_put_card_if_empty not in ("no", "-1", "yes")
-        and (selectedCard in kup[col].player_can_put_card_if_empty)
-        and kup[col].weight == 0
+        target_col.player_can_put_card_if_empty not in ("no", "-1", "yes")
+        and (selectedCard in target_col.player_can_put_card_if_empty)
+        and target_col.weight == 0
     )
 
-    # normal matching rules (alternate color, suit, rank, etc.)
-    cond3 = match_alternates(col, selectedCard)
+    # Rule: normal matching rules (alternate color, suit, rank, etc.)
+    # We pass 'state' down so match_alternates knows which player's rules to use
+    cond3 = match_alternates(state, target_col_idx, selectedCard)
 
-    # is move to this column allowed from specific columns
+    # Rule: is move allowed from specific columns (e.g. Foundation only from Tableau)
     cond4 = False
-    if kup[col].player_can_put_card not in ("yes", "no", "-1"):
+    if target_col.player_can_put_card not in ("yes", "no", "-1"):
+        # Here, player_can_put_card holds a string like "1,2,3"
         cond4 = match_specificCol(
-            kup[col].player_can_put_card,
-            selectedColumn
+            state,
+            target_col.player_can_put_card,
+            selectedColumn_idx
         )
+        # If specific column rule exists, it usually overrides general rules
         cond = cond4
     else:
+        # Standard logic: it's legal if ANY of these conditions are met
         cond = cond or cond1 or cond2 or cond3
 
     return cond
 
 
-def hide_previous_requisites():
+def hide_previous_requisites(state):
     """
     VB: hidePreviousRequsites
-    Tear down visuals from a previous game before staging a new one.
+    Resets the player's private table state before starting a new game.
     """
+    # Reset interaction mode
+    state.usermode = 0
 
-    global usermode, usedColumns, nextAvailableFaceDown
+    # Reset parameters (VB: parameter(20))
+    for i in range(len(state.parameter)):
+        state.parameter[i] = 0
 
-    # nothing clicked yet
-    usermode = 0
+    # Reset visual column slots (ShapeColumns)
+    for slot in state.ShapeColumns:
+        slot.visible = False
+        slot.enabled = True
 
-    # reset parameters
-    for i in range(len(parameter)):
-        parameter[i] = 0
-
-    # unload column shapes
-    for i in range(1, usedColumns + 1):
-        ShapeColumns[i].visible = False
-
-        if i < len(kup) and kup[i].allways_facedown == "1":
-            if i < len(imageFaceDown):
-                imageFaceDown[i].visible = False
-
-    # unload any remaining facedowns
-    if nextAvailableFaceDown > 0:
-        for i in range(1, nextAvailableFaceDown + 1):
-            if i < len(imageFaceDown):
-                imageFaceDown[i].visible = False
-        nextAvailableFaceDown = 0
-
-    usedColumns = 0
-
-    # hide templates
-    ShapeSelektor.visible = False
-    if imageFaceDown:
-        imageFaceDown[0].visible = False
-
-    # (actions / buttons will be handled later)
+    # Reset visual face-down overlays
+    for fd in state.imageFaceDown:
+        fd.visible = False
+        fd.enabled = True
+    
+    # Reset counters
+    state.nextAvailableFaceDown = 0
+    # Note: 'usedColumns' is now derived from len(state.ShapeColumns)
+    
+    # Hide the selection indicator
+    state.ShapeSelektor.visible = False
 
 
-def check_allways_facedown_columns():
+def check_allways_facedown_columns(state):
     """
     VB: check_allways_facedown_columns
-    Keeps always-facedown overlays in sync with their columns.
+    Syncs facedown overlays with the current position of the columns.
     """
+    s = state  # Short reference
 
-    global usedColumns
-
-    max_i = min(usedColumns, len(kup) - 1, len(imageFaceDown) - 1)
-
-    for i in range(max_i + 1):
-        col = kup[i]
-
+    # We iterate through all columns in the player's private 'kup'
+    for i, col in enumerate(s.kup):
+        # We only care about columns tagged as "always facedown" (usually the deck)
         if col.allways_facedown == "1":
-
+            
+            # If the column has cards, the overlay must be visible and correctly positioned
             if col.weight > 0:
-                # vertical position
-                if col.custom_y != -1:
-                    imageFaceDown[i].top = col.custom_y
+                # 1. Resolve Column Position (VB Index)
+                pos_idx = int(col.position) if col.position else 0
+                
+                # 2. Vertical Position (Y)
+                if col.custom_y not in (-1, None, ""):
+                    # Specific override in script
+                    s.imageFaceDown[i].top = int(col.custom_y)
                 else:
-                    imageFaceDown[i].top = (
-                        columnY[int(col.position)]
-                        + col.overlap_y * col.weight
+                    # Standard grid position + fan overlap
+                    s.imageFaceDown[i].top = (
+                        s.columnY[pos_idx] + (col.overlap_y * col.weight)
                     )
 
-                # horizontal position
-                if col.custom_x != -1:
-                    imageFaceDown[i].left = col.custom_x
+                # 3. Horizontal Position (X)
+                if col.custom_x not in (-1, None, ""):
+                    s.imageFaceDown[i].left = int(col.custom_x)
                 else:
-                    imageFaceDown[i].left = (
-                        columnX[int(col.position)]
-                        + col.overlap_x * col.weight
+                    s.imageFaceDown[i].left = (
+                        s.columnX[pos_idx] + (col.overlap_x * col.weight)
                     )
 
-                imageFaceDown[i].bring_to_front()
-
-                # VB: Right(kup(i).contents, 3)
-                imageFaceDown[i].tag = col.contents[-3:] if col.contents else ""
-
-                imageFaceDown[i].visible = True
-
+                # 4. Update the card reference (VB .Tag)
+                # Since col.contents is a list of Card objects, we take the last one's code
+                if col.contents:
+                    s.imageFaceDown[i].card_code = col.contents[-1].code
+                
+                s.imageFaceDown[i].visible = True
             else:
-                imageFaceDown[i].visible = False
-                imageFaceDown[i].tag = ""
+                # Column is empty, hide the facedown image
+                s.imageFaceDown[i].visible = False
+                s.imageFaceDown[i].card_code = ""
 
-
-def match_specificCol(specifCol, col):
+def match_specificCol(state, specifCol, col_idx):
     """
     VB: match_specificCol
-    specifCol: string ("any", "4", "1,4,5,18")
-    col: integer (current column index)
+    Checks if 'col_idx' is allowed based on a string rule (e.g. "any", "1,2,5").
     """
-
-    if not specifCol:
+    if not specifCol or specifCol == "-1":
         return False
 
     if specifCol == "any":
         return True
 
     try:
-        # no commas → single column
-        if "," not in specifCol:
-            return int(specifCol) == col
+        # Check for comma-separated list
+        if "," in str(specifCol):
+            # Parse list: "1, 2, 4" -> [1, 2, 4]
+            allowed = [int(x.strip()) for x in str(specifCol).split(",") if x.strip()]
+            return col_idx in allowed
+        else:
+            # Single value check
+            return (int(specifCol) if specifCol else 0) == col_idx
 
-        # comma-separated list
-        allowed = [int(s.strip()) for s in specifCol.split(",") if s.strip()]
-        return col in allowed
-
-    except Exception:
-        # VB: MsgBox gamename & lang_msg : End
-        raise RuntimeError(f"Game script error: invalid specifCol='{specifCol}'")
-
-
-
-# ------------------------------------------------------
-# functions that use timer (experimental)
-#-------------------------------------------------------
-def gather_cards(self):
-    if not self.animate_enabled:
-        return
-
-    self.timer_repeats = 3 * 24
-
-    def step():
-        self._gather_step()
-
-    self.timers.append(
-        EngineTimer(
-            interval=1/24,
-            repeats=self.timer_repeats,
-            callback=step
-        )
-    )
-
-
-def _gather_step(self):
-    self.timer_repeats -= 1
-
-    if self.timer_repeats <= 0:
-        self._snap_cards_to_deck()
-        return
-
-    r = random.randint(1, 51)
-    c0 = self.cards[0]
-    c = self.cards[r]
-
-    factor = self.timer_repeats / 72
-    c.top = c0.top + (c.top - c0.top) * factor
-    c.left = c0.left + (c.left - c0.left) * factor
-
-
-def _snap_cards_to_deck(self):
-    c0 = self.cards[0]
-    for c in self.cards[1:]:
-        c.top = c0.top
-        c.left = c0.left
-
-    self.deck_facedown.top = c0.top
-    self.deck_facedown.left = c0.left
-    self.deck_facedown.visible = True
-
-
-
-# ---------------------------------------------------------------
-# engine functions
-# ---------------------------------------------------------------
-def turn_or_shuffle_column(kup, col_index, mode="turn"):
-    """
-    mode: "turn" | "shuffle"
-    Returns True if operation performed, False otherwise.
-    """
-
-    # Safety
-    if col_index < 0 or col_index >= len(kup):
+    except Exception as e:
+        # If the script has a typo (like '1, 2, abc'), we fail safely
+        print(f"Logic Error in specificCol check: {specifCol} for player {state.session_id}")
         return False
 
-    column = kup[col_index]
 
-    if column.weight == 0:
+def turn_or_shuffle_column(state, col_index, mode="turn"):
+    """
+    VB Port: turncolumn / shufflecolumn
+    Rotates or randomizes the cards within a specific column.
+    """
+    s = state
+    if col_index < 0 or col_index >= len(s.kup):
         return False
 
-    if column.weight == 1:
-        return True  # trivial success
+    column = s.kup[col_index]
 
-    # --- snapshot old order ---
-    old_cards = list(column.contents)  # list[Card]
+    if column.weight <= 1:
+        return True  # Nothing to shuffle or turn
+
+    # --- Snapshot old order ---
+    old_cards = list(column.contents)
     n = len(old_cards)
 
-    # --- compute new order indices ---
+    # --- Compute new order indices ---
     if mode == "turn":
+        # Reverse the list of cards
         new_indices = list(reversed(range(n)))
-
     elif mode == "shuffle":
+        # Randomize the list
         new_indices = list(range(n))
         random.shuffle(new_indices)
-
     else:
-        raise ValueError(f"Unknown mode: {mode}")
+        raise ValueError(f"Unknown column transformation mode: {mode}")
 
-    # --- apply new order ---
-    new_cards = [old_cards[i] for i in new_indices]
-    column.contents = new_cards
-    column.weight = len(new_cards)
-
-    # --- rebuild contents_str (VB-compatible semantic) ---
-    column.contents_str = ",".join(card.code for card in new_cards)
-
-    # --- z-order semantics (bottom first, VB-style) ---
-    for card in new_cards:
-        card.z = 0  # or however z-order is represented
+    # --- Apply new order ---
+    column.contents = [old_cards[i] for i in new_indices]
+    
+    # --- Sync Duality ---
+    from .engine import sync_column_contents
+    sync_column_contents(state, column)
 
     return True
 
 
-def do_action(self, act: str) -> bool:
+def check_ifduringaction_condition(state, condit_str):
     """
-    Execute an action DSL string.
-    Returns success of the action.
+    VB Port: check_ifduringaction_condition
+    Evaluates conditional logic inside an action script.
     """
-
-    success = False
-
-    # ----------------------------
-    # movecolumn=X-Y
-    # ----------------------------
-    if act.startswith("movecolumn="):
-        ac = act[len("movecolumn="):]
-        csource, cdest = map(int, ac.split("-"))
-
-        self.actionMode = True
-        self.simulateClickMode = True
-
-        if self.kup[csource].weight > 0:
-            success = self.moveColumn(
-                csource,
-                cdest,
-                self.kup[csource].weight
-            )
-
-        self.actionMode = False
-        self.simulateClickMode = False
-
-    # ----------------------------
-    # turncolumn=X
-    # ----------------------------
-    elif act.startswith("turncolumn="):
-        col = int(act[len("turncolumn="):])
-        success = turn_or_shuffle_column(self.kup, col, mode="turn")
-
-    # ----------------------------
-    # shufflecolumn=X
-    # ----------------------------
-    elif act.startswith("shufflecolumn="):
-        col = int(act[len("shufflecolumn="):])
-        success = turn_or_shuffle_column(self.kup, col, mode="shuffle")
-
-    # ----------------------------
-    # movepile=N,X-Y
-    # ----------------------------
-    elif act.startswith("movepile="):
-        ac = act[len("movepile="):]
-        n_str, rest = ac.split(",", 1)
-        n = int(n_str)
-
-        csource, cdest = map(int, rest.split("-"))
-
-        self.actionMode = True
-        self.simulateClickMode = True
-
-        n = min(n, self.kup[csource].weight)
-        if n > 0:
-            success = self.moveColumn(csource, cdest, n)
-
-        self.actionMode = False
-        self.simulateClickMode = False
-
-    # ----------------------------
-    # trymovepile=...
-    # ----------------------------
-    elif act.startswith("trymovepile="):
-        ac = act[len("trymovepile="):]
-
-        max_part, cols = ac.split(",", 1)
-        max_cards = (
-            self.parameter[int(max_part[9:])]
-            if max_part.startswith("parameter")
-            else int(max_part)
-        )
-
-        src, dest = cols.split("-")
-        csource = self.selectedColumn if src == "selected" else int(src)
-        cdest = int(dest)
-
-        success = False
-
-        if self.kup[csource].weight > 1:
-            how_many = 0
-            cards = list(self.kup[csource].contents)
-
-            for i in range(min(len(cards), max_cards)):
-                card = cards[-(i + 1)]
-                if (
-                    move_condition(card.code, csource, cdest)
-                    and card.face_up
-                ):
-                    how_many = i + 1
-                else:
-                    break
-
-            if how_many > 1:
-                self.do_action(
-                    f"movepile={how_many},{csource}-{cdest}"
-                )
-                success = True
-
-    # ----------------------------
-    # parameter / setparameter
-    # ----------------------------
-    elif act.startswith("parameter") or act.startswith("setparameter="):
-        if act.startswith("setparameter="):
-            act = act[len("setparameter="):]
-
-        p = int(act[9:11])
-        expr = act[12:]
-
-        success = True
-
-        if expr.isdigit():
-            self.parameter[p] = int(expr)
-
-        elif expr.startswith("countempty"):
-            self.parameter[p] = param_count_empty(expr[10:])
-
-        elif expr.startswith("cardsrowed("):
-            col = (
-                self.selectedColumn
-                if expr[11:-1] == "selected"
-                else int(expr[11:-1])
-            )
-            self.parameter[p] = param_cards_rowed(col)
-
-        elif expr.startswith("min(") or expr.startswith("max("):
-            fn = expr[:3]
-            a, b = expr[4:-1].split(",")
-            self.parameter[p] = minmax(fn, a, b)
-
-        elif expr.startswith("source_column"):
-            self.parameter[p] = self.selectedColumn
-
-        elif expr.startswith("weight_of"):
-            self.parameter[p] = param_count_weight(expr[9:])
-
-        else:
-            success = False
-
-    # ----------------------------
-    # increase(parameterX)
-    # ----------------------------
-    elif act.startswith("increase(parameter"):
-        p = int(act[18:-1])
-        self.parameter[p] += 1
-        success = True
-
-    # ----------------------------
-    # ifduringaction(...)
-    # ----------------------------
-    elif act.startswith("ifduringaction("):
-        cond, subact = act[15:].split(")", 1)
-        subact = subact.lstrip(",")
-
-        if check_ifduringaction_condition(cond):
-            success = self.do_action(subact)
-
-    # ----------------------------
-    # autoplay
-    # ----------------------------
-    elif act.startswith("autoplay"):
-        self.try_every_turn_actions()
-        success = True
-
-    # ----------------------------
-    # whole action block
-    # ----------------------------
-    elif act.startswith("["):
-        self.do_whole_action(act)
-        success = True
-
-    # ----------------------------
-    # post-action maintenance
-    # ----------------------------
-    if success:
-        self.check_allways_facedown_columns()
-
-    return success
-
-
-def check_ifduringaction_condition(self, condit: str) -> bool:
-    """
-    Evaluate a condition used inside ifduringaction(...).
-    Returns True or False.
-    """
-
-    r = False
+    s = state
+    result = False
 
     # ---------------------------------
-    # destination_card=...
+    # destination_card=s01,h13...
     # ---------------------------------
-    if condit.startswith("destination_card="):
-        allowed = condit[len("destination_card="):]
+    if condit_str.startswith("destination_card="):
+        allowed_list = condit_str[len("destination_card="):]
+        dest_idx = s.destinationColumn
+        
+        if dest_idx != -1 and s.kup[dest_idx].contents:
+            # Top card of destination column
+            dest_card_code = s.kup[dest_idx].contents[-1].code
+            if dest_card_code in allowed_list:
+                result = True
 
-        if self.kup[self.destinationColumn].weight > 0:
-            # top card of destination column
-            dest_card = self.kup[self.destinationColumn].contents[-1].code
-            if dest_card in allowed:
-                r = True
-
     # ---------------------------------
-    # parameterXX comparisons
+    # parameterXX comparisons (e.g., parameter01<5)
     # ---------------------------------
-    elif condit.startswith("parameter"):
-        # parameterXX<value / >value / =value
-        p = int(condit[9:11])
-        expr = condit[11:]
+    elif condit_str.startswith("parameter"):
+        p_idx = int(condit_str[9:11])
+        expr = condit_str[11:]
+        current_val = s.parameter[p_idx]
 
         if expr.startswith("<"):
-            value = int(expr[1:])
-            if self.parameter[p] < value:
-                r = True
-
+            result = current_val < int(expr[1:])
         elif expr.startswith(">"):
-            value = int(expr[1:])
-            if self.parameter[p] > value:
-                r = True
-
+            result = current_val > int(expr[1:])
         elif expr.startswith("="):
-            value = int(expr[1:])
-            if self.parameter[p] == value:
-                r = True
+            result = current_val == int(expr[1:])
+        elif expr[0].isdigit():
+            # Implicit equality: parameter015
+            result = current_val == int(expr)
 
-        else:
-            # implicit equality: parameterXX5
-            if self.parameter[p] == int(expr):
-                r = True
+    return result
 
-    return r
-
-
-def do_whole_action(self, actionname: str) -> bool:
+def match_alternates(state, col_idx, selected_card_code):
     """
-    Execute a named action block like "[myaction]"
-    or a standalone action like "trymovepile=52,10-8".
+    VB Port: match_alternates
+    The core rule-checker for moving a card onto a pile.
+    Checks Alternate Color, Suit, and Rank rules.
     """
+    s = state
+    card_can_go = False
+    dest_col = s.kup[col_idx]
 
-    success = False
+    # If the column is not empty, we match against the top card
+    if dest_col.contents:
+        target_card = dest_col.contents[-1].code
+        
+        # Parse Moving Card (sc) and Target Card (c)
+        sc_suit, sc_val = selected_card_code[0], int(selected_card_code[1:])
+        c_suit, c_val = target_card[0], int(target_card[1:])
 
-    # ---------------------------------
-    # Block action: [actionname]
-    # ---------------------------------
-    if actionname.startswith("["):
-        if not self.list_actions:
-            return False
+        def is_alternate(suit_a, suit_b):
+            """Internal helper for red/black logic."""
+            reds = ('h', 'd')
+            blacks = ('c', 's')
+            return (suit_a in blacks and suit_b in reds) or (suit_a in reds and suit_b in blacks)
 
-        i = 0
-        count = len(self.list_actions)
-
-        # find action header
-        while i < count and self.list_actions[i] != actionname:
-            i += 1
-
-        # action not found
-        if i >= count:
-            return False
-
-        i += 1  # move past [actionname]
-
-        # execute until next block or end
-        while i < count:
-            s = self.list_actions[i]
-            if s.startswith("["):
-                break
-            success = self.do_action(s)
-            i += 1
-
-    # ---------------------------------
-    # Single action
-    # ---------------------------------
-    else:
-        success = self.do_action(actionname)
-
-    return success
-
-
-def _parse_cols_arg(self, cols):
-    """
-    Parse column argument like:
-    "3", "1,4,7", "(1,4,7)"
-    → [1, 4, 7]
-    """
-    if cols is None:
-        return []
-
-    s = str(cols).strip()
-
-    if s.startswith("("):
-        s = s[1:]
-    if s.endswith(")"):
-        s = s[:-1]
-
-    if not s:
-        return []
-
-    if "," in s:
-        return [int(c.strip()) for c in s.split(",") if c.strip().isdigit()]
-    else:
-        return [int(s)]
-
-
-def param_count_empty(self, cols):
-    """
-    Count how many of the given columns are empty.
-    """
-    r = 0
-    for c in self._parse_cols_arg(cols):
-        if 0 <= c < len(self.kup):
-            if self.kup[c].weight == 0:
-                r += 1
-    return r
-
-
-def param_count_weight(self, cols):
-    """
-    Count total number of cards in the given columns.
-    """
-    r = 0
-    for c in self._parse_cols_arg(cols):
-        if 0 <= c < len(self.kup):
-            r += self.kup[c].weight
-    return r
-
-
-def param_cards_rowed(self, col):
-    """
-    Count how many top cards in a column form a valid row
-    according to suit / alternate rules.
-    """
-    r = 0
-
-    if not (0 <= col < len(self.kup)):
-        return 0
-
-    column = self.kup[col]
-
-    if column.weight == 0:
-        return 0
-
-    if column.weight == 1:
-        return 1
-
-    # work on a copy of contents, top-first
-    cards = list(column.contents)  # bottom -> top
-    cards.reverse()                # top -> bottom
-
-    rowed = True
-
-    for i in range(len(cards)):
-        ctop = cards[i].code
-        r += 1
-
-        if i + 1 >= len(cards):
-            break
-
-        cunder = cards[i + 1].code
-
-        # suit rule
-        if column.suit != "-1":
-            rowed = self.match_crds_suit(column.suit, ctop, cunder)
-
-        # alternate color rule
-        if rowed and column.alternate != "-1":
-            rowed = self.match_crds_alternate(column.alternate, ctop, cunder)
-
-        if not rowed:
-            break
-
-        if r >= column.weight:
-            break
-
-    return r
-
-
-def match_alternates(self, col, selectedCard):
-    """
-    Check if a single card may be placed onto destination column `col`.
-    """
-    cardcango = False
-
-    if not (0 <= col < len(self.kup)):
-        return False
-
-    dest_col = self.kup[col]
-
-    # destination must have a card to match against
-    if dest_col.weight > 0:
-        c = dest_col.contents[-1].code  # top card on destination
-
-        sc_suit = selectedCard[0]
-        sc_val = int(selectedCard[1:])
-        c_suit = c[0]
-        c_val = int(c[1:])
-
-        # --------------------------------------------------
-        # ALTERNATE rules
-        # --------------------------------------------------
+        # --- ALTERNATE rules ---
         if dest_col.alternate != "-1":
-
-            def is_alternate(a, b):
-                return (
-                    (a == "c" and b in ("h", "d")) or
-                    (a == "d" and b in ("c", "s")) or
-                    (a == "h" and b in ("c", "s")) or
-                    (a == "s" and b in ("h", "d"))
-                )
-
-            if dest_col.alternate == "1":  # ascending
-                cond1 = (sc_val - c_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 1 and c_val == 13:
-                        cond1 = True
-                cond2 = is_alternate(sc_suit, c_suit)
-                cardcango = cond1 and cond2
-
-            elif dest_col.alternate == "0":  # descending
-                cond1 = (c_val - sc_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 13 and c_val == 1:
-                        cond1 = True
-                cond2 = is_alternate(sc_suit, c_suit)
-                cardcango = cond1 and cond2
-
+            # 1 = Ascending, 0 = Descending
+            rank_match = False
+            if dest_col.alternate == "1":
+                rank_match = (sc_val - c_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 1 and c_val == 13)
+            elif dest_col.alternate == "0":
+                rank_match = (c_val - sc_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 13 and c_val == 1)
             elif dest_col.alternate == "any":
-                cardcango = is_alternate(sc_suit, c_suit)
+                rank_match = True
+            
+            card_can_go = rank_match and is_alternate(sc_suit, c_suit)
 
-        # --------------------------------------------------
-        # SUIT rules
-        # --------------------------------------------------
+        # --- SUIT rules ---
         if dest_col.suit != "-1":
-
-            same_suit = sc_suit == c_suit
-
-            if dest_col.suit == "1":  # ascending
-                cond1 = (sc_val - c_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 1 and c_val == 13:
-                        cond1 = True
-                cardcango = cond1 and same_suit
-
-            elif dest_col.suit == "0":  # descending
-                cond1 = (c_val - sc_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 13 and c_val == 1:
-                        cond1 = True
-                cardcango = cond1 and same_suit
-
-            elif dest_col.suit == "10":  # next_in_rank
-                cond1 = abs(c_val - sc_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if (sc_val, c_val) in ((13, 1), (1, 13)):
-                        cond1 = True
-                cardcango = cond1 and same_suit
-
+            same_suit = (sc_suit == c_suit)
+            rank_match = False
+            if dest_col.suit == "1": # Ascending same suit
+                rank_match = (sc_val - c_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 1 and c_val == 13)
+            elif dest_col.suit == "0": # Descending same suit
+                rank_match = (c_val - sc_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 13 and c_val == 1)
+            elif dest_col.suit == "10": # Next in rank (either way) same suit
+                rank_match = abs(c_val - sc_val) == 1 or (dest_col.aces_on_kings != "no" and sorted((sc_val, c_val)) == [1, 13])
             elif dest_col.suit == "any":
-                cardcango = same_suit
+                rank_match = True
+            
+            card_can_go = rank_match and same_suit
 
-        # --------------------------------------------------
-        # CARD VALUE rules
-        # --------------------------------------------------
+        # --- CARD VALUE rules (Regardless of suit) ---
         if dest_col.card_value != "-1":
+            if dest_col.card_value == "1": # Same rank
+                card_can_go = (sc_val == c_val)
+            elif dest_col.card_value == "2": # Ascending
+                card_can_go = (sc_val - c_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 1 and c_val == 13)
+            elif dest_col.card_value == "3": # Descending
+                card_can_go = (c_val - sc_val == 1) or (dest_col.aces_on_kings != "no" and sc_val == 13 and c_val == 1)
+            elif dest_col.card_value == "23": # Adjacent
+                card_can_go = abs(c_val - sc_val) == 1 or (dest_col.aces_on_kings != "no" and sorted((sc_val, c_val)) == [1, 13])
 
-            if dest_col.card_value == "1":  # same value
-                cardcango = sc_val == c_val
-
-            elif dest_col.card_value == "2":  # ascending
-                cardcango = (sc_val - c_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 1 and c_val == 13:
-                        cardcango = True
-
-            elif dest_col.card_value == "3":  # descending
-                cardcango = (c_val - sc_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if sc_val == 13 and c_val == 1:
-                        cardcango = True
-
-            elif dest_col.card_value == "23":  # adjacent regardless of suit
-                cardcango = abs(c_val - sc_val) == 1
-                if dest_col.aces_on_kings != "no":
-                    if (sc_val, c_val) in ((13, 1), (1, 13)):
-                        cardcango = True
-
-        # --------------------------------------------------
-        # SUIT OR CARD rules
-        # --------------------------------------------------
+        # --- SUIT OR CARD rules ---
         if dest_col.suit_or_card != "-1":
-
             if dest_col.suit_or_card == "1":
-                same_value = sc_val == c_val
-                same_suit = sc_suit == c_suit
-                cardcango = same_value or same_suit
-
+                card_can_go = (sc_val == c_val or sc_suit == c_suit)
             elif dest_col.suit_or_card == "any":
-                cardcango = True
+                card_can_go = True
 
-    # --------------------------------------------------
-    # ALWAYS ALLOWED FROM COLUMNS
-    # --------------------------------------------------
+    # --- ALWAYS ALLOWED FROM COLUMNS ---
     if dest_col.always_allowed_from_columns != "-1":
-        if self.match_specificCol(
-            dest_col.always_allowed_from_columns,
-            self.selectedColumn
-        ):
-            cardcango = True
-        if dest_col.always_allowed_from_columns == "any":
-            cardcango = True
+        from .engine import match_specificCol
+        if match_specificCol(state, dest_col.always_allowed_from_columns, s.selectedColumn):
+            card_can_go = True
 
-    return cardcango
+    return card_can_go
 
-
-@staticmethod
-def card_faces_up(cards_face_up: str, j: int) -> bool:
+def card_faces_up(rule_str, pos_idx):
     """
-    cards_face_up: "1,1,1,0,1"
-    j: 1-based position
+    Determines if a card at a certain index is visible.
+    Example rule: "1,0,1" -> pos 1 is Up, pos 2 is Down.
     """
-    if not cards_face_up:
-        return True
-
-    # single value
-    if len(cards_face_up) == 1:
-        return bool(int(cards_face_up))
-
-    parts = cards_face_up.split(",")
-    if 1 <= j <= len(parts):
-        return bool(int(parts[j - 1]))
-
+    if not rule_str: return True
+    if len(rule_str) == 1: return rule_str == "1"
+    
+    parts = rule_str.split(",")
+    # pos_idx is 1-based from VB
+    if 1 <= pos_idx <= len(parts):
+        return parts[pos_idx - 1].strip() == "1"
     return False
 
 
-@staticmethod
-def cardId(c: str) -> int:
+def cardId(card_code):
     """
-    c = "c04" -> 0..51
+    Converts card code ('c04') to 0..51.
     """
-    suit_map = {
-        "c": 0,
-        "d": 1,
-        "h": 2,
-        "s": 3,
-    }
+    suit_map = {"c": 0, "d": 1, "h": 2, "s": 3}
+    try:
+        suit = card_code[0]
+        value = int(card_code[1:])
+        return suit_map[suit] * 13 + value - 1
+    except (KeyError, ValueError, IndexError):
+        return None
 
-    suit = c[0]
-    value = int(c[1:])
-
-    return suit_map[suit] * 13 + value - 1
-
-
-@staticmethod
-def cardname(k: int) -> str:
+def card_name(idx):
     """
-    k = 0..51 -> "c01".."s13"
+    Converts 0..51 back to card code ('c01').
     """
-    suit_map = {
-        0: "c",
-        1: "d",
-        2: "h",
-        3: "s",
-    }
-
-    suit = suit_map[k // 13]
-    value = (k % 13) + 1
-
+    suit_map = {0: "c", 1: "d", 2: "h", 3: "s"}
+    suit = suit_map[idx // 13]
+    value = (idx % 13) + 1
     return f"{suit}{value:02d}"
 
-
-@staticmethod
-def match_crds_suit(mode: str, ctop: str, cunder: str) -> bool:
+def match_crds_suit(state, mode, c_top, c_under):
     """
-    Check suit-based matching between two cards.
-    Single-deck assumption.
+    Checks suit-based rank matching (Same suit).
     """
-    # suits must match
-    if ctop[0] != cunder[0]:
+    if c_top[0] != c_under[0]:
         return False
+    
+    val_top = int(c_top[1:])
+    val_under = int(c_under[1:])
 
-    top_val = int(ctop[1:])
-    under_val = int(cunder[1:])
+    # VB Logic: 1 = Ascending, 0 = Descending
+    if mode == "1": return (val_top - val_under) == 1
+    if mode == "0": return (val_under - val_top) == 1
+    if mode == "any": return True
+    return False
 
-    if mode == "1":
-        return (top_val - under_val) == 1
-    elif mode == "0":
-        return (top_val - under_val) == 1
-    elif mode == "any":
-        return True
+def match_crds_alternate(state, mode, c_top, c_under):
+    """
+    Checks alternate-color matching (Red on Black, etc).
+    """
+    blacks, reds = {"c", "s"}, {"d", "h"}
+    top_s, und_s = c_top[0], c_under[0]
 
+    alt = (top_s in blacks and und_s in reds) or (top_s in reds and und_s in blacks)
+    if not alt: return False
+
+    val_top, val_under = int(c_top[1:]), int(c_under[1:])
+    if mode == "1": return (val_top - val_under) == 1
+    if mode == "0": return (val_under - val_top) == 1
+    if mode == "any": return True
     return False
 
 
-@staticmethod
-def match_crds_alternate(mode: str, ctop: str, cunder: str) -> bool:
+
+
+
+
+
+# # ------------------------------------------------------
+# # functions that use timer (experimental)
+# #-------------------------------------------------------
+# def gather_cards(self):
+#     if not self.animate_enabled:
+#         return
+
+#     self.timer_repeats = 3 * 24
+
+#     def step():
+#         self._gather_step()
+
+#     self.timers.append(
+#         EngineTimer(
+#             interval=1/24,
+#             repeats=self.timer_repeats,
+#             callback=step
+#         )
+#     )
+
+
+# def _gather_step(self):
+#     self.timer_repeats -= 1
+
+#     if self.timer_repeats <= 0:
+#         self._snap_cards_to_deck()
+#         return
+
+#     r = random.randint(1, 51)
+#     c0 = self.cards[0]
+#     c = self.cards[r]
+
+#     factor = self.timer_repeats / 72
+#     c.top = c0.top + (c.top - c0.top) * factor
+#     c.left = c0.left + (c.left - c0.left) * factor
+
+
+# def _snap_cards_to_deck(self):
+#     c0 = self.cards[0]
+#     for c in self.cards[1:]:
+#         c.top = c0.top
+#         c.left = c0.left
+
+#     self.deck_facedown.top = c0.top
+#     self.deck_facedown.left = c0.left
+#     self.deck_facedown.visible = True
+
+
+
+
+# ================================================================
+# ADDITIONAL ENGINE ROUTINES 
+# ================================================================
+
+def apply_facedown_masks(state):
     """
-    Check alternate-color matching between two cards.
-    Single-deck assumption.
+    VB: Logic usually found in prepareColumns or dealCards.
+    Reads 'cards_face_up' string and hides cards accordingly.
     """
-    black = {"c", "s"}
-    red = {"d", "h"}
+    s = state
+    s.nextAvailableFaceDown = 0
+    
+    # First, hide all existing masks
+    for fd in s.imageFaceDown:
+        fd.visible = False
 
-    top_suit = ctop[0]
-    under_suit = cunder[0]
-
-    # alternate colors required
-    alt = (
-        (top_suit in black and under_suit in red) or
-        (top_suit in red and under_suit in black)
-    )
-
-    if not alt:
-        return False
-
-    top_val = int(ctop[1:])
-    under_val = int(cunder[1:])
-
-    if mode == "1":
-        return (top_val - under_val) == 1
-    elif mode == "0":
-        return (under_val - top_val) == 1
-    elif mode == "any":
-        return True
-
-    return False
-
-
-def try_every_turn_actions(self):
-    """
-    Execute actions defined as every_turn=x-y or every_turn=[action].
-    """
-    while True:
-        self.clickModeSuceededSoTryAgain = False
-
-        if not self.ListActions:
-            break
-
-        i = 0
-        while i < len(self.ListActions):
-            s = self.ListActions[i]
-            i += 1
-
-            if s.startswith("every_turn=") and self.autoplay_enabled:
-                ac = s[11:]  # after 'every_turn='
-
-                if ac.startswith("["):
-                    self.do_whole_action(ac)
-
-                elif ac.startswith("parameter"):
-                    self.do_action(ac)
-
-                else:
-                    # x-y move
-                    try:
-                        csource = int(ac.split("-")[0])
-                        cdest = int(ac.split("-")[1])
-                    except (ValueError, IndexError):
-                        continue
-
-                    if self.kup[csource].weight == 0:
-                        continue
-
-                    crd = self.kup[csource].contents[-3:]
-                    crd_id = self.cardId(crd)
-
-                    if crd_id is not None and self.card_is_face_up(self.cardname(crd_id)):
-                        # simulate click mode
-                        self.simulateClickMode = True
-                        self.column_click(csource, crd_id)
-                        self.column_click(cdest, crd_id)
-                        self.simulateClickMode = False
-
-            if s == "[FINISH]":
-                break
-
-        if not self.clickModeSuceededSoTryAgain:
-            break
-
-    # also execute conditional actions every turn
-    self.try_if_actions()
-
-
-def try_if_actions(self):
-    """
-    Execute conditional actions defined as if(condition)then[action].
-    """
-    if not self.ListActions:
-        return
-
-    i = 0
-    while i < len(self.ListActions):
-        s = self.ListActions[i]
-        i += 1
-
-        if not s.startswith("if("):
-            if s == "[FINISH]":
-                break
+    for col in s.kup:
+        if not col.cards_face_up or col.cards_face_up == "-1":
             continue
 
-        # extract condition and action block name
-        cond_expr = s[s.find("(") + 1 : s.find(")")]
-        ac = s[s.find(")then") + 5 :]
+        # Convert "0,0,1" -> [False, False, True]
+        # In VB, these were often comma-separated strings
+        rules = [r.strip() == "1" for r in str(col.cards_face_up).split(",")]
 
-        cond = False
-
-        # empty_columns condition
-        if cond_expr.startswith("empty_columns="):
-            cols = cond_expr[14:]
-            sum_weights = 0
-
-            for part in cols.split(","):
-                c = int(part)
-                sum_weights += self.kup[c].weight
-
-            cond = (sum_weights == 0)
-
-        # parameter condition
-        elif cond_expr.startswith("parameter"):
-            pnum = int(cond_expr[9:11])
-            expr = cond_expr[cond_expr.find("=") + 1 :]
-
-            val = self.parameter[pnum]
-
-            if expr.startswith(">"):
-                cond = val >= int(expr[1:])
-            elif expr.startswith("<"):
-                cond = val <= int(expr[1:])
-            else:
-                cond = val == int(expr)
-
-        # execute action block
-        if cond:
-            j = 0
-            while j < len(self.ListActions):
-                if self.ListActions[j] == ac:
-                    break
-                j += 1
-
-            if j >= len(self.ListActions):
-                raise RuntimeError("Action block not found")
-
-            j += 1
-            while j < len(self.ListActions):
-                act = self.ListActions[j]
-                j += 1
-                if act.startswith("["):
-                    break
-                self.do_action(act)
-
-        if s == "[FINISH]":
-            break
+        for i, card in enumerate(col.contents):
+            # Check the rule for this specific card index in the pile
+            should_be_face_up = True
+            if i < len(rules):
+                should_be_face_up = rules[i]
+            
+            if not should_be_face_up:
+                # 1. Update the Card object (The modern web way)
+                card.face_up = False
+                
+                # 2. Activate the Mask (The 'Faithful VB' way)
+                if s.nextAvailableFaceDown < len(s.imageFaceDown):
+                    mask = s.imageFaceDown[s.nextAvailableFaceDown]
+                    mask.visible = True
+                    mask.card_code = card.code
+                    
+                    # Position the mask exactly where the card is
+                    mask.left = col.x + (i * col.overlap_x)
+                    mask.top = col.y + (i * col.overlap_y)
+                    
+                    s.nextAvailableFaceDown += 1
 
 
-def try_seek_Parameter_actions(self):
+def sync_visual_actors(state):
     """
-    Execute seek_parameter actions.
+    The Master Wire. Call this once at the end of ANY engine action.
+    It ensures masks (imageFaceDown) match the Card.face_up state.
     """
-    if not self.ListActions:
-        return
+    s = state
+    s.nextAvailableFaceDown = 0
+    
+    # Reset all masks
+    for fd in s.imageFaceDown:
+        fd.visible = False
 
-    for s in self.ListActions:
-        if s.startswith("seek_parameter="):
-            ac = s[15:]
-            if ac.startswith("parameter"):
-                self.do_action(ac)
-        if s == "[FINISH]":
-            break
-
-
-def check_end_of_game(self):
-    """
-    Checks [VICTORY] and [DEFEAT] blocks in ListGame.
-    Emits end-of-game events exactly once.
-    """
-    try:
-        # ---------- VICTORY ----------
-        i = 0
-        sum_weights = 0
-
-        while i < len(self.ListGame) and self.ListGame[i] != "[VICTORY]":
-            i += 1
-
-        if i < len(self.ListGame):
-            i += 1  # first condition
-            s = self.ListGame[i]
-
-            if s.startswith("empty_columns="):
-                cols = s[14:]
-
-                for part in cols.split(","):
-                    c = int(part)
-                    sum_weights += self.kup[c].weight
-
-                if sum_weights == 0 and not self.youWon:
-                    self.statistics(self.gamename, "modify", 1, 0, 1)
-
-                    # engine signal (UI will react later)
-                    self.game_result = "victory"
-                    self.game_message = lang_youwon
-
-                    self.youWon = True
-
-        # ---------- DEFEAT ----------
-        i = 0
-        sum_weights = 0
-
-        while i < len(self.ListGame) and self.ListGame[i] != "[DEFEAT]":
-            i += 1
-
-        if i < len(self.ListGame) and not self.youWon:
-            i += 1  # first condition
-            s = self.ListGame[i]
-
-            if s.startswith("empty_columns="):
-                cols = s[14:]
-
-                for part in cols.split(","):
-                    c = int(part)
-                    sum_weights += self.kup[c].weight
-
-                if sum_weights == 0 and not self.youWon:
-                    self.statistics(self.gamename, "modify", 0, 1, 1)
-
-                    self.game_result = "defeat"
-                    self.game_message = lang_youlost
-
-                    self.youWon = True
-
-    except Exception:
-        raise RuntimeError(self.gamename + lang_msg)
+    for col in s.kup:
+        for i, card in enumerate(col.contents):
+            # If the card is face down, we need a mask
+            if not card.face_up:
+                if s.nextAvailableFaceDown < len(s.imageFaceDown):
+                    mask = s.imageFaceDown[s.nextAvailableFaceDown]
+                    mask.visible = True
+                    mask.card_code = card.code
+                    
+                    # Position mask exactly on top of the card
+                    mask.left = col.x + (i * col.overlap_x)
+                    mask.top = col.y + (i * col.overlap_y)
+                    
+                    s.nextAvailableFaceDown += 1

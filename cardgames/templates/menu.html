@@ -1,53 +1,64 @@
-<ul class="menu-root">
-
-    <li class="menu-item">Game
-        <ul class="dropdown">
+<ul class="menu-root win95-bevel-out">
+    
+    <!-- GAME -->
+    <li class="menu-item">{{ m.game or 'Game' }}
+        <ul class="dropdown win95-bevel-out">
             {% for g in games %}
-            <li onclick="location.href='/play/{{ g.id }}'">
+            <li onclick="location.href='{{ url_for('cardgames.play_game', game_id=g.id) }}'">
                 {{ g.name }}
             </li>
             {% endfor %}
             <li class="separator"></li>
-            <li onclick="location.href='/exit'">Exit</li>
+            <li onclick="location.href='/exit'">{{ m.exit or 'Exit' }}</li>
         </ul>
     </li>
 
-    <li class="menu-item">Zoom
-        <ul class="dropdown">
-            <li>Zoom In</li>
-            <li>Zoom Out</li>
-            <li>Max</li>
-            <li>Min</li>
+    <!-- ZOOM (Neutralized/Obsolete) -->
+    <li class="menu-item">{{ m.zoom or 'Zoom' }}
+        <ul class="dropdown win95-bevel-out">
+            <li style="color: gray;">Zoom In</li>
+            <li style="color: gray;">Zoom Out</li>
+            <li class="separator"></li>
+            <li style="color: gray;">Max</li>
+            <li style="color: gray;">Min</li>
         </ul>
     </li>
 
-    <li class="menu-item">Options
-        <ul class="dropdown">
-            <li class="checkable" id="menu-autoplay">Autoplay</li>
-            <li>Resizable</li>
-            <li>Other Cards</li>
-            <li>Statistics</li>
-            <li>Overall</li>
+    <!-- OPTIONS -->
+    <li class="menu-item">{{ m.options or 'Options' }}
+        <ul class="dropdown win95-bevel-out">
+            <li class="checkable {{ 'checked' if game and game.autoplay_enabled }}" 
+                id="menu-autoplay" 
+                onclick="toggleAutoplay(this)">
+                {{ m.autoplay or 'Autoplay' }}
+            </li>
+            <li style="color: gray;">Resizable</li>
+            <li style="color: gray;">Other Cards</li>
+            <li class="separator"></li>
+            <li>{{ m.statistics or 'Statistics' }}</li>
+            <li>{{ m.overall or 'Overall' }}</li>
         </ul>
     </li>
 
-    <li class="menu-item">Help
-        <ul class="dropdown">
-            <li onclick="showRules()">Rules</li>
-            <li>Customizing</li>
-            <li>About</li>
-            <li>Register</li>
+    <!-- HELP -->
+    <li class="menu-item">{{ m.help or 'Help' }}
+        <ul class="dropdown win95-bevel-out">
+            <li onclick="showRules()">{{ m.rules or 'Rules' }}</li>
+            <li>{{ m.customizing or 'Customizing' }}</li>
+            <li class="separator"></li>
+            <li>{{ m.about or 'About' }}</li>
+            <li>{{ m.register or 'Register' }}</li>
         </ul>
     </li>
 
-    <li class="menu-item">Language
-        <ul class="dropdown">
+    <!-- LANGUAGE -->
+    <li class="menu-item">{{ m.language or 'Language' }}
+        <ul class="dropdown win95-bevel-out">
             {% for code in ["eng","slo","ger","fr","it","spa","por","chn","jap","kor","yu"] %}
-            <li onclick="location.href='/set-language/{{ code }}'">
+            <li onclick="location.href='{{ url_for('cardgames.set_language', code=code) }}'">
                 {{ code.upper() }}
             </li>
             {% endfor %}
         </ul>
     </li>
-
 </ul>

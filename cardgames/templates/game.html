@@ -1,34 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>{{ page_title }}</title>
-    <link rel="stylesheet" href="/static/css/cardgames.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cardgames.css') }}">
 </head>
+
+<!-- THE WIN95 MESSAGE BOX (The 4th Actor) -->
+<div id="win95-modal-overlay" style="display:none;">
+    <div class="win95-dialog win95-bevel-out">
+        <div class="win95-title-bar">
+            <span id="msgbox-title">System Message</span>
+            <button class="win95-btn-close" onclick="closeMsgBox()">X</button>
+        </div>
+        <div class="win95-dialog-body">
+            <div id="msgbox-content" style="white-space: pre-wrap;">
+                <!-- Rules or Messages appear here -->
+            </div>
+            <div class="win95-dialog-footer" style="text-align: center; margin-top: 20px;">
+                <button class="win95-btn win95-bevel-out" onclick="closeMsgBox()">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <body>
 
-<!-- TITLE BAR -->
-<div id="title-bar">
-    <span class="title-text">
-        Card Games – {{ game.name }}
-    </span>
-</div>
+    <!-- TITLE BAR -->
+    <div id="title-bar">
+        <span class="title-text">
+            {% if game %}
+                Card Games – {{ game.name }}
+            {% else %}
+                Card Games – Select a Game from the Menu
+            {% endif %}
+        </span>
+    </div>
 
-<!-- MENU BAR -->
-<div id="menu-bar">
-    {% include "menu.html" %}
-</div>
+    <!-- MENU BAR -->
+    <div id="menu-bar">
+        {% include "menu.html" %}
+    </div>
 
-<!-- GAME AREA -->
-<div id="table-scroll">
-    <div id="game-table" data-game-id="{{ game.game_id }}"></div>
-</div>
+    <!-- GAME AREA -->
+    <div id="table-scroll">
+        <!-- data-game-id is vital for cardgame.js -->
+        <div id="game-table" data-game-id="{{ game.game_id if game else '' }}">
+            {% if not game %}
+                <div style="padding: 100px; text-align: center; color: white;">
+                    <h2>Welcome!</h2>
+                    <p>Please use the <strong>Game</strong> menu above to pick a game.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-<script>
-    window.INITIAL_GAME_STATE = {{ game.to_dict() | tojson | safe }};
-</script>
-
-<script src="/static/js/cardgame.js"></script>
+    <script>
+        // Only provide state if a game is actually running
+        {% if game %}
+            window.INITIAL_GAME_STATE = {{ game.to_dict() | tojson | safe }};
+        {% else %}
+            window.INITIAL_GAME_STATE = null;
+        {% endif %}
+    </script>
+    
+    <!-- Include the JS that handles the rules and clicks -->
+    <script src="{{ url_for('static', filename='js/cardgame.js') }}"></script>
 
 </body>
 </html>

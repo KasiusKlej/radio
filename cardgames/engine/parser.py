@@ -1,7 +1,12 @@
 import re
 from pathlib import Path
-from .model import Column, Card
-from .model import menu_items_slo, menu_items_eng, LANG_DIR
+
+#from .model import Column, Card
+#from .model import menu_items_slo, menu_items_eng, LANG_DIR
+
+
+
+from .model import GameState, orig_card_x_size,orig_card_y_size, gap_x, gap_y, LANG_DIR, menu_items_slo, menu_items_eng
 
 GAMES_FILE = Path(__file__).parent.parent / "games" / "CardGames-utf8.txt"
 
@@ -71,170 +76,129 @@ def new_column(cId, name, position, num_cards, shuffle_any):
 # -------------------------------------------------
 # Main loader
 # -------------------------------------------------
-# def load_games():
-#     lines = GAMES_FILE.read_text(encoding="utf-8").splitlines()
+# -------------------------------------------------
+# Main loader with Twip-to-Pixel Conversion
+# -------------------------------------------------
+def load_gamesVB(state):
+    # Constant for the VB coordinate conversion
+    TPX = 15 
 
-#     games = []
-#     i = 0
+    lines = GAMES_FILE.read_text(encoding="utf-8").splitlines()
+    games = []
+    counter = 1
+    i = 0
 
-#     while i < len(lines):
-#         line = lines[i].strip()
-#         i += 1
+    while i < len(lines):
+        line = lines[i].strip()
+        i += 1
 
-#         if not line or line.startswith("#"):
-#             continue
+        if not line or line.startswith("#") or line != "[GAMENAME]":
+            continue
 
-#         if line != "[GAMENAME]":
-#             continue
+        name = lines[i].strip()
+        raw_name = name
+        game_id = str(counter)
+        counter += 1
 
-#         # -------------------------------
-#         # New game
-#         # -------------------------------
-#         raw_name = lines[i].strip()     # lines[i] example: "FreeCell (Prosta celica)"
-#         name = lines[i].strip()
+        # Localization logic preserved
+        if "(" in raw_name and ")" in raw_name:
+            eng_name = raw_name.split("(")[0].strip()
+            slo_name = raw_name.split("(", 1)[1].rstrip(")").strip()
+        else:
+            eng_name = raw_name; slo_name = raw_name
 
-#         if "(" in raw_name and ")" in raw_name:
-#             eng_name = raw_name.split("(")[0].strip()
-#             slo_name = raw_name.split("(", 1)[1].rstrip(")").strip()
-#         else:
-#             # fallback if no localization present
-#             eng_name = raw_name
-#             slo_name = raw_name
+        menu_items_eng.append(eng_name)
+        menu_items_slo.append(slo_name)
 
-#         menu_items_eng.append(eng_name)
-#         menu_items_slo.append(slo_name)
+        i += 1
+        presets = ColumnPresets()
+        kup = []
+        raw_lines = ["[GAMENAME]", name]
 
-#         i += 1
+        while i < len(lines) and lines[i].strip() != "[GAMENAME]":
+            raw_lines.append(lines[i].rstrip("\n"))
+            i += 1
+
+        # ---- PARSE DEFAULTS (Dividing Twips by 15) ----
+        j = 0
+        while j < len(raw_lines):
+            if raw_lines[j].strip() == "[COLUMNS DEFAULTS]":
+                j += 1
+                while j < len(raw_lines):
+                    s = raw_lines[j].strip()
+                    j += 1
+                    if s == "[END COLUMNS DEFAULTS]": break
+                    
+                    if s.startswith("overlap_x="):
+                        # Convert Twips to Pixels
+                        presets.default_overlap_x = int(s.split("=")[1]) // TPX
+                    elif s.startswith("overlap_y="):
+                        presets.default_overlap_y = int(s.split("=")[1]) // TPX
+                    elif s.startswith("zoom="):
+                        presets.zoom = float(s.split("=")[1])
+                break
+            j += 1
+
+        # ---- PARSE COLUMNS ----
+        j = 0
+        while j < len(raw_lines) and raw_lines[j].strip() != "[COLUMNS]": j += 1
+        if j < len(raw_lines):
+            j += 1
+            c = 0
+            while j < len(raw_lines):
+                s = raw_lines[j].strip()
+                j += 1
+                if s == "[END COLUMNS]": break
+                parts = [p.strip() for p in s.split(",")]
+                # Position (parts[1]) and num_cards (parts[2]) are indices/counts, not twips.
+                col = new_column(c, parts[0], parts[1][:2], parts[2], parts[-1])
+                kup.append(col)
+                c += 1
+
+        # ---- PARSE BEHAVIOUR (Dividing Twips by 15) ----
+        j = 0
+        current_col = None
+        while j < len(raw_lines):
+            if raw_lines[j].strip() == "[COLUMNS BEHAVIOUR]":
+                j += 1
+                while j < len(raw_lines):
+                    s = raw_lines[j].strip()
+                    j += 1
+                    if s == "[END COLUMNS BEHAVIOUR]": break
+                    if s.startswith("[") and s.endswith("]"):
+                        col_name = s[1:-1]
+                        current_col = next((c for c in kup if c.column_name == col_name), None)
+                    elif current_col and "=" in s:
+                        key, val = s.split("=", 1)
+                        val = val.strip()
+                        
+                        # Apply conversion logic
+                        if key == "overlap_x":
+                            current_col.overlap_x = presets.default_overlap_x if val == "default" else int(val) // TPX
+                        elif key == "overlap_y":
+                            current_col.overlap_y = presets.default_overlap_y if val == "default" else int(val) // TPX
+                        elif key == "custom_x":
+                            # Note: if val is -1, -1 // 15 is still -1 in Python, which is perfect.
+                            current_col.custom_x = int(val) // TPX
+                        elif key == "custom_y":
+                            current_col.custom_y = int(val) // TPX
+                        elif key == "cards_face_up":
+                            current_col.cards_face_up = val
+                break
+            j += 1
+
+        games.append({
+            "id": game_id,
+            "name": name,
+            "kup": kup,
+            "presets": presets,
+            "raw_lines": raw_lines,
+        })
+
+    return games
 
 
-#         game_id = re.sub(r"[^a-z0-9_]", "_", name.lower())
-
-#         presets = ColumnPresets()
-#         kup = []
-
-#         # ✅ START RAW CAPTURE
-#         raw_lines = ["[GAMENAME]", name]
-
-#         # -------------------------------
-#         # Capture until next [GAMENAME] or EOF
-#         # -------------------------------
-#         start = i
-#         while i < len(lines) and lines[i].strip() != "[GAMENAME]":
-#             raw_lines.append(lines[i].rstrip("\n"))
-#             i += 1
-
-#         # -------------------------------
-#         # SECOND PASS: parse from raw_lines
-#         # -------------------------------
-#         # (this mirrors VB behaviour exactly)
-
-#         # ---- COLUMNS DEFAULTS ----
-#         j = 0
-#         while j < len(raw_lines):
-#             if raw_lines[j].strip() == "[COLUMNS DEFAULTS]":
-#                 j += 1
-#                 while j < len(raw_lines):
-#                     s = raw_lines[j].strip()
-#                     j += 1
-#                     if s == "[END COLUMNS DEFAULTS]":
-#                         break
-#                     if s.startswith("overlap_x="):
-#                         presets.default_overlap_x = int(s.split("=", 1)[1])
-#                     elif s.startswith("overlap_y="):
-#                         presets.default_overlap_y = int(s.split("=", 1)[1])
-#                     elif s.startswith("zoom="):
-#                         presets.zoom = float(s.split("=", 1)[1])
-#                 break
-#             j += 1
-
-#         # ---- COLUMNS ----
-#         j = 0
-#         while j < len(raw_lines) and raw_lines[j].strip() != "[COLUMNS]":
-#             j += 1
-
-#         if j >= len(raw_lines):
-#             raise RuntimeError(f"{name}: [COLUMNS] not found")
-
-#         j += 1
-#         c = 0
-
-#         while j < len(raw_lines):
-#             s = raw_lines[j].strip()
-#             j += 1
-
-#             if s == "[END COLUMNS]":
-#                 break
-
-#             parts = [p.strip() for p in s.split(",")]
-#             col_name = parts[0]
-#             position = parts[1][:2]
-#             num_cards = parts[2]
-#             shuffle_any = parts[-1]
-
-#             col = new_column(c, col_name, position, num_cards, shuffle_any)
-#             kup.append(col)
-#             c += 1
-
-#         # ---- COLUMNS BEHAVIOUR ----
-#         j = 0
-#         current_col = None
-
-#         while j < len(raw_lines):
-#             s = raw_lines[j].strip()
-#             j += 1
-#             if s == "[COLUMNS BEHAVIOUR]":
-#                 break
-
-#         while j < len(raw_lines):
-#             s = raw_lines[j].strip()
-#             j += 1
-
-#             if s == "[END COLUMNS BEHAVIOUR]":
-#                 break
-
-#             if s.startswith("[") and s.endswith("]"):
-#                 col_name = s[1:-1]
-#                 current_col = next(
-#                     (c for c in kup if c.column_name == col_name),
-#                     None
-#                 )
-#                 continue
-
-#             if not current_col or "=" not in s:
-#                 continue
-
-#             key, value = s.split("=", 1)
-#             value = value.strip()
-
-#             if key == "overlap_x":
-#                 current_col.overlap_x = (
-#                     presets.default_overlap_x if value == "default" else int(value)
-#                 )
-#             elif key == "overlap_y":
-#                 current_col.overlap_y = (
-#                     presets.default_overlap_y if value == "default" else int(value)
-#                 )
-#             elif key == "custom_x":
-#                 current_col.custom_x = int(value)
-#             elif key == "custom_y":
-#                 current_col.custom_y = int(value)
-#             elif key == "cards_face_up":
-#                 current_col.cards_face_up = value
-
-#         # -------------------------------
-#         # DONE
-#         # -------------------------------
-#         games.append({
-#             "id": game_id,
-#             "name": name,
-#             "kup": kup,
-#             "presets": presets,
-#             "raw_lines": raw_lines,  # ✅ CORRECT
-#         })
-
-#     return games
-
-def load_games():
+def load_games2():
     """
     VB equivalent:
     Open CardGames.txt For Input
@@ -259,55 +223,75 @@ def normalize_game_id(name: str) -> str:
     name = re.sub(r"_+", "_", name)
     return name.strip("_")
 
+
+# returns game's id and name (required for games menu)
 # def load_game_names():
+#     """
+#     Extract game IDs and display names for menu only using numeric IDs.
+#     """
+#     lines = load_games2()
+
 #     games = []
-
-#     with open(LANG_DIR / "CardGames-utf8.txt", encoding="utf-8") as f:
-#         for line in f:
-#             line = line.strip()
-#             if not line or line.startswith("["):
-#                 continue
-
-#             display_name = line
-#             game_id = normalize_game_id(display_name)
-
+#     counter = 1
+#     i = 0
+#     while i < len(lines):
+#         if lines[i] == "[GAMENAME]":
+#             name = lines[i + 1].strip()
+#             # Assign numeric ID as string for URL consistency
+#             game_id = str(counter)
+            
 #             games.append({
 #                 "id": game_id,
-#                 "name": display_name
+#                 "name": name
 #             })
+#             counter += 1
+#             i += 2
+#         else:
+#             i += 1
 
 #     return games
-def load_game_names():
+def load_game_names(lang_code="eng"):
     """
-    Extract game IDs and display names for menu only.
+    Extracts localized game names. 
+    Expects format: "English Name (Localized Name)"
     """
-    lines = load_games()
-
+    lines = load_games2() # Assuming this loads your list of lines
     games = []
+    counter = 1
+    
     i = 0
     while i < len(lines):
-        if lines[i] == "[GAMENAME]":
-            name = lines[i + 1].strip()
-            game_id = name.lower().replace(" ", "_")
+        line = lines[i].strip()
+        if line == "[GAMENAME]":
+            # The name is the very next line
+            raw_name = lines[i + 1].strip()
+            
+            display_name = raw_name
+            if "(" in raw_name and ")" in raw_name:
+                # Split at the first '('
+                parts = raw_name.split("(", 1)
+                eng_name = parts[0].strip()
+                # Get the content between '(' and ')'
+                local_name = parts[1].split(")", 1)[0].strip()
+                
+                # If the current language is NOT english, show the local part
+                display_name = local_name if lang_code != "eng" else eng_name
+            
             games.append({
-                "id": game_id,
-                "name": name
+                "id": str(counter),
+                "name": display_name
             })
+            counter += 1
             i += 2
         else:
             i += 1
-
     return games
-
 
 
 
 def language_parser(lang_dir: Path, filename: str) -> dict:
     """
-    Parse a VB-style language file into structured data.
-
-    lang_dir : Path to directory containing language txt files
-    filename : e.g. 'eng.txt', 'kor.txt'
+    Parse a VB-style language file into structured data and strip '&' mnemonics.
     """
 
     if not filename.lower().endswith(".txt"):
@@ -318,19 +302,31 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
         raise FileNotFoundError(f"Language file not found: {path}")
 
     with path.open("r", encoding="utf-8") as f:
+        # Read all lines and strip trailing whitespace/newlines
         lines = [line.rstrip("\n") for line in f]
 
     idx = 0
 
     def next_line():
+        """Helper to get next line, remove VB '&' shortcuts, and handle EOF."""
         nonlocal idx
+        if idx >= len(lines):
+            return "" # Return empty string if we reach end of file unexpectedly
+        
         val = lines[idx]
         idx += 1
-        return val
+        
+        # ---------------------------------------------------------
+        # THE FIX: Strip the '&' artefact.
+        # We replace "&&" with a temporary marker if we wanted to preserve 
+        # literal ampersands, but for a standard port, simply removing 
+        # single '&' is the best approach for clean web menus.
+        # ---------------------------------------------------------
+        return val.replace("&", "")
 
     lang = {}
 
-    # --- A. core language strings ---
+    # --- A. Core language strings ---
     lang["lang"] = {
         "app": next_line(),
         "msg": next_line(),
@@ -347,9 +343,9 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
         "statPctalfa": next_line(),
     }
 
-    next_line()  # separator
+    next_line()  # skip separator
 
-    # --- B. menu captions ---
+    # --- B. Menu captions (The ones that showed &Help) ---
     lang["menu"] = {
         "game": next_line(),
         "zoom": next_line(),
@@ -369,15 +365,15 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
         "about": next_line(),
     }
 
-    next_line()  # separator
+    next_line()  # skip separator
 
-    # --- C. dialog buttons ---
+    # --- C. Dialog buttons ---
     lang["dialog"] = {
         "ok": next_line(),
         "cancel": next_line(),
     }
 
-    next_line()  # separator
+    next_line()  # skip separator
 
     lang["statistics"] = {
         "ok": next_line(),
@@ -387,9 +383,9 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
         "lost": next_line(),
     }
 
-    next_line()  # separator
+    next_line()  # skip separator
 
-    # --- D. meta menu ---
+    # --- D. Meta menu (Language, Register, etc.) ---
     lang["meta"] = {
         "language": next_line(),
         "customizing": next_line(),
@@ -399,7 +395,7 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
     return lang
 
 
-from pathlib import Path
+
 
 
 def load_game_rules(
@@ -472,6 +468,7 @@ def parse_all_games(lang_dir):
     games_by_id = {}
     games_by_name = {}
     game_names = []
+    counter = 1
 
     current_name = None
     buffer = []
@@ -482,7 +479,7 @@ def parse_all_games(lang_dir):
 
             if line == "[GAMENAME]":
                 if current_name:
-                    gid = normalize_game_id(current_name)
+                    gid = str(counter)
                     games_by_id[gid] = {
                         "id": gid,
                         "name": current_name,
@@ -490,13 +487,16 @@ def parse_all_games(lang_dir):
                     }
                     games_by_name[current_name] = games_by_id[gid]
                     game_names.append(games_by_id[gid])
+                    counter += 1
+                
                 current_name = next(f).strip()
                 buffer = []
             else:
                 buffer.append(line)
 
+        # Handle the last game in the file
         if current_name:
-            gid = normalize_game_id(current_name)
+            gid = str(counter)
             games_by_id[gid] = {
                 "id": gid,
                 "name": current_name,

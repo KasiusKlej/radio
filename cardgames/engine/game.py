@@ -1,39 +1,24 @@
 # game.py 
-# here are the collected constants, variables,functions and procedures that run a state machine for Card Games 
-from .model import columnX, columnY, orig_card_x_size, orig_card_y_size, gap_x, gap_y, zoom, zoom2, default_overlap_x, default_overlap_y
-from .model import LIST_GAME_LINES, LIST_DECK, GAME_NAME, CURRENT_LANGUAGE, AUTOPLAY_ENABLED, LANG_DIR, DEFAULT_LANG
-from .model import timerNumRepeats, parameter, numOfGames, kup, usedColumns, usedFaceDowns, usermode, selectedCard
-from .model import selectedColumn, destinationColumn, simulateClickMode, singleClickMode, doubleClickMode, actionMode, youWon, clickModeSuceededSoTryAgain, cardJustMoved, nextAvailableFaceDown
-from .model import zap_st_igre
-from .model import Column, Card, TableObject
-from .model import FaceDownOverlay, SelectionOverlay, ColumnSlot 
-from .model import imageFaceDown, ShapeSelektor, ShapeColumns
-from .model import menu_items_slo, menu_items_eng
-from .model import lang_app, lang_msg, lang_youwon, lang_youlost, lang_logo1, lang_logo2, lang_logo3, lang_logo4, lang_statWon, lang_statLost, lang_statPlayed, lang_statPct, lang_statPctalfa
-from .model import frmc1, frmc2, frmc3, frmc4, frmc5, frmc6, frmc7
+from flask import session
+import random
+import uuid
+from pathlib import Path
 
-# engine incorporated...
-from .engine import parse_contents_str, serialize_contents, sync_column_contents, assert_cards_are_objects
-from .engine import card_faces_up, calcColumnXY, card_is_face_up, minmax, param_count_empty, param_count_weight, param_cards_rowed
-from .engine import getGameInfo, hide_previous_requisites, check_allways_facedown_columns, match_specificCol, gather_cards
-from .engine import turn_or_shuffle_column, do_action, check_ifduringaction_condition, do_whole_action
-from .engine import match_alternates, card_faces_up, cardId, cardname, match_crds_suit, match_crds_alternate
-from .engine import try_every_turn_actions, try_if_actions, try_seek_Parameter_actions, check_end_of_game
-
-from .parser import load_games, language_parser, load_game_rules, load_game_names, parse_all_games
-
+# --- Internal Engine Tools ---
+from .engine import sync_column_contents, check_allways_facedown_columns, getGameInfo, column_click, card_DblClick
+# --- Data Models & Constants ---
+from .model import GameState, Card, Column, ColumnSlot, FaceDownOverlay, SelectionOverlay, LANG_DIR, orig_card_x_size, orig_card_y_size, gap_x, gap_y
+# --- Parsers & Shufflers ---
+from .parser import load_games2, language_parser, load_game_rules, load_game_names, parse_all_games, load_gamesVB
 from .shuffler_girl import shuffleDeck
 from .card_dealer import dealCards
 
-from flask import session
-import random
-from .layout_heuristics import apply_game_layout_heuristics
-from pathlib import Path
 
 
+# movable part
 def load_default_language():
     try:
-        return language_parser(LANG_DIR, DEFAULT_LANG)
+        return language_parser(LANG_DIR, "eng")
     except Exception as e:
         # LAST LINE OF DEFENSE — app must not crash because of language
         print("Language load failed:", e)
@@ -50,163 +35,738 @@ def load_default_language():
             "meta": {},
         }
 
-#out of phase
 CURRENT_LANGUAGE = load_default_language()      # this is out of phase, should be phase 0
+
+
+
+
+# Game manager - a way to store these objects in the server memory, separated by a unique "Session ID."
+active_games = {} # Key: SessionID, Value: GameState object
+def get_my_game():
+    session_id = session.get('user_sid')
+    if session_id not in active_games:
+        # Create a new instance specifically for this user
+        active_games[session_id] = GameState(game_id="default", player_id=session_id)
+    return active_games[session_id]
+
+def to_px(value):
+    """
+    The 'Smart Bridge' helper - Revised for negative numbers.
+    - Handles 'Fortress' (negative spreads)
+    - Handles 'FreeCell' (small pixel spreads)
+    - Handles 'Four Seasons' (large twip spreads)
+    """
+    try:
+        v_str = str(value).strip()
+        if not v_str or v_str == "-1":
+            return -1
+        
+        val = int(v_str)
+        if val == 0:
+            return 0
+            
+        # We check the ABSOLUTE value for the threshold
+        # If the magnitude is > 24, it's a Twip (positive or negative)
+        if abs(val) > 24:
+            # We use float division then cast to int to match VB 'Fix' behavior
+            # e.g., -300 / 15 = -20
+            return int(val / 15)
+            
+        # Otherwise, it's a small Pixel value
+        return val
+    except (ValueError, TypeError):
+        return 0
+        
+
+# -------------------------------------------------
+# PHASE 0: Language Handling (Session-Safe)
+# -------------------------------------------------
+
+def get_language_dict(lang_code="eng"):
+    """
+    Retrieves language strings. No longer uses a global variable.
+    """
+    try:
+        return language_parser(LANG_DIR, lang_code)
+    except Exception as e:
+        print(f"Language load failed for {lang_code}, falling back to English: {e}")
+        return {
+            "lang": {"app": "Card Games", "youwon": "You Won!", "youlost": "You Lost!"},
+            "menu": {}, "dialog": {"ok": "OK", "cancel": "Cancel"}
+        }
+
+# -------------------------------------------------
+# CardGame Controller
+# -------------------------------------------------
 
 class CardGame:
     """
-    Single source of truth for:
-    - column semantics (role)
-    - layout metadata (row, overlap)
-    - card state
+    The Engine Controller. 
+    It 'owns' a GameState and provides methods to manipulate it.
     """
-    #TICK_INTERVAL = 1 / 24  # seconds
+    def __init__(self, game_id, session_id=None, from_snapshot=None):
+        # 1. Initialize the State (The container for all Brazilian/Korean data)
+        # We ensure the session ID is linked immediately.
+        sid = session_id or session.get('user_sid')
+        self.state = GameState(game_id, sid)
+        
+        print(f"DEBUG: Initializing game controller for ID: {game_id}")
+
+        if from_snapshot:
+            # Reconstruct from browser save
+            self._load_from_dict(from_snapshot)
+        else:
+            # This is the ONLY entry point for a fresh game.
+            # We call the faithful VB port directly.
+            self._start_new_game(game_id)
 
 
-# -------------------------------------------------
-# entry point somewhere between phase 1 and 2
-# -------------------------------------------------
-    def __init__(self, game_id):
+    # def __init__(self, game_id, session_id=None, from_snapshot=None):
+    #     # 1. Initialize the State (The Big Move)
+    #     # This object holds ALL player-specific data.
+    #     #self.state = GameState(game_id, session_id)
 
-        # ---- PHASE 2: pre-Form_Load (VB global setup) ----
-        global zap_st_igre, GAME_NAME, LIST_GAME_LINES
+    #     self.state = GameState(game_id, session.get('user_sid'))
+    #     print(f"DEBUG: Initializing game {game_id}")
 
-        zap_st_igre = game_id
-        self.game_id = game_id
-        self.name = ""
-        self.timers = []
+    #     if from_snapshot:
+    #         # Reconstruct state from a saved dictionary (JSON from frontend)
+    #         self._load_from_dict(from_snapshot)
+    #     else:
+    #         # Start a fresh game
+    #         self._initialize_new_game(game_id)
 
-        # STATIC GAME DATA (read once per game start, not per action)
-        LIST_GAME_LINES = load_games()          # ZERO arguments, single source
+    # def _initialize_new_game(self, game_id):
+    #     """VB Phase 1 & 2: Setup memory and load script."""
+        
+    #     # Set session-based defaults
+    #     self.state.zap_st_igre = game_id
+    #     self.state.CURRENT_LANGUAGE = session.get("lang", "eng")
+        
+    #     # Load the game definition from the text file (numeric index lookup)
+    #     # We pass self.state so the parser can fill LIST_GAME_LINES and GAME_NAME
+    #     self._load_game_definition(game_id)
 
-        # Extract this game's definition
-        self.load_game()                        # sets GAME_NAME, trims LIST_GAME_LINES
+    #     # Initialize engine flags to starting values
+    #     self._vb_init_globals()
 
-        # Initialize VB-style globals
-        self._vb_init_globals()
+    #     # VB Phase 3: Shuffling and Dealing
+    #     shuffleDeck(self.state)  # Pass state to shuffler
+    #     dealCards(self.state)    # Pass state to dealer
 
-        # ---- PHASE 3: start game (VB Form_Load) ----
-        self.autoplay_enabled = False
-        self._start_new_game()
+    #     # Setup visual coordinates and overlays
+    #     self.prepareRequisites()
 
-
-    # inside class CardGame
-
-    # def _start_new_game(self):
-    #     global (
-    #         simulateClickMode, singleClickMode, doubleClickMode, actionMode,
-    #         youWon, nextAvailableFaceDown,
-    #         zoom, zoom2,
-    #         numOfGames
-    #     )
-
-    #     # input modes
-    #     simulateClickMode = False
-    #     singleClickMode = False
-    #     doubleClickMode = False
-    #     actionMode = False
-
-    #     # game state
-    #     youWon = False
-    #     nextAvailableFaceDown = 0
-
-    #     # zoom
-    #     zoom = 1
-    #     zoom2 = 1
-
-    #     # hourglass equivalent could be frontend later
-
-    #     # deck + statistics
-    #     initDeck()
-    #     statistics("no game started", "load", 0, 0, 0)
-
-    #     # gather cards (VB semantics)
-    #     gather_cards()
-
-    #     # menu/game counters
-    #     numOfGames = 0
-
-    #     # autoplay default
-    #     self.autoplay_enabled = False
-
+    def _load_game_definition(self, game_id):
+        """
+        Equivalent to VB Phase 2. 
+        Loads specific lines for the chosen game into self.state.
+        """
+        filepath = LANG_DIR / "CardGames-utf8.txt"
+        # We reuse the logic we wrote earlier to find the N-th game
+        lines, actions = getGameInfo(game_id, filepath)
+        
+        self.state.LIST_GAME_LINES = lines
+        if lines:
+            # Usually the name is on the second line of the block
+            self.state.GAME_NAME = lines[1].strip()
+            self.state.name = self.state.GAME_NAME
 
     def _vb_init_globals(self):
-        global kup, parameter, youWon
-        global selectedCard, selectedColumn, destinationColumn
-        global simulateClickMode, singleClickMode, doubleClickMode
-        global actionMode, clickModeSuceededSoTryAgain
-        global cardJustMoved, nextAvailableFaceDown
+        """
+        Sets all engine flags inside self.state.
+        Replaces 'global' variables with instance variables.
+        """
+        s = self.state
+        s.youWon = False
+        s.selectedCard = -1
+        s.selectedColumn = -1
+        s.destinationColumn = -1
+        s.usermode = 0
+        s.actionMode = False          #patched
+        s.nextAvailableFaceDown = 0
+        s.parameter = [0] * 21
+        s.autoplay_enabled = False
 
-        kup.clear()
-        parameter.clear()
-
-        youWon = False
-        selectedCard = -1
-        selectedColumn = -1
-        destinationColumn = -1
-
-        simulateClickMode = False
-        singleClickMode = False
-        doubleClickMode = False
-        actionMode = False
-        clickModeSuceededSoTryAgain = False
-        cardJustMoved = False
-        nextAvailableFaceDown = 0
-
+    
     def prepareRequisites(self):
         """
-        VB: prepareRequisites
-        Initializes visual table actors:
-        - column slots
-        - selection overlay
-        - persistent face-down overlays
+        VB: prepareRequisites. 
+        Stages the visual 'actors' (slots and overlays) based on column data.
         """
+        s = self.state
+        s.ShapeColumns = []
+        s.imageFaceDown = []
+        s.ShapeSelektor.visible = False
+        s.nextAvailableFaceDown = 0 # Reset counter
 
-        # reset globals (VB-style shared visual actors)
-        ShapeColumns.clear()
-        imageFaceDown.clear()
+        for i, col in enumerate(s.kup):
+            # 1. Skip columns that don't have a valid position
+            if not col.position:
+                continue
 
-        # reset facedown tracking
-        global nextAvailableFaceDown, usedColumns
-        nextAvailableFaceDown = 0
-
-        # selector hidden at start
-        ShapeSelektor.visible = False
-
-        # --- create column slots ---
-        for i, col in enumerate(self.kup):
             slot = ColumnSlot(column_index=i)
+            
+            # 2. Geometry Resolution (The 'Big Move' fix)
+            try:
+                pos = int(col.position)
+            except ValueError:
+                pos = 0
 
-            pos = int(col.position)
-
-            slot.top = col.custom_y if col.custom_y != -1 else columnY[pos]
-            slot.left = col.custom_x if col.custom_x != -1 else columnX[pos]
-
+            # Use the state's calculated X/Y grid or the custom override
+            slot.left = col.custom_x if col.custom_x != -1 else s.columnX[pos]
+            slot.top = col.custom_y if col.custom_y != -1 else s.columnY[pos]
             slot.visible = True
+            # THE COSTUME CHECK
+            # Transfer settings from the Column (Data) to the Slot (Actor)
+            slot.backstyle = col.backstyle
+            slot.backcolor = col.backcolor
+        
+            s.ShapeColumns.append(slot)
 
-            # appearance overrides
-            if col.backstyle != "-1":
-                slot.backstyle = col.backstyle
-            if col.backcolor != "-1":
-                slot.backcolor = col.backcolor
-
-            ShapeColumns.append(slot)
-
-        usedColumns = len(ShapeColumns) - 1
-
-        # --- persistent face-down columns ---
-        for i, col in enumerate(self.kup):
+            # 3. Handle Face-Down Overlays (Spelling check: allways_facedown)
             if col.allways_facedown == "1":
                 fd = FaceDownOverlay()
                 fd.visible = True
-                fd.top = ShapeColumns[i].top
-                fd.left = ShapeColumns[i].left
+                fd.left = slot.left
+                fd.top = slot.top
+                # Link it to the card logic
+                fd.card_code = col.contents[-1].code if col.contents else ""
+                
+                s.imageFaceDown.append(fd)
+                s.nextAvailableFaceDown += 1
 
-                imageFaceDown.append(fd)
-                nextAvailableFaceDown += 1
+                
 
-        # ensure facedowns are stacked correctly
-        check_allways_facedown_columns()
+
+    # ------------------------------------------------------
+    # Animation Ticks (Server-side simulation)
+    # ------------------------------------------------------
+    
+    def gather_cards(self):
+        """Initializes the gather sequence."""
+        if not self.state.animate_enabled:
+            self._snap_cards_to_deck()
+            return
+
+        # 3 seconds at 24 frames per second
+        self.state.timer_repeats = 3 * 24
+
+        # Instead of self.timers, we use our state's timer list
+        from .model import EngineTimer
+        self.state.timers.append(
+            EngineTimer(
+                interval=1/24,
+                repeats=self.state.timer_repeats,
+                callback=self._gather_step # Passing the method as a callback
+            )
+        )
+
+    def _gather_step(self):
+        """
+        VB: TimerAnimate_Timer() logic.
+        Calculates one frame of cards flying toward the deck.
+        """
+        s = self.state
+        s.timer_repeats -= 1
+
+        if s.timer_repeats <= 0:
+            self._snap_cards_to_deck()
+            return
+
+        # Move one random card per tick (Faithful to your VB code)
+        import random
+        r = random.randint(0, 51)
+        
+        # We need access to the actual Card objects to update their coordinates
+        # assuming all cards are stored in a master list for animation
+        # (This would be your list of 52 card objects)
+        all_cards = [] 
+        for col in s.kup: all_cards.extend(col.contents)
+
+        if len(all_cards) > r:
+            card = all_cards[r]
+            target_x = s.columnX[0] # Usually position 0 is the deck
+            target_y = s.columnY[0]
+
+            factor = s.timer_repeats / 72
+            # The math: CurrentPos = Target + (Start - Target) * Factor
+            # This makes the card "slide" into the deck
+            # Note: Card coordinates must be in the Card object or GameState
+            # We will assume they are in card.x and card.y
+            if hasattr(card, 'x'):
+                card.x = target_x + (card.x - target_x) * factor
+                card.y = target_y + (card.y - target_y) * factor
+
+
+    def _snap_cards_to_deck(self):
+        """Finalizes the animation by snapping everything to (0,0)."""
+        s = self.state
+        target_x = s.columnX[0]
+        target_y = s.columnY[0]
+
+        for col in s.kup:
+            for card in col.contents:
+                card.x = target_x
+                card.y = target_y
+
+        # Sync the facedown overlay (The deck back)
+        if len(s.imageFaceDown) > 0:
+            s.imageFaceDown[0].left = target_x
+            s.imageFaceDown[0].top = target_y
+            s.imageFaceDown[0].visible = True
+
+
+    def do_action(self, act: str) -> bool:
+        """
+        VB Port: do_action
+        The interpreter for the game's script language. 
+        Operates exclusively on self.state.
+        """
+        s = self.state
+        success = False
+        
+        # Import engine tools needed for these actions
+        from .engine import (
+            turn_or_shuffle_column, move_condition, 
+            param_count_empty, param_cards_rowed, 
+            param_count_weight, minmax, 
+            check_ifduringaction_condition
+        )
+
+        # ----------------------------
+        # movecolumn=X-Y (Move whole column)
+        # ----------------------------
+        if act.startswith("movecolumn="):
+            ac_body = act[len("movecolumn="):]
+            csource, cdest = map(int, ac_body.split("-"))
+
+            s.actionMode = True
+            s.simulateClickMode = True
+
+            if s.kup[csource].weight > 0:
+                # We call the move_column method we ported earlier
+                success = self.move_column(csource, cdest, s.kup[csource].weight)
+
+            s.actionMode = False
+            s.simulateClickMode = False
+
+        # ----------------------------
+        # turncolumn=X / shufflecolumn=X
+        # ----------------------------
+        elif act.startswith("turncolumn="):
+            col_idx = int(act[len("turncolumn="):])
+            success = turn_or_shuffle_column(s, col_idx, mode="turn")
+
+        elif act.startswith("shufflecolumn="):
+            col_idx = int(act[len("shufflecolumn="):])
+            success = turn_or_shuffle_column(s, col_idx, mode="shuffle")
+
+        # ----------------------------
+        # movepile=N,X-Y (Move top N cards)
+        # ----------------------------
+        elif act.startswith("movepile="):
+            ac_body = act[len("movepile="):]
+            n_str, rest = ac_body.split(",", 1)
+            n = int(n_str)
+            csource, cdest = map(int, rest.split("-"))
+
+            s.actionMode = True
+            s.simulateClickMode = True
+
+            actual_n = min(n, s.kup[csource].weight)
+            if actual_n > 0:
+                success = self.move_column(csource, cdest, actual_n)
+
+            s.actionMode = False
+            s.simulateClickMode = False
+
+        # ----------------------------
+        # trymovepile=MAX,SRC-DEST
+        # ----------------------------
+        elif act.startswith("trymovepile="):
+            ac_body = act[len("trymovepile="):]
+            max_part, col_range = ac_body.split(",", 1)
+            
+            # Resolve if max is a raw number or a parameter
+            if max_part.startswith("parameter"):
+                p_idx = int(max_part[9:11])
+                max_cards = s.parameter[p_idx]
+            else:
+                max_cards = int(max_part)
+
+            src_str, dest_str = col_range.split("-")
+            csource = s.selectedColumn if src_str == "selected" else int(src_str)
+            cdest = int(dest_str)
+
+            if s.kup[csource].weight > 0:
+                how_many = 0
+                cards = list(s.kup[csource].contents)
+
+                # Look for a sequence of cards that can move together
+                for i in range(min(len(cards), max_cards)):
+                    card = cards[-(i + 1)]
+                    # Logic: Is the i-th card allowed to land on cdest?
+                    if move_condition(s, card.code, csource, cdest) and card.face_up:
+                        how_many = i + 1
+                    else:
+                        # In many card games, if the 3rd card can't move, 
+                        # the 4th card behind it certainly can't.
+                        break
+
+                if how_many > 0:
+                    success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
+
+        # ----------------------------
+        # parameter management (The Game's Variables)
+        # ----------------------------
+        elif act.startswith("parameter") or act.startswith("setparameter="):
+            # Clean the string
+            clean_act = act[len("setparameter="):] if act.startswith("setparameter=") else act
+            
+            p_idx = int(clean_act[9:11])
+            expr = clean_act[12:]
+            success = True
+
+            if expr.isdigit():
+                s.parameter[p_idx] = int(expr)
+            elif expr.startswith("countempty"):
+                s.parameter[p_idx] = param_count_empty(s, expr[10:])
+            elif expr.startswith("cardsrowed("):
+                col = s.selectedColumn if "selected" in expr else int(expr[11:-1])
+                s.parameter[p_idx] = param_cards_rowed(s, col)
+            elif expr.startswith("min(") or expr.startswith("max("):
+                fn = expr[:3]
+                val_a, val_b = expr[4:-1].split(",")
+                s.parameter[p_idx] = minmax(s, fn, val_a, val_b)
+            elif expr.startswith("source_column"):
+                s.parameter[p_idx] = s.selectedColumn
+            elif expr.startswith("weight_of"):
+                s.parameter[p_idx] = param_count_weight(s, expr[9:])
+            else:
+                success = False
+
+        # ----------------------------
+        # Logic: increase(parameterX)
+        # ----------------------------
+        elif act.startswith("increase(parameter"):
+            p_idx = int(act[18:-1])
+            s.parameter[p_idx] += 1
+            success = True
+
+        # ----------------------------
+        # Conditionals: ifduringaction(COND, ACTION)
+        # ----------------------------
+        elif act.startswith("ifduringaction("):
+            content = act[15:]
+            cond_str, subact = content.split(")", 1)
+            subact = subact.lstrip(",")
+
+            if check_ifduringaction_condition(s, cond_str):
+                success = self.do_action(subact)
+
+        # ----------------------------
+        # Recursion: whole action block [ActionName]
+        # ----------------------------
+        elif act.startswith("["):
+            self.do_whole_action(act)
+            success = True
+
+        # ----------------------------
+        # post-action maintenance
+        # ----------------------------
+        if success:
+            from .engine import check_allways_facedown_columns
+            check_allways_facedown_columns(s)
+
+        return success
+
+
+    def do_whole_action(self, action_name: str) -> bool:
+        """
+        VB Port: do_whole_action
+        Executes a sequence of commands labeled in the script as [action_name].
+        """
+        s = self.state
+        success = False
+
+        if action_name.startswith("["):
+            # We look into the player's private list of script lines
+            lines = s.LIST_GAME_LINES
+            i = 0
+            
+            # 1. Find the header
+            while i < len(lines) and lines[i].strip() != action_name:
+                i += 1
+            
+            if i >= len(lines):
+                return False # Action not found in this game's definition
+
+            i += 1 # Move past the header
+            
+            # 2. Execute lines until we hit another [header] or the end
+            while i < len(lines):
+                line = lines[i].strip()
+                if not line or line.startswith("#"): 
+                    i += 1
+                    continue
+                if line.startswith("["): 
+                    break
+                
+                # Execute individual DSL command
+                success = self.do_action(line)
+                i += 1
+        else:
+            # Standalone action (e.g., movepile=1,0-1)
+            success = self.do_action(action_name)
+
+        return success
+
+    def _parse_cols_arg(self, cols_input):
+        """Helper: Parses '(1,2,3)' or '5' into a list of integers."""
+        if not cols_input: return []
+        s = str(cols_input).replace("(", "").replace(")", "").strip()
+        if "," in s:
+            return [int(c.strip()) for c in s.split(",") if c.strip().isdigit()]
+        return [int(s)] if s.isdigit() else []
+
+    def param_count_empty(self, cols_input):
+        """Action: countempty(cols)"""
+        count = 0
+        for c_idx in self._parse_cols_arg(cols_input):
+            if 0 <= c_idx < len(self.state.kup):
+                if self.state.kup[c_idx].weight == 0:
+                    count += 1
+        return count
+
+    def param_count_weight(self, cols_input):
+        """Action: weight_of(cols)"""
+        count = 0
+        for c_idx in self._parse_cols_arg(cols_input):
+            if 0 <= c_idx < len(self.state.kup):
+                count += self.state.kup[c_idx].weight
+        return count
+
+    def param_cards_rowed(self, col_idx):
+        """
+        Action: cardsrowed(col)
+        Checks how many cards at the top of a column follow the sequence rules.
+        """
+        s = self.state
+        if not (0 <= col_idx < len(s.kup)): return 0
+        
+        column = s.kup[col_idx]
+        if column.weight <= 1: return column.weight
+
+        # Check from top down
+        cards = list(column.contents)
+        cards.reverse() # Top is now at index 0
+        
+        row_count = 1
+        for i in range(len(cards) - 1):
+            # Check if card i can be placed on card i+1 (the card under it)
+            # using the column's specific suit/alternate rules
+            if self.match_alternates(col_idx, cards[i].code):
+                row_count += 1
+            else:
+                break
+        return row_count
+    
+    def try_every_turn_actions(self):
+        """
+        VB Port: try_every_turn_actions
+        The 'Autoplay' engine. It loops as long as it finds valid automatic moves.
+        """
+        s = self.state
+        # We limit loops to prevent potential infinite script loops
+        max_loops = 50 
+        
+        while max_loops > 0:
+            s.clickModeSuceededSoTryAgain = False
+            lines = s.LIST_GAME_LINES # Our script block
+
+            for line in lines:
+                line = line.strip()
+                if line.startswith("every_turn=") and s.autoplay_enabled:
+                    action_cmd = line[11:]
+
+                    if action_cmd.startswith("["):
+                        self.do_whole_action(action_cmd)
+                    elif action_cmd.startswith("parameter"):
+                        self.do_action(action_cmd)
+                    else:
+                        # Standard x-y move (e.g., 0-1)
+                        try:
+                            src_idx, dst_idx = map(int, action_cmd.split("-"))
+                            source_col = s.kup[src_idx]
+                            
+                            if source_col.contents:
+                                top_card = source_col.contents[-1]
+                                
+                                # Simulate clicks to move the card
+                                s.simulateClickMode = True
+                                self.column_click(src_idx, top_card.code)
+                                self.column_click(dst_idx, top_card.code)
+                                s.simulateClickMode = False
+                        except Exception:
+                            continue
+                
+                if line == "[FINISH]": break
+            
+            if not s.clickModeSuceededSoTryAgain:
+                break
+            max_loops -= 1
+
+        self.try_if_actions()
+
+    def try_if_actions(self):
+        """
+        VB Port: try_if_actions
+        Evaluates 'if(condition)then[Action]' blocks.
+        """
+        s = self.state
+        for line in s.LIST_GAME_LINES:
+            line = line.strip()
+            if not line.startswith("if("):
+                if line == "[FINISH]": break
+                continue
+
+            # Parsing: if(empty_columns=1,2,3)then[MoveToFound]
+            try:
+                cond_part = line[line.find("(")+1 : line.find(")")]
+                then_part = line[line.find(")then")+5 :]
+                
+                met = False
+                if cond_part.startswith("empty_columns="):
+                    met = (self.param_count_empty(cond_part[14:]) == 0) # Wait, logic check: VB usually meant 'all these are empty'
+                    # If you want 'Are ALL these empty?', use count_empty == len(cols)
+                    
+                elif cond_part.startswith("parameter"):
+                    p_idx = int(cond_part[9:11])
+                    expr = cond_part[cond_part.find("=")+1:]
+                    val = s.parameter[p_idx]
+                    if expr.startswith(">"): met = val >= int(expr[1:])
+                    elif expr.startswith("<"): met = val <= int(expr[1:])
+                    else: met = val == int(expr)
+
+                if met:
+                    self.do_whole_action(then_part)
+            except:
+                continue
+
+    def check_end_of_game(self):
+        """
+        VB Port: check_end_of_game
+        Checks [VICTORY] and [DEFEAT] conditions.
+        """
+        s = self.state
+        if s.youWon: return # Only win once per game
+
+        lines = s.LIST_GAME_LINES
+        
+        # Helper to find a block and check its 'empty_columns' rule
+        def check_block(header):
+            i = 0
+            while i < len(lines) and lines[i].strip() != header:
+                i += 1
+            if i < len(lines) - 1:
+                cond_line = lines[i+1].strip()
+                if cond_line.startswith("empty_columns="):
+                    # If the specified columns are all empty, condition is met
+                    col_str = cond_line[14:]
+                    cols = [int(c.strip()) for c in col_str.split(",")]
+                    return all(s.kup[c].weight == 0 for c in cols)
+            return False
+
+        # Check Victory
+        if check_block("[VICTORY]"):
+            s.youWon = True
+            s.game_message = s.lang_youwon
+            print(f"Victory detected for player {s.session_id}")
+            # statistics(s.name, "win") logic here
+
+        # Check Defeat
+        elif check_block("[DEFEAT]"):
+            s.youWon = True # Mark as game over
+            s.game_message = "You lost!"
+            print(f"Defeat detected for player {s.session_id}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # -------------------------------------------------
+    # State Serialization (to/from Frontend)
+    # -------------------------------------------------
+
+    def to_dict(self):
+        """Calls the GameState's to_dict to package data for JS."""
+        # Ensure cards are synced with strings before sending
+        for col in self.state.kup:
+            sync_column_contents(self.state, col)
+        return self.state.to_dict()
+   
+
+    @staticmethod
+    def from_dict(data, session_id):
+        """
+        RECONSTRUCTION: Rebuilds the engine from a JSON snapshot.
+        """
+        # 1. Create a skeleton game
+        g = CardGame(data["game_id"], session_id=session_id)
+        s = g.state
+        
+        s.GAME_NAME = data.get("name", "")
+        s.autoplay_enabled = data.get("autoplay_enabled", False)
+        s.selectedCard = data.get("selected_card_code", -1)
+        s.usermode = data.get("usermode", 0)
+        s.actionMode = data.get("actionMode", False)
+        s.rules_of_currently_played_game = data.get("rules", "")
+
+        # 2. Rebuild Columns and Cards
+        s.kup = []
+        for col_data in data.get("kup", []):
+            col = Column(index=col_data["index"])
+            col.column_name = col_data["name"]
+            col.x, col.y = col_data["x"], col_data["y"]
+            col.overlap_x = col_data["overlap_x"]
+            col.overlap_y = col_data["overlap_y"]
+            col.allways_facedown = col_data.get("allways_facedown", "-1")
+            
+            for c_data in col_data.get("cards", []):
+                card = Card(c_data["code"], face_up=c_data["face_up"])
+                col.contents.append(card)
+            
+            col.weight = len(col.contents)
+            s.kup.append(col)
+            
+        return g
+
+
+    # -------------------------------------------------
+    # Engine Actions
+    # -------------------------------------------------
+
+    def move_card(self, from_col_idx, to_col_idx, card_code):
+        """
+        The main entry point for a player's 'wish'.
+        Checks conditions and executes movement.
+        """
+        # Example of calling an engine function with the state
+        # if move_condition(self.state, card_code, from_col_idx, to_col_idx):
+        #     execute_move(self.state, ...)
+        #     return True
+        return False
+
 
 
 
@@ -215,284 +775,273 @@ class CardGame:
     # -------------------------------------------------
     # Load & semantics
     # -------------------------------------------------
-    # def load_game_definition(game_id):
-    #     current_name = None
-    #     buffer = []
-    #     games = {}
-
-    #     with open(LANG_DIR / "CardGames-utf8.txt", encoding="utf-8") as f:
-    #         for line in f:
-    #             line = line.rstrip()
-
-    #             if line == "[GAMENAME]":
-    #                 if current_name:
-    #                     gid = normalize_game_id(current_name)
-    #                     games[gid] = buffer
-    #                 current_name = next(f).strip()
-    #                 buffer = []
-    #             else:
-    #                 buffer.append(line)
-
-    #         if current_name:
-    #             gid = normalize_game_id(current_name)
-    #             games[gid] = buffer
-
-    #     if game_id not in games:
-    #         raise ValueError(f"Game definition not found for id '{game_id}'")
-
-    #     return games[game_id], current_name
-
 
     def load_game(self):
-        global LIST_GAME_LINES, GAME_NAME
-
-        lines = LIST_GAME_LINES
+        """
+        Extracts the specific game definition from the master list.
+        Uses self.state to store results.
+        """
+        # Get local reference to the player's specific state data
+        lines = self.state.LIST_GAME_LINES
+        target_id = str(self.state.zap_st_igre) 
+        
         i = 0
+        current_game_index = 0
         found = False
         game_lines = []
 
         while i < len(lines):
             line = lines[i].strip()
-            i += 1
 
             if line == "[GAMENAME]":
-                name = lines[i].strip()
-                i += 1
+                current_game_index += 1  # Increment game counter (1, 2, 3...)
 
-                if name == zap_st_igre:
-                    GAME_NAME = name
-                    self.name = name
+                if str(current_game_index) == target_id:
+                    # We found the N-th game!
+                    name = lines[i + 1].strip()
+                    self.state.GAME_NAME = name
+                    self.state.name = name
                     found = True
 
-                    # collect game block
+                    # --- START CAPTURING THE GAME BLOCK ---
+                    game_lines.append(lines[i])
+                    game_lines.append(lines[i+1])
+                    i += 2
+
                     while i < len(lines):
-                        s = lines[i].strip()
-                        if s.startswith("[") and s.endswith("]"):
+                        if lines[i].strip() == "[GAMENAME]":
                             break
-                        game_lines.append(s)
+                        game_lines.append(lines[i])
                         i += 1
                     break
+            i += 1
 
         if not found:
-            raise ValueError(f"Game not found: {zap_st_igre}")
+            raise ValueError(f"Numeric game index {target_id} not found in file.")
 
-        # Replace LIST_GAME_LINES with this game's definition
-        LIST_GAME_LINES = game_lines
+        # Replace player's LIST_GAME_LINES with only their game's definition
+        self.state.LIST_GAME_LINES = game_lines
 
 
+    # load game rules
+    def _load_rules_to_state(self):
+        """
+        Reads the rules from the language file and stores them 
+        directly in the player's state.
+        """
+        from .parser import load_game_rules
+        from .model import LANG_DIR
+        
+        # Get session language
+        lang = self.state.CURRENT_LANGUAGE 
+        
+        # We need the language dictionary for the 'logos'
+        lang_data = get_language_dict(lang)
+        lang_vars = lang_data.get('lang', {})
 
-    def _start_new_game(self):
-        global youWon, cardJustMoved, zap_st_igre
+        rules_text = load_game_rules(
+            gamename=self.state.GAME_NAME,
+            language=lang,
+            lang_dir=LANG_DIR,
+            list_game=self.state.LIST_GAME_LINES,
+            lang_vars=lang_vars
+        )
+        
+        self.state.rules_of_currently_played_game = rules_text
+
+    # def _start_new_game(self, game_id):
+    #     """
+    #     VB Form_Load equivalent.
+    #     Called exactly once to initialize the table.
+    #     """
+    #     s = self.state # Short reference for cleaner code
+        
+    #     # ------------------------------------------------------------
+    #     # VB → Python Migration Tracker (Preserved for your orientation)
+    #     # #### irrelevant / intentionally not ported
+    #     # ###  ported & working
+    #     # ##   planned, not ported yet
+    #     # #    decision pending
+    #     # ------------------------------------------------------------
+
+    #     #### statistics(gamename, "modify", 0, 0, 1)
+    #     # (statistics system will be ported later)
+
+    #     ### gamename
+    #     # Already mapped → self.state.name
+
+    #     ### youWon
+    #     s.youWon = False  # VB Boolean → Boolean inside State
+
+    #     ### Form1.Caption
+    #     # Ported → HTML <title> (via Flask template)
+
+    #     #### menu enabling
+    #     # mnuStatistics.Enabled, mnuRules.Enabled
+    #     # (menus handled by web navigation, not state)
+
+    #     #### TimerAnimate
+    #     # Web animations handled via CSS/JS
+
+    #     ### cardJustMoved
+    #     # Will be used by engine for move validation
+    #     s.cardJustMoved = False
+
+    #     ## Screen.MousePointer
+    #     # Ported conceptually → CSS cursor: wait on body.busy
+
+    #     ### hidePreviousRequsites
+    #     # Not applicable (DOM handles visibility)
+    #     # hide_previous_requisites() 
+
+    #     ### getGameInfo
+    #     # This is now handled by load_game() above which populates s.LIST_GAME_LINES
+
+    #     ### calcColumnXY
+    #     # This function should be updated to: calcColumnXY(self.state)
+    #     # from .engine import calcColumnXY
+    #     # calcColumnXY(s)
+
+    #     ### prepareColumns
+    #     print(f"DEBUG: prepare columns")        
+    #     self._prepare_columns() # Should be a method that populates s.kup
+                
+    #     ### prepareRequisites
+    #     # sets up visual actors in s.ShapeColumns and s.imageFaceDown
+    #     self.prepareRequisites()
+        
+    #     ### shuffleDeck
+    #     # Correct Syntax: pass the state object
+    #     shuffleDeck(s)
+
+    #     ### dealCards
+    #     # Correct Syntax: pass the state object
+    #     dealCards(s)
+
+    #     # debug        
+    #     total_on_table = sum(len(col.contents) for col in s.kup)
+    #     print(f"DEBUG: After deal, total cards in 'kup': {total_on_table}")        
+
+    #     # --- Debug info (Server Console) ---
+    #     total_cards_on_table = sum(len(col.contents) for col in s.kup)
+    #     print(f"Game Started: {s.name} (ID: {s.zap_st_igre})")
+    #     print(f"Total cards on table: {total_cards_on_table}")
+        
+    #     # 🔒 critical invariant enforcement
+    #     for col in s.kup:
+    #         sync_column_contents(col)
+      
+    #     ## check_allways_facedown_columns
+    #     # Updated to take state
+    #     check_allways_facedown_columns(s)
+
+    #     ## do_whole_action("[autostart]")
+    #     # Engine-driven automation (future)        
+
+    def _start_new_game(self, game_id):
         """
         VB Form_Load equivalent.
-        Called exactly once.
+        This is the MASTER function where the game logic river flows.
         """
+        s = self.state 
         
+        # --- STEP 1: SETUP MEMORY & SCRIPT (Old Phase 1 & 2) ---
+        s.zap_st_igre = game_id
+        s.CURRENT_LANGUAGE = session.get("lang", "eng")
         
-        # ------------------------------------------------------------
-        # VB → Python Migration Tracker
-        # #### irrelevant / intentionally not ported
-        # ###  ported & working
-        # ##   planned, not ported yet
-        # #    decision pending
-        # ------------------------------------------------------------
-
-        #### statistics(gamename, "modify", 0, 0, 1)
-        # (statistics system will be ported later)
-
-        ### gamename
-        # Already mapped → game.name
-
-        ### youWon
-        youWon = 0  # VB Boolean → int/boolean (global model citizen)
-
-        ### Form1.Caption
-        # Ported → HTML <title> (via Flask template)
-
-        #### menu enabling
-        # mnuStatistics.Enabled, mnuRules.Enabled
-        # (menus handled by web navigation, not state)
-
-        #### TimerAnimate
-        # Web animations handled via CSS/JS
-
-        ### cardJustMoved
-        # Will be used by engine for move validation
-        cardJustMoved = 0
-
-        ## Screen.MousePointer
-        # Ported conceptually → CSS cursor: wait
-        # Future usage:
-        # setBusy(true);
-        # // start animation / fetch / deal
-        # setBusy(false);
-        # self.gather_cards()         # experimental
+        # Load the specific text lines for this game into s.LIST_GAME_LINES
+        self._load_game_definition(game_id) 
         
-        ### hidePreviousRequsites
-        # Not applicable (DOM handles visibility)
-        hide_previous_requisites()
+        # --- STEP 2: INITIALIZE GLOBALS (VB-style) ---
+        self._vb_init_globals() # Sets s.youWon = False, s.usermode = 0, etc.
+        s.cardJustMoved = False
+        s.name = s.GAME_NAME # Map the loaded name
+        self._load_rules_to_state() #game rules
 
-        ### getGameInfo
-        GAMES_FILE = Path(__file__).parent.parent / "games" / "CardGames-utf8.txt"
-        getGameInfo(zap_st_igre, GAMES_FILE)        # zap_st_igre is set within session
-
-        ### calcColumnXY
-        calcColumnXY()
-
-        ### prepareColumns
-        self._prepare_columns()
+        # --- STEP 3: GEOMETRY & PARSING ---
+        from .engine import calcColumnXY, check_allways_facedown_columns, sync_column_contents
+        
+        # Calculate X/Y grid based on the constants
+        calcColumnXY(s)
+        
+        print(f"DEBUG: prepare columns")
+        # Parse the [COLUMNS] section from the script into s.kup
+        self._prepare_columns() 
                 
-        ### prepareRequisites
-        # sets up visual actors
+        # Setup visual actors (overlays, selectors)
         self.prepareRequisites()
         
-        ### shuffleDeck
-        shuffleDeck()
+        # --- STEP 4: CARDS IN MOTION ---
+        # 1. Create the physical deck objects
+        self._create_deck() 
         
-        ### dealCards
-        dealCards(self)
-        
-        #debug
-        print("Deck size after deal:", len(LIST_DECK))        
-        total_cards_on_table = sum(len(col.contents) for col in self.kup)
-        print("Total cards on table:", total_cards_on_table)
-        for i, col in enumerate(self.kup):
-            print(
-                f"Column {i}:",
-                [card.code if hasattr(card, "code") else card for card in col.contents]
-            )
+        # 2. Shuffle
+        shuffleDeck(s)
 
+        # 3. Deal
+        dealCards(s)
 
+        # --- THE FIX: The Quick Hand Trickery ---
+        from .engine import apply_facedown_masks
+        apply_facedown_masks(s)
 
-        # 🔒 critical invariant enforcement
-        for col in self.kup:
-            sync_column_contents(col)
+        # Enforce duality (Cards <-> Strings)
+        for col in s.kup:
+            sync_column_contents(s, col)
       
-        ## check_allways_facedown_columns
-        # Needed for strict VB rule enforcement
-        check_allways_facedown_columns()
+        # Set facedown positions
+        check_allways_facedown_columns(s)
 
-        ## do_whole_action("[autostart]")
-        # Engine-driven automation (future)
-
+        # Optional: Run start-of-game automation
+        # self.do_whole_action("[autostart]")
 
 
-        
 
 
-    
-    
 
-    # -------------------------------------------------
-    # Slot geometry
-    # -------------------------------------------------
-    #def _column_base_xy(self):
-    def _column_base_xy(self, position):
-        """
-        Convert VB slot position (e.g. "03") into (x, y).
-        """
 
-        if not isinstance(position, str) or len(position) != 2:
-            raise ValueError(f"Invalid position '{position}'")
 
-        col = int(position[0])
-        row = int(position[1])
 
-        x = self.TABLE_INSET_X + col * self.SLOT_W
-        y = self.TABLE_INSET_Y + row * self.SLOT_H
 
-        return x, y
-            
 
-    def _assert_only_real_columns(self):
-        for idx, col in enumerate(self.kup):
-            col_id = col.cId or f"#{idx}"
-            if col.position in ("", None):
-                raise RuntimeError(
-                    f"Synthetic column detected: {col_id} (no position)"
-                )
-  
 
-    def _resolve_overlap_values(self):
-        for idx, col in enumerate(self.kup):
-            col_id = col.cId or f"#{idx}"
 
-            if getattr(col, "_is_placeholder", False):
-                continue
 
-            # Normalize overlap values (VB style: empty means default)
-            if col.overlap_x in ("", None):
-                col.overlap_x = self.DEFAULT_OVERLAP_X
 
-            if col.overlap_y in ("", None):
-                col.overlap_y = self.DEFAULT_OVERLAP_Y
-  
-    
-    def _assert_columns_are_well_formed(self):
-        for idx, col in enumerate(self.kup):
-            col_id = col.cId or f"#{idx}"
 
-            # position is mandatory for layout
-            if col.position in ("", None):
-                raise RuntimeError(
-                    f"Column {col_id} missing position"
-                )
-
-            # contents must always exist (VB ListBox equivalent)
-            if col.contents is None:
-                raise RuntimeError(
-                    f"Column {col_id} missing contents list"
-                )
-        
-    
 
     
 
-    def _apply_slot_geometry(self):
-        """
-        VB-style slot geometry.
-        Resolves base x/y from columnX/Y and applies custom overrides.
-        """
-
-        for idx, col in enumerate(self.kup):
-
-            # position is VB string ("00", "12", ...)
-            if col.position in ("", None):
-                raise RuntimeError(f"Column #{idx} missing position")
-
-            try:
-                pos = int(col.position)
-            except ValueError:
-                raise RuntimeError(
-                    f"Invalid column position '{col.position}' in column #{idx}"
-                )
-
-            if pos < 0 or pos >= len(columnX):
-                raise RuntimeError(
-                    f"Column position {pos} out of range in column #{idx}"
-                )
-
-            # base geometry (VB columnX / columnY)
-            col.x = columnX[pos]
-            col.y = columnY[pos]
-
-            # custom overrides (VB: -1 means ignore)
-            if col.custom_x not in (-1, None, ""):
-                col.x = int(col.custom_x)
-
-            if col.custom_y not in (-1, None, ""):
-                col.y = int(col.custom_y)
 
 
 
+    # # -------------------------------------------------
+    # # Moves (under reconstruction)
+    # # -------------------------------------------------
+    # def move_card(self, from_col, to_col, card_code):
+    #     if from_col not in self.columns or to_col not in self.columns:
+    #         return False
+
+    #     src = self.columns[from_col]["cards"]
+    #     for i, card in enumerate(src):
+    #         if card["code"] == card_code:
+    #             self.columns[to_col]["cards"].append(src.pop(i))
+    #             return True
+    #     return False
+
+
+    
+
+
+
+   
 
     def _init_geometry_constants(self):
         """
         Single source of truth for all geometry.
-        MUST match CSS and renderer assumptions.
+        These are stored in the engine instance, but defaults come from self.state.
         """
-
-        # --- Card dimensions ---
+        # --- Card dimensions (Standard) ---
         self.CARD_W = 80
         self.CARD_H = 120
 
@@ -507,411 +1056,276 @@ class CardGame:
         self.SLOT_W = self.CARD_W + self.SLOT_GAP_X
         self.SLOT_H = self.CARD_H + self.SLOT_GAP_Y
 
-        # --- Default overlaps (VB semantics) ---
-        self.DEFAULT_OVERLAP_X = 20
-        self.DEFAULT_OVERLAP_Y = 30
-
-        # --- Modern helpers (optional, but consistent) ---
-        self.card_width = self.CARD_W
-        self.card_height = self.CARD_H
-
-        self.table_padding_x = self.TABLE_INSET_X
-        self.table_padding_y = self.TABLE_INSET_Y
-
-
-    def _position_to_xy(self, pos):
-        """
-        Factory position resolver (VB-faithful).
-        Converts position like '00', '01', '12' into base (x, y).
-        """
-        try:
-            row = int(pos[0])
-            col = int(pos[1])
-        except Exception:
-            raise RuntimeError(f"Invalid position '{pos}'")
-
-        x = self.TABLE_INSET_X + col * self.SLOT_W
-        y = self.TABLE_INSET_Y + row * self.SLOT_H
-        return x, y
-
-
-
-    # helper functions
-    def _iter_columns(self):
-        return self.columns
-
+    # -------------------------------------------------
+    # Slot geometry
+    # -------------------------------------------------
     
-    # Column overlap normalization (VB-faithful, GOLDEN)
-    def _normalize_column_overlaps(self):
-        for col in self.kup:
-
-            if getattr(col, "_is_placeholder", False):
-                col.overlap_x = 0
-                col.overlap_y = 0
+    def _apply_slot_geometry(self):
+        """
+        VB-style slot geometry.
+        Resolves base x/y from shared constants and applies custom overrides.
+        """
+        for idx, col in enumerate(self.state.kup):
+            if col.position in ("", None):
                 continue
 
-            ox = col.overlap_x
-            oy = col.overlap_y
+            try:
+                # VB position index (e.g. "01" -> 1)
+                pos = int(col.position)
+            except ValueError:
+                continue
 
-            if ox in ("", None) and oy in ("", None):
-                col.overlap_x = self.DEFAULT_OVERLAP_X
-                col.overlap_y = self.DEFAULT_OVERLAP_Y
+            if pos < 0 or pos >= len(self.state.columnX):
+                continue
 
+            # 1. Start with base geometry (Global columnX / columnY)
+            col.custom_x = self.state.columnX[pos]
+            col.custom_y = self.state.columnY[pos]
 
+            # 2. Check for manual overrides in the game script (VB: -1 means ignore)
+            # Note: We use the values parsed during _prepare_columns
+            # col.x/y are the final resolved coordinates for the renderer
+            col.x = col.custom_x
+            col.y = col.custom_y
 
+    # def _normalize_column_overlaps(self):
+    #     """Column overlap normalization (VB-faithful)."""
+    #     s = self.state
+    #     for col in s.kup:
+    #         # Normalize overlap values (VB style: 0 or empty means use system default)
+    #         if col.overlap_x in (0, "", None):
+    #             col.overlap_x = s.default_overlap_x             # fishy bug
 
+    #         if col.overlap_y in (0, "", None):
+    #             col.overlap_y = s.default_overlap_y             # fishy bug
 
+    # def _normalize_column_overlaps(self):
+    #     """
+    #     Uses the game-wide defaults if a specific column 
+    #     doesn't have its own custom spread.
+    #     """
+    #     s = self.state
+    #     for col in s.kup:
+    #         # If col.overlap_x is -1, it means 'use the game default'
+    #         if col.overlap_x == -1:
+    #             col.overlap_x = s.default_overlap_x
+            
+    #         if col.overlap_y == -1:
+    #             col.overlap_y = s.default_overlap_y
+        
+    #     # FINAL SAFETY: If even the game default was missing (-1),
+    #     # force a tiny spread so cards aren't invisible.
+    #     for col in s.kup:
+    #         if col.overlap_x == -1: col.overlap_x = 0
+    #         if col.overlap_y == -1: col.overlap_y = 20
 
-    
+    def _normalize_column_overlaps(self):
+        """
+        Improved Normalizer: Prevents 'Leaking Axis' bugs.
+        """
+        s = self.state
+        for col in s.kup:
+            # Case A: Column specified NOTHING (-1, -1)
+            # Use the game-wide defaults.
+            if col.overlap_x == -1 and col.overlap_y == -1:
+                col.overlap_x = s.default_overlap_x
+                col.overlap_y = s.default_overlap_y
 
-    
+            # Case B: Column specified horizontal ONLY
+            # Assume vertical is 0.
+            elif col.overlap_x != -1 and col.overlap_y == -1:
+                col.overlap_y = 0
+
+            # Case C: Column specified vertical ONLY
+            # Assume horizontal is 0.
+            elif col.overlap_y != -1 and col.overlap_x == -1:
+                col.overlap_x = 0
+            
+            # Case D: Both already set (e.g. by behaviour or Stage 2)
+            # Do nothing.
+
 
 
 
 
     # -------------------------------------------------
-    # Deck & dealing  (temporary variant until we find VB version)
+    # Deck & dealing
     # -------------------------------------------------
+
     def _create_deck(self):
-        suits = {
-            "c": ("clubs", "black"),
-            "d": ("diamonds", "red"),
-            "h": ("hearts", "red"),
-            "s": ("spades", "black"),
-        }
-        deck = []
-        for s, (name, color) in suits.items():
-            for rank in range(1, 14):
-                code = f"{s}{rank:02}"
-                deck.append({
-                    "code": code,
-                    "suit": name,
-                    "rank": rank,
-                    "color": color,
-                    "face_up": True,
-                    "image": f"1024x768{code}.bmp",
-                })
-        return deck
+        suits = ['c', 'd', 'h', 's']
+        self.state.LIST_DECK = []
+        for s in suits:
+            for v in range(1, 14):
+                # Format to match your filenames: e.g. "s13"
+                code = f"{s}{v:02d}" 
+                self.state.LIST_DECK.append(code)
 
+    # -------------------------------------------------
+    # Moves (Web Context)
+    # -------------------------------------------------
     
-    # def shuffle_and_deal(self):
-    #     # temporary not VB version (a function just to simulate card dealings at the start of a card game)
-    #     deck = self._create_deck()
-    #     random.shuffle(deck)
-
-    #     for col in self.kup:
-    #         col.contents.clear()
-    #         col.weight = 0
-
-    #         n = int(col.num_cards or 0)
-    #         if n <= 0:
-    #             continue
-
-    #         face_mask = col.cards_face_up or []
-    #         always_fd = col.allways_facedown == "1"
-    #         use_fd = col.use_facedown == "1"
-
-    #         for i in range(n):
-    #             card = deck.pop(0)
-
-    #             if always_fd:
-    #                 card.face_up = False
-    #             elif use_fd and i == n - 1:
-    #                 card.face_up = False
-    #             elif i < len(face_mask):
-    #                 card.face_up = bool(int(face_mask[i]))
-    #             else:
-    #                 card.face_up = True
-
-    #             col.contents.append(card)
-
-    #         col.weight = len(col.contents)
-
-
-
-
-    # -------------------------------------------------
-    # Moves (under reconstruction)
-    # -------------------------------------------------
-    def move_card(self, from_col, to_col, card_code):
-        if from_col not in self.columns or to_col not in self.columns:
+    def move_card(self, from_col_idx, to_col_idx, card_code):
+        """
+        Web entry point for moving a card. 
+        Works on self.state.kup indexed by current player.
+        """
+        s = self.state
+        try:
+            from_idx = int(from_col_idx)
+            to_idx = int(to_col_idx)
+            src_col = s.kup[from_idx]
+            dst_col = s.kup[to_idx]
+        except (ValueError, IndexError):
             return False
 
-        src = self.columns[from_col]["cards"]
-        for i, card in enumerate(src):
-            if card["code"] == card_code:
-                self.columns[to_col]["cards"].append(src.pop(i))
+        # Find the card in the source column
+        for i, card in enumerate(src_col.contents):
+            if card.code == card_code:
+                # Move the card object
+                moving_card = src_col.contents.pop(i)
+                dst_col.contents.append(moving_card)
+                
+                # Update weights and strings (Duality check)
+                from .engine import sync_column_contents
+                sync_column_contents(src_col)
+                sync_column_contents(dst_col)
                 return True
         return False
 
-
     # -------------------------------------------------
-    # Serialization
+    # Column Preparation (The Script Parser)
     # -------------------------------------------------
-    def to_dict(self):
-        # --- ensure column duality before save ---
-        for col in self.kup:
-            sync_column_contents(col)
 
-        return {
-            "game_id": self.game_id,
-
-            # ----------------
-            # COLUMNS + CARDS
-            # ----------------
-            "kup": [
-                {
-                    "cId": col.cId,
-                    "column_name": col.column_name,
-                    "position": col.position,
-                    "num_cards": col.num_cards,
-                    "shufle_any_cards": col.shufle_any_cards,
-
-                    "custom_x": col.custom_x,
-                    "custom_y": col.custom_y,
-                    "overlap_x": col.overlap_x,
-                    "overlap_y": col.overlap_y,
-
-                    "cards": [
-                        {
-                            "code": card.code,
-                            "face_up": card.face_up,
-                            "image": card.image,
-                        }
-                        for card in col.contents
-                    ],
-
-                    "contents_str": col.contents_str,
-                }
-                for col in self.kup
-            ],
-
-            # ----------------
-            # ACTORS (VISUALS)
-            # ----------------
-            "actors": {
-                "ShapeColumns": [
-                    {
-                        "top": s.top,
-                        "left": s.left,
-                        "visible": s.visible,
-                        "enabled": s.enabled,
-                        "backstyle": s.backstyle,
-                        "backcolor": s.backcolor,
-                    }
-                    for s in ShapeColumns
-                ],
-
-                "imageFaceDown": [
-                    {
-                        "top": fd.top,
-                        "left": fd.left,
-                        "visible": fd.visible,
-                        "enabled": fd.enabled,
-                        "tag": fd.tag,
-                    }
-                    for fd in imageFaceDown
-                ],
-
-                "ShapeSelektor": {
-                    "top": ShapeSelektor.top,
-                    "left": ShapeSelektor.left,
-                    "visible": ShapeSelektor.visible,
-                    "enabled": ShapeSelektor.enabled,
-                },
-            }
-        }
+    
 
 
-    @staticmethod
-    def from_dict(data):
-        if not isinstance(data.get("kup"), list):
-            raise RuntimeError(
-                f"Session corruption detected: kup must be list, got {type(data.get('kup'))}"
-            )
-
-        g = CardGame(data["game_id"], shuffle=False)
-        g.kup = []
-
-        # ----------------
-        # COLUMNS
-        # ----------------
-        for col_data in data["kup"]:
-            col = Column()
-
-            col.cId = col_data.get("cId", "")
-            col.column_name = col_data.get("column_name", "")
-            col.position = col_data.get("position", "")
-            col.num_cards = col_data.get("num_cards", "")
-            col.shufle_any_cards = col_data.get("shufle_any_cards", "")
-
-            col.custom_x = col_data.get("custom_x", "")
-            col.custom_y = col_data.get("custom_y", "")
-            col.overlap_x = col_data.get("overlap_x", "")
-            col.overlap_y = col_data.get("overlap_y", "")
-
-            col.contents = []
-            for card_data in col_data.get("cards", []):
-                col.contents.append(
-                    Card(
-                        code=card_data["code"],
-                        face_up=card_data.get("face_up", True),
-                        image=card_data.get("image"),
-                    )
-                )
-
-            col.contents_str = col_data.get(
-                "contents_str",
-                ",".join(card.code for card in col.contents),
-            )
-
-            col.weight = len(col.contents)
-
-            sync_column_contents(col)
-            g.kup.append(col)
-
-        # ----------------
-        # ACTORS
-        # ----------------
-        actors = data.get("actors", {})
-
-        ShapeColumns.clear()
-        for s in actors.get("ShapeColumns", []):
-            slot = ColumnSlot()
-            slot.top = s.get("top", 0)
-            slot.left = s.get("left", 0)
-            slot.visible = s.get("visible", False)
-            slot.enabled = s.get("enabled", True)
-            slot.backstyle = s.get("backstyle", 0)
-            slot.backcolor = s.get("backcolor", 0)
-            ShapeColumns.append(slot)
-
-        imageFaceDown.clear()
-        for fd in actors.get("imageFaceDown", []):
-            f = FaceDownOverlay()
-            f.top = fd.get("top", 0)
-            f.left = fd.get("left", 0)
-            f.visible = fd.get("visible", False)
-            f.enabled = fd.get("enabled", True)
-            f.tag = fd.get("tag", "")
-            imageFaceDown.append(f)
-
-        sel = actors.get("ShapeSelektor")
-        if sel:
-            ShapeSelektor.top = sel.get("top", 0)
-            ShapeSelektor.left = sel.get("left", 0)
-            ShapeSelektor.visible = sel.get("visible", False)
-            ShapeSelektor.enabled = sel.get("enabled", True)
-            ShapeSelektor.tag = sel.get("tag", "")
-
-        return g
-
-
-    # Frontend Wiring 5️⃣ Frontend Layout Formula (Canonical)
-    def card_position(col, index):
-        base_x = col.custom_x if col.custom_x != -1 else columnX[col.position]
-        base_y = col.custom_y if col.custom_y != -1 else columnY[col.position]
-
-        return (
-            base_x + col.overlap_x * index,
-            base_y + col.overlap_y * index,
-            index  # z-order
-        )
-
-
-
-
-
-
-
-    # -------------------------------------------------
-    # Session helpers
-    # -------------------------------------------------
-    @staticmethod
-    def load_from_session():
-        session.pop("game", None)
-        return None
-
-
-    def save_to_session(self):
-        session["game"] = self.to_dict()
-
-
-    #-------------------------------------------------
-    # porting some VB functions here
-    #-------------------------------------------------
-
-    # prepareColumns
     def _prepare_columns(self):
+        """
+        VB: prepareColumns
+        Full 3-stage parser: Defaults -> Layout -> Behaviour
+        """
+        s = self.state
+        lines = s.LIST_GAME_LINES
         i = 0
 
-        # ---- [COLUMNS DEFAULTS] ----
-        while i < len(LIST_GAME_LINES) and LIST_GAME_LINES[i] != "[COLUMNS DEFAULTS]":
-            i += 1
-
-        if i < len(LIST_GAME_LINES):
-            i += 1
-            while i < len(LIST_GAME_LINES):
-                s = LIST_GAME_LINES[i]
+        # ---- STAGE 1: [COLUMNS DEFAULTS] ----
+        # (Already mostly correct in your version)
+        while i < len(lines):
+            line = lines[i].strip()
+            if line == "[COLUMNS DEFAULTS]":
                 i += 1
+                while i < len(lines) and lines[i].strip() != "[END COLUMNS DEFAULTS]":
+                    l = lines[i].strip()
 
-                if s == "[END COLUMNS DEFAULTS]":
-                    break
+                    if line.startswith("overlap_x="):
+                        s.default_overlap_x = to_px(line.split("=")[1])
+                    elif line.startswith("overlap_y="):
+                        s.default_overlap_y = to_px(line.split("=")[1])
 
-                if s.startswith("overlap_x="):
-                    default_overlap_x = int(s[10:])
-                elif s.startswith("overlap_y="):
-                    default_overlap_y = int(s[10:])
-                elif s.startswith("zoom="):
-                    zoom = float(s[5:])
+                    i += 1
+            if line == "[COLUMNS]": break
+            i += 1
 
-        # ---- [COLUMNS] ----
+        # ---- STAGE 2: [COLUMNS] ----
+        # (Where we create the objects)
         i = 0
-        while i < len(LIST_GAME_LINES) and LIST_GAME_LINES[i] != "[COLUMNS]":
-            i += 1
-
-        if i >= len(LIST_GAME_LINES):
-            raise RuntimeError("No [COLUMNS] section")
-
+        while i < len(lines) and lines[i].strip() != "[COLUMNS]": i += 1
         i += 1
-        c = 0
+        
+        c_idx = 0
+        s.kup = [] 
+        while i < len(lines):
+            line = lines[i].strip()
+            if line == "[END COLUMNS]": break
+            if not line or line.startswith("#"): 
+                i += 1
+                continue
 
-        while i < len(LIST_GAME_LINES):
-            s = LIST_GAME_LINES[i]
+            col = Column(index=c_idx)
+            parts = [p.strip() for p in line.split(",")]
+            col.column_name = parts[0]
+            col.position = parts[1][:2]
+            col.num_cards = int(parts[2]) if parts[2].isdigit() else 0
+            col.shufle_any_cards = line[-1] 
+
+            # FLAG: Initialize with -1 to indicate "not set yet"
+            col.overlap_x = -1
+            col.overlap_y = -1
+            
+            s.kup.append(col)
+            c_idx += 1
             i += 1
 
-            if s == "[END COLUMNS]":
+        # ---- STAGE 3: [COLUMNS BEHAVIOUR] (THE MISSING PIECE) ----
+        # This is where 'overlap_y=default' lives!
+        i = 0
+        current_col = None
+        while i < len(lines):
+            line = lines[i].strip()
+            if line == "[COLUMNS BEHAVIOUR]":
+                i += 1
+                while i < len(lines):
+                    line = lines[i].strip()
+                    if line == "[END COLUMNS BEHAVIOUR]":
+                        break
+                    
+                    if line.startswith("[") and line.endswith("]"):
+                        # Found a header like [column1]
+                        col_name = line[1:-1]
+                        current_col = next((c for c in s.kup if c.column_name == col_name), None)
+                    
+                    elif current_col and "=" in line:
+                        key, val = [p.strip() for p in line.split("=", 1)]
+                        
+                        # --- OVERLAP LOGIC (The Gordian Knot Fix) ---
+                        if key == "overlap_x":
+                            if val == "default":
+                                current_col.overlap_x = s.default_overlap_x
+                            else:
+                                current_col.overlap_x = to_px(val)
+                                
+                        elif key == "overlap_y":
+                            if val == "default":
+                                current_col.overlap_y = s.default_overlap_y
+                            else:
+                                current_col.overlap_y = to_px(val)
+
+                        # --- GEOMETRY OVERRIDES ---
+                        elif key == "custom_x":
+                            current_col.custom_x = to_px(val)
+                        elif key == "custom_y":
+                            current_col.custom_y = to_px(val)
+
+                        # --- PERMISSIONS & RULES (The 'Other Keys') ---
+                        elif key == "player_can_take_card":
+                            current_col.player_can_take_card = val
+                        elif key == "player_can_put_card":
+                            current_col.player_can_put_card = val
+                        elif key == "player_can_put_card_if_empty":
+                            current_col.player_can_put_card_if_empty = val
+                        elif key == "allways_facedown":
+                            current_col.allways_facedown = val
+                        elif key == "cards_face_up":
+                            current_col.cards_face_up = val
+                        elif key == "dblclick_moves_to":
+                            current_col.dblclick_moves_to = val
+                        elif key == "aces_on_kings":
+                            current_col.aces_on_kings = val
+                        elif key == "backstyle":
+                            current_col.backstyle = int(val)
+                        elif key == "backcolor":
+                            current_col.backcolor = int(val)
+                        
+                        # Rule types (0=descending, 1=ascending, etc.)
+                        elif key in ("alternate", "suit", "card_value", "suit_or_card"):
+                            setattr(current_col, key, val)
+                            
+                    i += 1
                 break
+            i += 1
 
-            col = Column()
-            col.cId = c
-
-            parts = s.split(",")
-            col.column_name = parts[0]
-            col.position = parts[1].strip()[:2]
-            col.num_cards = parts[2].strip()
-            col.shufle_any_cards = s[-1]
-
-            # defaults (VB faithfully)
-            col.max_cards = 0
-            col.suit = -1
-            col.card_value = -1
-            col.alternate = -1
-            col.suit_or_card = -1
-            col.always_allowed_from_columns = -1
-            col.custom_x = -1
-            col.custom_y = -1
-            col.overlap_x = 0
-            col.overlap_y = 0
-            col.player_can_put_card = "-1"
-            col.player_can_put_card_if_empty = "-1"
-            col.player_can_take_card = "-1"
-            col.contents_at_start = ""
-            col.cards_face_up = ""
-            col.use_facedown = "-1"
-            col.weight = 0
-
-            self.kup.append(col)
-            c += 1
-
+        # Finalize
+        self._apply_slot_geometry()
+        self._normalize_column_overlaps()
 

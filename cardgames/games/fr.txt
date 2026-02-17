@@ -1,14 +1,14 @@
 Jeux De Carte 
-dÃ©faut de fonctionnement. 
-Vous avez gagnÃ©. 
-Vous avez dÃ©truit. 
+défaut de fonctionnement. 
+Vous avez gagné. 
+Vous avez détruit. 
 Cardez les jeux pour un joueur pour les Windows (c) septembre 2000 (p) miha11@yahoo.com 
 
-Ce jeu est shareware. Si vous voulez plus que s'il vous plaÃ®t 
+Ce jeu est shareware. Si vous voulez plus que s'il vous plaît 
 registre a http://abulafia.ijs.si/bbxmih/games / 
-GagnÃ©: 
+Gagné: 
 Perdu: 
-JouÃ©: 
+Joué: 
 Pour cent: 
 Alfa de pour cent: 
 --- 
@@ -33,8 +33,8 @@ OK
 Annulation 
 --- 
 OK 
-LÃ©gende: 
-gagnÃ© 
+Légende: 
+gagné 
 non fini 
 perdu 
 --- 
@@ -44,7 +44,7 @@ perdu
 -------
 --------
 Ce jeu est shareware. 
-Si vous voulez plus que registre s'il vous plaÃ®t. 
+Si vous voulez plus que registre s'il vous plaît. 
 Visitez http://abulafia.ijs.si/bbxmih/games / 
 Visitez http://abulafia.ijs.si/bbxmih/page2.html 
 ------
@@ -56,9 +56,9 @@ Vous n'etes pas utilisateur encore entierement registre des jeux de carte.
 Vous ne pouvez pas pouvoir jouer tous les jeux a moins que vous registre. 
 Vous pouvez vous inscrire a 18$ ou a moins. 
 Pour registre, envoyez-nous une demande.  
-Si vous allready payed pour les jeux de carte et avez reÃ§u le numÃ©ro de sÃ©rie, 
-alors vous pouvez Ã©crire le numÃ©ro de sÃ©rie et devenir le joueur registre. 
-Vous pouvez Ã©galement visiter http://abulafia.ijs.si/bbxmih/games / 
+Si vous allready payed pour les jeux de carte et avez reçu le numéro de série, 
+alors vous pouvez écrire le numéro de série et devenir le joueur registre. 
+Vous pouvez également visiter http://abulafia.ijs.si/bbxmih/games / 
 ---
 Je veux acheter des jeux de carte 
 
@@ -66,13 +66,13 @@ Je payerai avec
 argent
 mandat
 cheque
-carte crÃ©dit
+carte crédit
 VISA
 Mastercard
 autre... 
 
 Je veux recevoir 
-NumÃ©ro de sÃ©rie
+Numéro de série
 3.5 " Disquette
 Disque compact 
 
@@ -85,21 +85,21 @@ Nom:
 Rue: 
 Ville: 
 Code postal (USA seulement) 
-Ãtat (USA seulement) 
+État (USA seulement) 
 Pays: 
 
 Je ne veux pas tous les jeux 
-(ceci rÃ©duira le prix) 
+(ceci réduira le prix) 
 
-QuantitÃ© 
-Cout d'expÃ©dition 
+Quantité 
+Cout d'expédition 
 Montant total 
 ---
 Fiche d'impression 
 Envoyez la commande par la poste 
 Pour envoyer la commande par la poste, imprimez la fiche et envoyez-l'a a l'adresse ci-dessus. 
 Envoyez la commande par E-mail 
-Ãcrivez le numÃ©ro de sÃ©rie 
+Écrivez le numéro de série 
 OK 
 Fin 
 ---
@@ -113,48 +113,48 @@ Objet:
 [GAMENAME]
 Cellule libre 
 L'objet d'un jeu est de mettre toutes les cartes 
-dans de bons endroits du haut 4 commenÃ§ant par l'as des clubs, 
+dans de bons endroits du haut 4 commençant par l'as des clubs, 
 as des diamants, as des coeurs et as des cosses 
 dans chacun de 4 endroits. 
 
 [GAMENAME]
 Quatre saisons 
-Mettez toutes les cartes dans les coins commenÃ§ant par des as 
+Mettez toutes les cartes dans les coins commençant par des as 
 dans chaque coin. Il y a 5 cartes en positions du milieu 5 
 et d'autres cartes dans le paquet. Utilisez les positions moyennes a 
-enregistrez les cartes. Vous pouvez dÃ©placer des cartes du paquet a l'endroit 
+enregistrez les cartes. Vous pouvez déplacer des cartes du paquet a l'endroit 
 pres du paquet ou dans 5 positions moyennes. 
 
 [GAMENAME]
 Golf 
-L'objet du jeu est de dÃ©placer toutes les cartes du 
-paquet et de 7 colonnes a la serre dans croissant ou dÃ©croissant 
-ordre indÃ©pendamment de costume. 
+L'objet du jeu est de déplacer toutes les cartes du 
+paquet et de 7 colonnes a la serre dans croissant ou décroissant 
+ordre indépendamment de costume. 
 
 [GAMENAME]
 Remplacement 
 Construisez 4 piles dans des couleurs alternatives en montant 
-commande sur les as et ordre dÃ©croissant sur les rois. 
+commande sur les as et ordre décroissant sur les rois. 
 Cartes d'affaire une par une, construisant si possible ou 
-jeter dans quels de quatre segments de mÃ©moire de rebut. La carte supÃ©rieure 
-de chaque segment de mÃ©moire est toujours disponible. Quand toutes les cartes 
-ont Ã©tÃ© occupÃ©s, redeal sans shufling. Deux tels redeals 
-sont laissÃ©s. 
+jeter dans quels de quatre segments de mémoire de rebut. La carte supérieure 
+de chaque segment de mémoire est toujours disponible. Quand toutes les cartes 
+ont été occupés, redeal sans shufling. Deux tels redeals 
+sont laissés. 
 
 [GAMENAME]
 Canfield 
 Le but du jeu est de terminer chacune des quatre piles de base 
 a partir des as et de la construction vers le haut dans l'ordre de costume. 
-Employez les piles de tableau pour enregistrer des cartes dans l'ordre dÃ©croissant de 
+Employez les piles de tableau pour enregistrer des cartes dans l'ordre décroissant de 
 couleur alternative. Il y a quatre cartes dans le tableau a begining 
 du jeu. 
-Utilisez la carte supÃ©rieure des provisions, ou il y a 13 cartes a begining. 
-34 autres cartes sont laissÃ©es dans le paquet. Cartes de la prise 3 du paquet 
-a votre main. Seulement la carte supÃ©rieure est disponible. Quand toutes les 3 possibilitÃ©s 
-ont Ã©tÃ© jouÃ©s, retournent et jettent remamining des 3 cartes (celle 
-n'ont pas Ã©tÃ© jouÃ©s) a la serre. 
-Quand le paquet est exsausted, la serre est retournÃ© sans etre 
-brouillÃ© et devient le nouveau paquet, les cartes dans lui encore Ã©tant tournÃ© 
+Utilisez la carte supérieure des provisions, ou il y a 13 cartes a begining. 
+34 autres cartes sont laissées dans le paquet. Cartes de la prise 3 du paquet 
+a votre main. Seulement la carte supérieure est disponible. Quand toutes les 3 possibilités 
+ont été joués, retournent et jettent remamining des 3 cartes (celle 
+n'ont pas été joués) a la serre. 
+Quand le paquet est exsausted, la serre est retourné sans etre 
+brouillé et devient le nouveau paquet, les cartes dans lui encore étant tourné 
 au-dessus de en des paquets de trois. Il n'y a aucune limite au nombre de fois ceci 
 peut etre fait. 
 
@@ -165,11 +165,11 @@ Employez le tableau pour enregistrer des cartes dans la descente
 alternez la commande. Doublez cliquettent en fonction des provisions a redeal. 
 
 [GAMENAME]
-ChÃ¢teaux en Espagne 
+Châteaux en Espagne 
 L'objet d'un jeu est de terminer chacun des quatre 
 buildig de colonnes de base des as montant 
 aux rois dans le costume. Employez le tableau pour enregistrer des cartes 
-dans la commande alternative dÃ©croissante. Double dÃ©clic 
+dans la commande alternative décroissante. Double déclic 
 le visage cardent vers le bas pour le faire tourner. 
 
 [GAMENAME]
@@ -178,26 +178,26 @@ Klondike
 
 Mettez toutes les cartes dans quatre colonnes de base 
 a partir des as construisant dans le costume jusqu' aux rois. 
-Employez le tableau pour enregistrer des cartes dans le remplacement dÃ©croissant 
-commande. Si l'offre d'emploi dans le tableau est crÃ©Ã©e pendant le jeu, 
+Employez le tableau pour enregistrer des cartes dans le remplacement décroissant 
+commande. Si l'offre d'emploi dans le tableau est créée pendant le jeu, 
 vous pouvez mettre le roi ou un ordre avec un roi comme base 
-carte. Le double visage de dÃ©clic cardent vers le bas pour la faire tourner. 
-Une fois que toutes les dÃ©marches possibles dans le tableau a Ã©tÃ© entreprises, 
+carte. Le double visage de déclic cardent vers le bas pour la faire tourner. 
+Une fois que toutes les démarches possibles dans le tableau a été entreprises, 
 en tournez les cartes en stock un, en jouant 
-cartes qui peuvent etre jouÃ©es sur une carte appropriÃ©e dans 
+cartes qui peuvent etre jouées sur une carte appropriée dans 
 tableau ou sur sa pile de base. Cartes qui ne peuvent pas 
-soyez jouÃ© sont mis dans la serre. Un redeal de la serre 
-est laissÃ©. 
+soyez joué sont mis dans la serre. Un redeal de la serre 
+est laissé. 
 
 [GAMENAME]
 Forme de bateau et mode de Bristol 
-Le but est d'Ã©tablir 4 bases vers le haut 
-indÃ©pendamment du costume a partir des as. 
+Le but est d'établir 4 bases vers le haut 
+indépendamment du costume a partir des as. 
 L'emballage dans le tableau est en bas, 
 ragardless du costume. Seulement une carte a la fois 
-peut etre jouÃ©. 
-Doublez les provisions de dÃ©clic pour s'occuper ensuite trois cartes 
-aux colonnes de rÃ©serve. 
+peut etre joué. 
+Doublez les provisions de déclic pour s'occuper ensuite trois cartes 
+aux colonnes de réserve. 
 
 [GAMENAME]
 La bataille des dames 
@@ -205,13 +205,13 @@ Trois plots sont exclus du paquet et sont exacts lointain mis, pres des provisio
 L'autre Jack est au dessus de la pyramide. Le but est de construire de 4 reines 
 vers le haut aux dix selon le costume. 
 Le nom du jeu provient de la vieille regle qui la reine 
-qui la base est terminÃ©e d'abord rÃ©clame le Jack et gagne. 
-Les cartes sur le cÃ´tÃ© de la pyramide sont construction en bas dans le remplacement 
-couleurs. Elles peuvent seulement etre dÃ©placÃ©es un. Les espaces crÃ©Ã©s sont remplis 
+qui la base est terminée d'abord réclame le Jack et gagne. 
+Les cartes sur le côté de la pyramide sont construction en bas dans le remplacement 
+couleurs. Elles peuvent seulement etre déplacées un. Les espaces créés sont remplis 
 par des cartes des provisions. Quand plus de mouvements ne sont possibles occupez-vous 6 
-cartes des provisions aux cÃ´tÃ©s de la pyramide par double cliqueter sur des provisions. 
-Quand les provisions sont exsausted, des cartes des cÃ´tÃ©s de pyramide sont prises et 
-redealed. On permet deux tels redeals. Au double dÃ©clic redeal 
+cartes des provisions aux côtés de la pyramide par double cliqueter sur des provisions. 
+Quand les provisions sont exsausted, des cartes des côtés de pyramide sont prises et 
+redealed. On permet deux tels redeals. Au double déclic redeal 
 Carte de Jack au dessus de la pyramide. 
 
 [GAMENAME]
@@ -220,27 +220,27 @@ Le but est de terminer des colonnes de base des as
 aux rois construisant dans le costume. 
 Employez deux lignes dans le tableau pour enregistrer des cartes dans la descente 
 convenez a la commande assortie. 
-Cartes qui ne peuvent pas etre jouÃ©es des provisions a la base ou au tableau 
+Cartes qui ne peuvent pas etre jouées des provisions a la base ou au tableau 
 sont mis pour gaspiller la colonne (vous pouvez doubler pour cliqueter en fonction des provisions pour faire ainsi). 
-La carte supÃ©rieure de la colonne de rebut est toujours disponible. 
-Toutes les vacances d'emploi qui sont crÃ©Ã©es dans le tableau sont remplies 
+La carte supérieure de la colonne de rebut est toujours disponible. 
+Toutes les vacances d'emploi qui sont créées dans le tableau sont remplies 
 de la pile de rebut ou, si elle est vide, des provisions. 
 
 [GAMENAME]
-Le ChÃ¢teau CernÃ© 
+Le Château Cerné 
 (rang: tres difficile) 
 
 Le but du jeu est de terminer 4 piles de base 
-bÃ¢timent des as aux rois. Utilisez 8 colonnes latÃ©rales a 
-enregistrez les cartes dans la commande alternative dÃ©croissante. 
+bâtiment des as aux rois. Utilisez 8 colonnes latérales a 
+enregistrez les cartes dans la commande alternative décroissante. 
 
 [GAMENAME]
 Bisley 
 (rang: tres difficile) 
 
-Construction en bas dans le costume commenÃ§ant par des rois. 
-La carte de tableau peut etre dÃ©placÃ©e a une carte cela 
-les allumettes dans le costume et est a cÃ´tÃ© de lui dans le grade (huit 
+Construction en bas dans le costume commençant par des rois. 
+La carte de tableau peut etre déplacée a une carte cela 
+les allumettes dans le costume et est a côté de lui dans le grade (huit 
 des clubs a pu aller a neuf ou a sept de clubs). 
 
 [GAMENAME]
@@ -248,47 +248,47 @@ Forteresse
 (rang: tres difficile) 
 
 Construisez quatre piles vers le haut dans le costume a partir des as. 
-Les cartes latÃ©rales peuvent etre dÃ©placÃ©es a une carte cela 
-les allumettes dans le costume et est a cÃ´tÃ© de lui dans le grade (huit 
+Les cartes latérales peuvent etre déplacées a une carte cela 
+les allumettes dans le costume et est a côté de lui dans le grade (huit 
 des clubs a pu aller a neuf ou a sept de clubs). 
 
 [GAMENAME]
 Horloge de Grandpa 
 Il y a 12 colonnes de base formant une horloge. 
-Vous devez vous accumuler dans le costume sur chacun, commenÃ§ant en fonction 
-carte et bÃ¢timent de base jusqu' aux extensions d'ordre 
+Vous devez vous accumuler dans le costume sur chacun, commençant en fonction 
+carte et bâtiment de base jusqu' aux extensions d'ordre 
 le nombre d'heures auxou la carte de base se repose. 
-Employez cinq lignes de tableau pour enregistrer des cartes dans l'ordre dÃ©croissant 
-indÃ©pendamment du costume. Double dÃ©clic la carte de tableau a tourner 
+Employez cinq lignes de tableau pour enregistrer des cartes dans l'ordre décroissant 
+indépendamment du costume. Double déclic la carte de tableau a tourner 
 il plus de. 
 
 [GAMENAME]
 Princ Albert 
 Construction vers le haut dans le costume a partir des as. 
 Employez le tableau (9 colonnes) pour enregistrer des cartes dedans 
-alternez l'ordre dÃ©croissant. 
-Sept cartes de la rÃ©serve peuvent etre jouÃ©es 
+alternez l'ordre décroissant. 
+Sept cartes de la réserve peuvent etre jouées 
 sur la base ou le tableau mais pas de nouveau au 
-rÃ©serve. 
+réserve. 
 
 [GAMENAME]
 Quadrille 
 Vous pouvez jouer ce jeu par double cliqueter sur des provisions. 
 
-(des cartes sont tournÃ©es vers le haut des provisions une par une. 
+(des cartes sont tournées vers le haut des provisions une par une. 
 Les cartes de base sont des fives et des sixes. Fives disparaissent 
 sur le nord, occidental, l'est et les positions du sud, les sixes vont 
 entre eux. Sur des fives vous pouvez construire vers le bas dans le costume 
 aux as, sur des sixes que vous pouvez augmentent jusqu'a des plots. Reines 
-ne jouez aucun rÃ´le dans le jeu. Quand ils tournent vers le haut, ils 
+ne jouez aucun rôle dans le jeu. Quand ils tournent vers le haut, ils 
 sont mis dans la position moyenne. 
 On permet deux redeals apres que les provisions soient exsausted.) 
 
 [GAMENAME]
 Raglan 
-Le but est d'Ã©tablir quatre bases des as 
+Le but est d'établir quatre bases des as 
 aux rois. 
-Employez le tableau pour enregistrer des cartes dans l'ordre dÃ©croissant alternatif. 
-Doublez la carte de facedown de dÃ©clic pour la faire tourner. 
-Les six cartes de la rÃ©serve peuvent etre mises a la base 
+Employez le tableau pour enregistrer des cartes dans l'ordre décroissant alternatif. 
+Doublez la carte de facedown de déclic pour la faire tourner. 
+Les six cartes de la réserve peuvent etre mises a la base 
 mais ne peut pas etre mis au tableau. 
