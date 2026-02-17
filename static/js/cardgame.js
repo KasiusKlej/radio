@@ -98,23 +98,70 @@ function updateSelectionUI(snapshot) {
 }
 
 
+// ============================================================
+//  FIXED: renderImmediately + createCardElement
+//
+//  Problems fixed:
+//  1. Old rendering block (sections 1, 2, 3) removed — it was
+//     drawing every card directly on #game-table with absolute
+//     coords, then the new loop drew them again inside column divs.
+//  2. Cards inside a .column div must use RELATIVE coordinates
+//     (just index * overlap), because the column div is already
+//     absolutely positioned at col.x / col.y.
+//  3. createCardElement now takes a `relative` param (default false)
+//     so animateDiff keeps using absolute coords on #game-table,
+//     while renderImmediately uses relative coords inside columns.
+// ============================================================
+
+function createCardElement(card, col, index, relative = false) {
+    const el = document.createElement("div");
+    el.className = `card ${card.face_up ? 'face-up' : 'face-down'}`;
+    el.dataset.cardId = card.code;
+
+    const ox = Number(col.overlap_x) || 0;
+    const oy = Number(col.overlap_y) || 0;
+
+    let finalX, finalY;
+    if (relative) {
+        // Card is a child of its column div — position relative to it
+        finalX = index * ox;
+        finalY = index * oy;
+    } else {
+        // Card is a direct child of #game-table — use absolute table coords
+        finalX = Number(col.x) + (index * ox);
+        finalY = Number(col.y) + (index * oy);
+    }
+
+    el.style.left   = `${finalX}px`;
+    el.style.top    = `${finalY}px`;
+    el.style.zIndex = 100 + index;
+
+    const ext = ".png";
+    const imgName = (card.face_up === true || card.face_up === 1)
+        ? `1024x768${card.code}${ext}`
+        : `1024x768face${ext}`;
+    el.style.backgroundImage = `url(/static/cards/${imgName})`;
+
+    cardElements[card.code] = el;
+    return el;
+}
+
+
 function renderImmediately(snapshot) {
     const table = document.getElementById("game-table");
     table.innerHTML = "";
+    // Reset the cardElements map since we're rebuilding everything
+    Object.keys(cardElements).forEach(k => delete cardElements[k]);
 
     // 1. Draw Column Placeholders (Z=1)
     snapshot.actors.slots.forEach(slot => {
         if (!slot.visible) return;
         const el = document.createElement("div");
-
-        //el.className = "column-requisite win95-bevel-in";
         el.className = "column-requisite";
-        // Logic for changing the costume
-        // In FreeCell, home1-4 has backstyle=1 and backcolor=8
+        
         if (slot.backstyle === 1 && slot.backcolor === 8) {
             el.classList.add("style-grey");
         } else {
-            // Default Green costume
             el.classList.add("win95-bevel-in"); 
         }
         
@@ -124,197 +171,90 @@ function renderImmediately(snapshot) {
         table.appendChild(el);
     });
 
-    // 2. Draw Cards (Z=100+)
+    // 2. Draw Cards (Z=100+) and populate cardElements map
     snapshot.kup.forEach(col => {
         col.cards.forEach((card, index) => {
             const el = createCardElement(card, col, index);
             table.appendChild(el);
+            // ✅ FIX: Register card in map BEFORE drawing selector
+            cardElements[card.code] = el;
         });
     });
 
-    // 3. Draw Selection Box (Z=1000)
+    // 3. Draw Selection Box (Z=1000) — FIXED
     const sel = snapshot.actors.selector;
-    if (sel.visible) {
-        const selectorEl = document.createElement("div");
-        selectorEl.className = "selection-box";
-        // The engine tells us which card is selected
+    if (sel.visible && snapshot.selected_card_code) {
+        console.log(`✨ Rendering selection box for card: ${snapshot.selected_card_code}`);
+        
         const cardEl = cardElements[snapshot.selected_card_code];
         if (cardEl) {
+            const selectorEl = document.createElement("div");
+            selectorEl.className = "selection-box";
+            
+            // Position exactly over the selected card
             selectorEl.style.left = cardEl.style.left;
             selectorEl.style.top = cardEl.style.top;
             selectorEl.style.zIndex = 1000;
+            
             table.appendChild(selectorEl);
+            console.log(`✅ Selection box rendered at (${cardEl.style.left}, ${cardEl.style.top})`);
+        } else {
+            console.warn(`⚠️  Card element not found for: ${snapshot.selected_card_code}`);
         }
     }
-
-
-    console.log("=== THEATRE RENDERING START ===");
-
-    snapshot.kup.forEach((col, colIdx) => {
-        // 1. Draw Placeholder
-        const slotEl = document.createElement("div");
-        slotEl.className = "column win95-bevel-in";
-        slotEl.dataset.columnId = colIdx;
-        slotEl.style.left = `${col.x}px`;
-        slotEl.style.top = `${col.y}px`;
-        slotEl.style.zIndex = 1;
-        table.appendChild(slotEl);
-
-        // 2. Draw Cards in this column
-        if (col.cards && col.cards.length > 0) {
-            if (colIdx === 8) {
-                console.log(`DEBUG: Processing Column 8 [${col.name}]`);
-                console.log(`Base Position: X=${col.x}, Y=${col.y}`);
-                console.log(`Overlap Stats: OX=${col.overlap_x}, OY=${col.overlap_y}`);
-            }
-
-            col.cards.forEach((card, index) => {
-                const el = createCardElement(card, col, index);
-                table.appendChild(el);
-                
-                // Detailed Math Debug for Column 8
-                if (colIdx === 8 && index < 2) {
-                    console.log(` > Card[${index}] (${card.code}): Calculated Left=${el.style.left}, Top=${el.style.top}`);
-                }
-            });
-        }
-    });
-    console.log("=== THEATRE RENDERING COMPLETE ===");
-    
-
-
-
-}
-
-
-
-// function createCardElement(card, col, index) {
-//     const el = document.createElement("div");
-//     el.className = `card ${card.face_up ? 'face-up' : 'face-down'}`;
-//     el.dataset.cardId = card.code;
-    
-//     // --- FORCE NUMBERS ---
-//     // Ensure overlap is a number. If it's a string or missing, default to 0 or 20.
-//     const ox = Number(col.overlap_x) || 0;
-//     const oy = Number(col.overlap_y) || 0;
-//     const baseX = Number(col.x) || 0;
-//     const baseY = Number(col.y) || 0;
-
-//     // --- MATH ---
-//     const finalX = baseX + (index * ox);
-//     const finalY = baseY + (index * oy);
-
-//     el.style.left = `${finalX}px`;
-//     el.style.top = `${finalY}px`;
-//     el.style.zIndex = 100 + index;
-    
-//     // Set Image (using confirmed BMP path)
-//     const imgPath = card.face_up 
-//         ? `1024x768${card.code}.bmp` 
-//         : `1024x768face.bmp`;
-        
-//     el.style.backgroundImage = `url(/static/cards/${imgPath})`;
-    
-//     // Safety: ensure background-size is 100% to fit the 89x132 div
-//     el.style.backgroundSize = "100% 100%";
-    
-//     cardElements[card.code] = el;
-//     return el;
-// }
-
-function createCardElement(card, col, index) {
-    const el = document.createElement("div");
-    el.className = `card ${card.face_up ? 'face-up' : 'face-down'}`;
-    el.dataset.cardId = card.code;
-    
-    // VB RECONSTRUCTION MATH
-    // 1. Get the base Anchor from the column
-    const baseX = Number(col.x);
-    const baseY = Number(col.y);
-    
-    // 2. Get the Overlap (The 'panning' value)
-    const ox = Number(col.overlap_x) || 0;
-    const oy = Number(col.overlap_y) || 0;
-
-    // 3. Final Absolute Table Position
-    // Card 0: baseX + 0
-    // Card 1: baseX + ox
-    // Card 2: baseX + 2*ox
-    const finalX = baseX + (index * ox);
-    const finalY = baseY + (index * oy);
-
-    el.style.left = `${finalX}px`;
-    el.style.top = `${finalY}px`;
-    
-    // Z-INDEX: VB used ZOrder. 
-    // Requisites (slots) = 1
-    // Bottom card = 100
-    // Top card = 100 + index
-    el.style.zIndex = 100 + index;
-    
-    // Graphics
-    const ext = ".png"; // or .bmp
-    let imgName;
-    
-    if (card.face_up === true || card.face_up === 1) {
-        imgName = `1024x768${card.code}${ext}`;
-    } else {
-        // The Mask! Show the back of the card.
-        imgName = `1024x768face${ext}`;
-    }
-    
-    el.style.backgroundImage = `url(/static/cards/${imgName})`;
-
-
-    return el;
 }
 
 
 
 function animateDiff(prev, next) {
     next.kup.forEach((col, colIdx) => {
+
+        // Find the column's wrapper div by its data-column-id.
+        // Cards must be moved/created inside this div so their
+        // left/top are relative offsets, matching renderImmediately.
+        const colEl = document.querySelector(`[data-column-id="${colIdx}"]`);
+
         col.cards.forEach((card, index) => {
+            const ox = Number(col.overlap_x) || 0;
+            const oy = Number(col.overlap_y) || 0;
+
+            // Relative offset inside the column div (NOT absolute table coords)
+            const newX = index * ox;
+            const newY = index * oy;
+
             const el = cardElements[card.code];
+
             if (el) {
-                const newX = col.x + (index * (col.overlap_x || 0));
-                const newY = col.y + (index * (col.overlap_y || 0));
-                
-                // If position changed, trigger CSS transition
-                el.style.transition = "all 0.35s ease-in-out";
-                el.style.left = `${newX}px`;
-                el.style.top = `${newY}px`;
-                el.style.zIndex = 100 + index;
-                
-                // Handle flip changes
-                if (card.face_up && el.classList.contains('face-down')) {
-                    el.classList.replace('face-down', 'face-up');
-                    el.style.backgroundImage = `url(/static/cards/1024x768${card.code}.bmp)`;
+                // ── Move existing card ──────────────────────────────────
+                // Re-parent into the correct column div if it moved columns
+                if (el.parentElement !== colEl && colEl) {
+                    colEl.appendChild(el);
                 }
 
+                el.style.transition = "all 0.35s ease-in-out";
+                el.style.left   = `${newX}px`;
+                el.style.top    = `${newY}px`;
+                el.style.zIndex = 100 + index;
 
-
-
-
-                // DEBUG 
-                const ox = Number(col.overlap_x) || 0;
-                const oy = Number(col.overlap_y) || 0;
-                const calcX = col.x + (index * ox);
-                const calcY = col.y + (index * oy);
-                console.log(`--- DEBUG 2: RENDERER MATH (Col 8, Card ${index}) ---`);
-                console.log(`Formula: ${col.y} + (${index} * ${oy}) = ${calcY}`);
-                console.log(`Resulting Style: Left: ${calcX}px, Top: ${calcY}px`);
-    
-
-
-
-
-
-
+                // Handle face-down → face-up flip
+                if (card.face_up && el.classList.contains('face-down')) {
+                    el.classList.replace('face-down', 'face-up');
+                    el.style.backgroundImage =
+                        `url(/static/cards/1024x768${card.code}.png)`;
+                }
 
             } else {
-                // Card is new (e.g. redealt), create it
-                const newEl = createCardElement(card, col, index);
-                document.getElementById("game-table").appendChild(newEl);
+                // ── New card (redealt / just arrived) ───────────────────
+                // relative=true so coords are column-relative, not absolute
+                const newEl = createCardElement(card, col, index, true);
+
+                if (colEl) {
+                    colEl.appendChild(newEl);   // inside column div ✅
+                } else {
+                    // Fallback: column div missing, go straight to table
+                    // (shouldn't happen, but safe to handle)
+                    document.getElementById("game-table").appendChild(newEl);
+                }
             }
         });
     });
@@ -388,7 +328,10 @@ document.addEventListener("mousedown", (e) => {
     
     // We send a Mousedown wish if we hit a column or a card
     if (card || slot) {
-        const colIdx = card ? card.parentElement.dataset.columnId : slot.dataset.columnId;
+        //const colIdx = card ? card.parentElement.dataset.columnId : slot.dataset.columnId;
+        // Walk up to find the nearest element with data-column-id
+        const colEl = e.target.closest("[data-column-id]");
+        const colIdx = colEl ? colEl.dataset.columnId : null;
         dispatchWish({
             event_type: "mousedown",
             col_idx: colIdx,
@@ -403,7 +346,10 @@ document.addEventListener("click", (e) => {
     const table = e.target.id === "game-table" || e.target.id === "table-scroll";
 
     if (card || slot) {
-        const colIdx = card ? card.parentElement.dataset.columnId : slot.dataset.columnId;
+        //const colIdx = card ? card.parentElement.dataset.columnId : slot.dataset.columnId;
+        // Walk up to find the nearest element with data-column-id
+        const colEl = e.target.closest("[data-column-id]");
+        const colIdx = colEl ? colEl.dataset.columnId : null;
         dispatchWish({
             event_type: "click",
             col_idx: colIdx,
@@ -416,23 +362,6 @@ document.addEventListener("click", (e) => {
 });
 
 
-// document.addEventListener("dblclick", (e) => {
-//     const cardEl = e.target.closest(".card");
-//     if (!cardEl) return;
-
-//     const colEl = cardEl.closest(".column");
-//     const colIdx = colEl ? colEl.dataset.columnId : null;
-
-//     if (colIdx !== null) {
-//         // CHANGE THIS: point to /api/click, not /api/double_click
-//         handleEngineAction("/cardgames/api/click", {
-//             event_type: "dblclick",
-//             col_idx: colIdx,
-//             card_code: cardEl.dataset.cardId
-//         });
-//     }
-// });
-
 // TABLE CLICK (The Green Felt)
 document.getElementById("game-table").addEventListener("click", (e) => {
     if (e.target.id === "game-table") {
@@ -444,10 +373,14 @@ document.getElementById("game-table").addEventListener("click", (e) => {
 document.addEventListener("dblclick", (e) => {
     const card = e.target.closest(".card");
     if (card) {
+        // Walk up to find the nearest element with data-column-id
+        const colEl = e.target.closest("[data-column-id]");
+        const colIdx = colEl ? colEl.dataset.columnId : null;
         dispatchWish({
             event_type: "dblclick",
-            card_code: card.dataset.cardId,
-            col_idx: card.parentElement.dataset.columnId
-        });
+            card_code: card ? card.dataset.cardId : null,
+            col_idx: colIdx
+        });        
+        
     }
 });

@@ -1,48 +1,49 @@
-
 <!DOCTYPE html>
-<html lang=SL>
-
-
+<html lang="en">
 <head>
-  <meta http-equiv=Content-Type content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="keywords" content="igre, filmi, glasba">
-  <title>&nbsp;&nbsp;www.zvezda2.si&nbsp;&nbsp;&nbsp;&nbsp;&#128296;</title>
-  <link rel="icon" type="image/x-icon" href={{ url_for('static', filename='favicon.ico')}}>
-  <link rel="stylesheet" href={{ url_for('static', filename='stili.css')}}>
-  <link rel="stylesheet" href={{ url_for('static', filename='zgornjimeni.css')}}>
+    <meta charset="utf-8">
+    <title>Mihin web sajt</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cardgames.css') }}">
 </head>
 
+
 <body>
-<div class="topnav">
-<a href="/">&#127968;&nbsp;</a> 
-<a href="/knjige/">&#128218;&nbsp;</a> 
-<a href="/film/">&#127909;&nbsp;</a> 
-<a href="/glasba/">&#127932;&nbsp;</a> 
-<a href="/igre/">&#9917;&nbsp;</a> 
-<a href="/software/">&#128190;&nbsp;</a>
-</div>
 
-<p> <img width=236 height=236 alt=" " src={{ url_for('static', filename='image001.jpg')}}> </p>
-<br><br>
+    <!-- TITLE BAR -->
+    <div id="title-bar">
+        <span class="title-text">
+            Mihin web sajt
+        </span>
+    </div>
 
+    <!-- MENU BAR -->
+    <div id="mihinmenu">
+        {% include "mihinmenu.html" %}
+    </div>
 
-<p style="font-family: Times, serif; font-size: 25px; font-weight: bold; ">
-Izdelava in gostovanje hitrih spletnih strani. 
-</p>
-<p style="font-family: Times, serif; font-size: 17px; font-weight: bold; ">
-Naročite svojo spletno stran na zvezda2.si/mojastran/ v 5 minutah.<br>
-Za več informacij pišite na 
-<a href="mailto:striparna@gmail.com"> striparna@gmail.com</a><br>
-<img width=32 height=32 alt=" " src={{ url_for('static', filename='mail7060.gif')}}>
-</p>
+    <!-- HOMEPAGE AREA -->
+    <div id="table-scroll">
+        <div id="game-table" >
+                <div style="padding: 10px; text-align: center; color: white;">
+                  <p> <img width=236 height=236 alt=" " src={{ url_for('static', filename='image002.png')}}> </p>  
+                  <h2>Dobrodošli... </h2>
+                    na Mihin websajt
+                    <p style="font-family: Times, serif; font-size: 17px; font-weight: bold; ">
+                    Za več informacij pišite na 
+                    <a href="mailto:striparna@gmail.com"> striparna@gmail.com</a><br>
+                    <img width=32 height=32 alt=" " src={{ url_for('static', filename='mail7060.gif')}}>
 
+                </div>
+            
+        </div>
+    </div>
 
-<br>
-<br>
-<br>
 
 
 </body>
-
 </html>
+
+
+
+
+

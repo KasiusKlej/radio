@@ -80,6 +80,21 @@ class Column:
         self.contents_str = ""
         self.weight = 0
 
+        self.contents_at_start = ""   # e.g. "h01" or "c01,d01" or "next"
+        self.shufle_any_cards = "0"   # "1" = draw from deck, "0" = use contents_at_start
+        self.dblclick_moves_to = "-1"
+        self.after_move_action = "-1"
+        self.after_playermove_action = "-1"
+        self.attempted_move_action = "-1"
+        self.attempted_playermove_action = "-1"
+        self.suit = "-1"
+        self.card_value = "-1"
+        self.alternate = "-1"
+        self.suit_or_card = "-1"
+        self.max_cards = 0
+        self.aces_on_kings = "yes"
+        self.use_facedown = "0"
+
     def to_dict(self):
         # 🛡️ Safety check: ensure cards are objects before serializing
         processed_cards = []
@@ -101,7 +116,21 @@ class Column:
             "cards": processed_cards,
             "weight": self.weight,
             "backstyle": int(self.backstyle) if str(self.backstyle).isdigit() else -1,
-            "backcolor": int(self.backcolor) if str(self.backcolor).isdigit() else -1
+            "backcolor": int(self.backcolor) if str(self.backcolor).isdigit() else -1,
+            "contents_at_start" : self.contents_at_start, 
+            "shufle_any_cards" : self.shufle_any_cards,
+            "dblclick_moves_to" : self.dblclick_moves_to,
+            "after_move_action" : self.after_move_action,
+            "after_playermove_action" : self.after_playermove_action,
+            "attempted_move_action" : self.attempted_move_action,
+            "attempted_playermove_action" : self.attempted_playermove_action,
+            "suit" : self.suit,
+            "card_value" : self.card_value,
+            "alternate" : self.alternate,
+            "suit_or_card" : self.suit_or_card,
+            "max_cards" : self.max_cards,
+            "aces_on_kings" : self.aces_on_kings,
+            "use_facedown" : self.use_facedown
         }
 
 

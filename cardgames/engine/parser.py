@@ -506,3 +506,138 @@ def parse_all_games(lang_dir):
             game_names.append(games_by_id[gid])
 
     return games_by_id, games_by_name, game_names
+
+
+
+def read_gamenames_from_language_files(language: str, lang_dir: Path) -> list[dict]:
+    """
+    Returns a list of game dictionaries with localized names.
+    
+    Args:
+        language: Language code (e.g., "eng", "slo", "ger")
+        lang_dir: Path to the directory containing language files
+    
+    Returns:
+        List of dicts: [{"id": "1", "name": "Klondike"}, ...]
+        The order matches the game order in CardGames-utf8.txt.
+    
+    Implementation notes:
+        1. Try to read from {language}.txt first (e.g., eng.txt)
+        2. If not found, fall back to reading from CardGames-utf8.txt
+        3. Always preserve game order and IDs (1, 2, 3... matching file order)
+    """
+    
+    # --- STEP 1: Try language-specific file ---
+    lang_file = lang_dir / f"{language}.txt"
+    
+    if lang_file.exists():
+        try:
+            games = _extract_names_from_language_file(lang_file)
+            if games:  # If we got names, return them
+                return games
+        except Exception as e:
+            print(f"Warning: Failed to parse {lang_file}: {e}")
+            # Fall through to fallback
+    
+    # --- STEP 2: Fallback to CardGames-utf8.txt ---
+    default_file = lang_dir / "CardGames-utf8.txt"
+    if default_file.exists():
+        try:
+            return _extract_names_from_game_definitions(default_file, language)
+        except Exception as e:
+            print(f"Error: Failed to parse {default_file}: {e}")
+            return []
+    
+    return []
+
+
+def _extract_names_from_language_file(filepath: Path) -> list[dict]:
+    """
+    Extract game names from a language file (eng.txt, slo.txt, etc.).
+    
+    Format:
+        [GAMENAME]
+        Game Name Here
+        rules text...
+        
+        [GAMENAME]
+        Next Game Name
+        more rules...
+    """
+    games = []
+    game_id = 1
+    
+    with filepath.open("r", encoding="utf-8") as f:
+        lines = [line.rstrip("\n") for line in f]
+    
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        
+        if line == "[GAMENAME]":
+            # Next line is the game name
+            if i + 1 < len(lines):
+                name = lines[i + 1].strip()
+                games.append({
+                    "id": str(game_id),
+                    "name": name
+                })
+                game_id += 1
+            i += 2  # Skip [GAMENAME] and the name line
+        else:
+            i += 1
+    
+    return games
+
+
+def _extract_names_from_game_definitions(filepath: Path, language: str) -> list[dict]:
+    """
+    Extract game names from CardGames-utf8.txt.
+    
+    Format in CardGames-utf8.txt:
+        [GAMENAME]
+        English Name (Localized Name)
+        ...
+        
+        [GAMENAME]
+        Next Game (Naslednja Igra)
+        ...
+    
+    The names follow the pattern: "English Name (Local Name)"
+    We extract the appropriate part based on the language.
+    """
+    games = []
+    game_id = 1
+    
+    with filepath.open("r", encoding="utf-8") as f:
+        lines = [line.rstrip("\n") for line in f]
+    
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        
+        if line == "[GAMENAME]":
+            if i + 1 < len(lines):
+                raw_name = lines[i + 1].strip()
+                
+                # Parse "English (Local)" format
+                display_name = raw_name
+                if "(" in raw_name and ")" in raw_name:
+                    parts = raw_name.split("(", 1)
+                    eng_name = parts[0].strip()
+                    local_name = parts[1].split(")", 1)[0].strip()
+                    
+                    # Choose which part to show based on language
+                    display_name = eng_name if language == "eng" else local_name
+                
+                games.append({
+                    "id": str(game_id),
+                    "name": display_name
+                })
+                game_id += 1
+            
+            i += 2
+        else:
+            i += 1
+    
+    return games

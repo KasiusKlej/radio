@@ -133,14 +133,44 @@ html, body {
 }
 
 /* ShapeSelektor costume (Black see-through net) */
+
 .selection-box {
     position: absolute;
     width: 89px;
     height: 132px;
-    pointer-events: none;
-    background-image: radial-gradient(#000 10%, transparent 20%);
-    background-size: 3px 3px; /* Creating a "Net" or "Dither" effect */
-    border: 2px solid black;
+    pointer-events: none;  /* Don't block clicks on the card beneath */
     z-index: 1000;
-    opacity: 0.5;
+    
+    /* Yellow glowing border */
+    border: 3px solid #FFD700;  /* Gold/yellow solid border */
+    border-radius: 6px;
+    
+    /* Animated pulsing glow effect */
+    box-shadow: 
+        0 0 10px #FFD700,
+        0 0 20px #FFD700,
+        0 0 30px #FFA500,
+        inset 0 0 10px rgba(255, 215, 0, 0.3);
+    
+    /* Subtle pulsing animation */
+    animation: selection-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes selection-pulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px #FFD700,
+            0 0 20px #FFD700,
+            0 0 30px #FFA500,
+            inset 0 0 10px rgba(255, 215, 0, 0.3);
+        border-color: #FFD700;
+    }
+    50% {
+        box-shadow: 
+            0 0 15px #FFD700,
+            0 0 30px #FFD700,
+            0 0 45px #FFA500,
+            inset 0 0 15px rgba(255, 215, 0, 0.5);
+        border-color: #FFA500;
+    }
 }

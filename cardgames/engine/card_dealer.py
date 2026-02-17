@@ -1,60 +1,77 @@
 # card_dealer.py
-# VB-style card dealer 
+# VB-style card dealer
 
-# 1. IMPORT the Card class from your model
 from .model import Card
+
 
 def dealCards(state):
     """
-    VB-style dealCards
-    - consumes state.LIST_DECK
-    - populates col.contents with Card objects
+    VB-style dealCards.
+    Deals cards into each column according to the game script rules.
+
+    Decision tree per column (mirrors VB logic exactly):
+
+      1. shufle_any_cards == "1"
+            → Draw num_cards from the top of the shuffled deck.
+              This is also triggered by contents_at_start=next (same thing).
+
+      2. shufle_any_cards == "0"  AND  contents_at_start is a card list
+            → Place exactly those named cards into the column.
+              These cards are NOT in the deck (the [DECK] set= line
+              deliberately excludes them, per readme.txt).
+
+      3. shufle_any_cards == "0"  AND  contents_at_start is empty / missing
+            → Column starts empty (num_cards=0 usually confirms this).
     """
     from .engine import sync_column_contents
 
     print(f"DEBUG: Dealer starting. Deck size: {len(state.LIST_DECK)}")
 
     for col in state.kup:
-        # Clear any old data (VB-style reset)
+        # Clear any old data
         col.contents = []
         col.weight = 0
 
-        # How many cards does this column want? (e.g. 7 for Solitaire tableau)
         num = int(col.num_cards or 0)
-        if num <= 0:
-            continue
 
-        # VB: shufle_any_cards = "1" means this column pulls from the main deck
+        # --- BRANCH 1: draw from shuffled deck ---
         if str(col.shufle_any_cards) == "1":
             for _ in range(num):
                 if not state.LIST_DECK:
                     break
-                
-                # Take the top card from the deck
                 item = state.LIST_DECK.pop(0)
-
-                # CHECK: Is it a string or an object?
-                if isinstance(item, str):
-                    # If it's a string code (VB style), turn it into a Card object
-                    new_card = Card(code=item)
-                else:
-                    # If it's already a Card object, just use it
-                    new_card = item
-                
-                # Link the card to this column
+                new_card = item if isinstance(item, Card) else Card(code=item)
                 new_card.column_index = col.index
                 col.contents.append(new_card)
 
+        # --- BRANCH 2: predefined card list from contents_at_start ---
         else:
-            # VB: predefined contents_at_start (e.g. fixed layout games)
-            if hasattr(col, 'contents_at_start') and col.contents_at_start:
-                for code in col.contents_at_start.split(","):
-                    if code.strip():
-                        col.contents.append(Card(code=code.strip()))
+            # BUG FIX: Column.__init__ does not initialise contents_at_start,
+            # so hasattr() returns False for columns created via Column(index=n).
+            # Use getattr with a fallback to "" to be safe regardless.
+            at_start = getattr(col, "contents_at_start", "") or ""
+
+            if at_start and at_start.strip().lower() != "next":
+                # e.g. contents_at_start=h01   or   contents_at_start=c01,d12
+                for code in at_start.split(","):
+                    code = code.strip()
+                    if code:
+                        new_card = Card(code=code)
+                        new_card.column_index = col.index
+                        col.contents.append(new_card)
+            # "next" with shufle_any_cards=0 is unusual but handle it gracefully:
+            # treat it the same as shufle_any_cards=1 (draw from deck).
+            elif at_start.strip().lower() == "next" and num > 0:
+                for _ in range(num):
+                    if not state.LIST_DECK:
+                        break
+                    item = state.LIST_DECK.pop(0)
+                    new_card = item if isinstance(item, Card) else Card(code=item)
+                    new_card.column_index = col.index
+                    col.contents.append(new_card)
+            # else: column starts empty — nothing to do
 
         col.weight = len(col.contents)
-
-        # 🔐 Sync the VB-style contents_str ("s13,h12...")
         sync_column_contents(state, col)
 
     #print(f"DEBUG: Dealing finished. Cards left in deck: {len(state.LIST_DECK)}")

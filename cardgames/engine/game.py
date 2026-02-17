@@ -51,29 +51,37 @@ def get_my_game():
 
 def to_px(value):
     """
-    The 'Smart Bridge' helper - Revised for negative numbers.
-    - Handles 'Fortress' (negative spreads)
-    - Handles 'FreeCell' (small pixel spreads)
-    - Handles 'Four Seasons' (large twip spreads)
+    Converts a game-data overlap/position value to pixels.
+
+    The game file is a mixed bag:
+      - Large values (200, 350, 1500...) are VB Twips → divide by 15
+      - Small values (0, 1, 2 ... up to ~15) are already pixels → keep as-is
+
+    Threshold history:
+      > 24  — original threshold; let values like 20 and 50 through as raw
+               pixels, causing wildly spread cards in games like Auld Lang Syne
+               whose reserve columns use overlap_x=20, overlap_y=50 (twips).
+      > 15  — new threshold; 15 is exactly 1 twip = 1 pixel, so anything
+               above 15 is unambiguously a twip value and must be divided.
+               Genuine sub-pixel or 1-pixel overlaps (0..15) are kept intact.
     """
     try:
         v_str = str(value).strip()
         if not v_str or v_str == "-1":
             return -1
-        
+
         val = int(v_str)
         if val == 0:
             return 0
-            
-        # We check the ABSOLUTE value for the threshold
-        # If the magnitude is > 24, it's a Twip (positive or negative)
-        if abs(val) > 24:
-            # We use float division then cast to int to match VB 'Fix' behavior
-            # e.g., -300 / 15 = -20
+
+        # Use absolute value for threshold check so negative spreads
+        # (e.g. overlap_x=-200 for rightward fans) are handled correctly.
+        if abs(val) > 15:
             return int(val / 15)
-            
-        # Otherwise, it's a small Pixel value
+
+        # Small value — already in pixels, return unchanged.
         return val
+
     except (ValueError, TypeError):
         return 0
         

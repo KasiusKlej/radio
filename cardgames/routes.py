@@ -227,39 +227,6 @@
 # #         "game": engine.to_dict()
 # #     })
 
-# @cardgames_bp.route("/api/click", methods=["POST"])
-# @cardgames_bp.route("/api/click/", methods=["POST"])
-# def handle_click():
-#     try:
-#         engine = get_user_game()
-#         data = request.get_json()
-        
-#         if not engine:
-#             return jsonify({"success": False, "error": "Session expired"}), 401
-
-#         from .engine.engine import column_click, card_DblClick, Form_MouseDown, sync_visual_actors
-        
-#         event_type = data.get("event_type")
-#         col_idx = data.get("col_idx")
-#         card_code = data.get("card_code")
-
-#         # Logic Dispatcher
-#         if event_type == "dblclick":
-#             card_DblClick(engine.state, card_code)
-#         elif event_type == "mousedown" and col_idx is not None:
-#             Form_MouseDown(engine.state, int(col_idx))
-#         elif col_idx is not None:
-#             column_click(engine.state, int(col_idx), card_code)
-
-#         # The Argonauts Sync
-#         sync_visual_actors(engine.state)
-
-#         return jsonify({"success": True, "game": engine.to_dict()})
-
-#     except Exception as e:
-#         import traceback
-#         print(traceback.format_exc()) # Prints the full VB-style error to your terminal
-#         return jsonify({"success": False, "error": str(e)}), 500
 
 
 import uuid
@@ -303,17 +270,22 @@ def inject_games():
     """Provides translated menu items and game list to all templates."""
     from .engine.game import get_language_dict 
     
+    from .engine.parser import read_gamenames_from_language_files
+    from .engine.model import LANG_DIR
+    
     lang_code = session.get('lang', 'eng')
     raw_lang = get_language_dict(lang_code)
     
-    # FIX: If your load_game_names doesn't take arguments yet, 
-    # we call it without them to prevent the TypeError.
-    # To get localized names, you must update the function in parser.py
-    try:
-        games_list = load_game_names(lang_code)
-    except TypeError:
-        games_list = load_game_names()
+    # # FIX: If your load_game_names doesn't take arguments yet, 
+    # # we call it without them to prevent the TypeError.
+    # # To get localized names, you must update the function in parser.py
+    # try:
+    #     games_list = load_game_names(lang_code)
+    # except TypeError:
+    #     games_list = load_game_names()
     
+    games_list = read_gamenames_from_language_files(lang_code, LANG_DIR)
+
     return dict(
         games=games_list,
         lang_dict=raw_lang,
@@ -349,6 +321,56 @@ def play_game(game_id):
 # MASTER DISPATCHER (One Route to Rule Them All)
 # -------------------------------------------------
 
+# @cardgames_bp.route("/api/click", methods=["POST"])
+# @cardgames_bp.route("/api/click/", methods=["POST"])
+# def handle_click():
+#     try:
+#         engine = get_user_game()
+#         data = request.get_json()
+        
+#         if not engine:
+#             if data.get("event_type") == "table_click":
+#                 return jsonify({"success": False}), 200
+#             return jsonify({"success": False, "error": "Session expired"}), 401
+
+#         s = engine.state
+#         event_type = data.get("event_type", "click")
+#         col_idx = data.get("col_idx")
+#         card_code = data.get("card_code")
+
+#         # Harbor Log
+#         print(f"⚓ DISPATCHER: {event_type.upper()} | Col: {col_idx} | Card: {card_code}")
+
+#         if event_type == "dblclick":
+#             card_DblClick(s, card_code)
+            
+#         elif event_type == "mousedown" and col_idx is not None:
+#             Form_MouseDown(s, int(col_idx))
+            
+#         elif event_type == "table_click":
+#             s.usermode = 0
+#             s.selectedCard = ""
+#             s.selectedColumn = -1
+#             s.ShapeSelektor.visible = False
+            
+#         elif col_idx is not None:
+#             # The heart of the engine: column_click
+#             # Pass 'engine' so it can call engine.do_whole_action()
+#             column_click(engine, int(col_idx), card_code)
+
+#         # The Argonauts Sync (Universal Visual Alignment)
+#         sync_visual_actors(s)
+
+#         return jsonify({"success": True, "game": engine.to_dict()})
+
+#     except Exception as e:
+#         print(traceback.format_exc())
+#         return jsonify({"success": False, "error": str(e)}), 500
+
+# ============================================================================
+# FIXED handle_click in routes.py
+# ============================================================================
+
 @cardgames_bp.route("/api/click", methods=["POST"])
 @cardgames_bp.route("/api/click/", methods=["POST"])
 def handle_click():
@@ -369,24 +391,30 @@ def handle_click():
         # Harbor Log
         print(f"⚓ DISPATCHER: {event_type.upper()} | Col: {col_idx} | Card: {card_code}")
 
+        # ── BUG FIX: All engine functions now take 'engine' not 'state' ──
+        # The signature changed when we needed access to engine.do_whole_action()
+        # in column_click and engine.try_every_turn_actions(), etc.
+        
         if event_type == "dblclick":
-            card_DblClick(s, card_code)
+            # FIXED: Pass engine, not state
+            card_DblClick(engine, card_code)
             
         elif event_type == "mousedown" and col_idx is not None:
-            Form_MouseDown(s, int(col_idx))
+            # FIXED: Pass engine, not state
+            Form_MouseDown(engine, int(col_idx))
             
         elif event_type == "table_click":
+            # Table click doesn't call engine functions - just resets state
             s.usermode = 0
             s.selectedCard = ""
             s.selectedColumn = -1
             s.ShapeSelektor.visible = False
             
         elif col_idx is not None:
-            # The heart of the engine: column_click
-            # Pass 'engine' so it can call engine.do_whole_action()
+            # This one was already correct ✅
             column_click(engine, int(col_idx), card_code)
 
-        # The Argonauts Sync (Universal Visual Alignment)
+        # The Argonauts Sync
         sync_visual_actors(s)
 
         return jsonify({"success": True, "game": engine.to_dict()})
@@ -394,6 +422,7 @@ def handle_click():
     except Exception as e:
         print(traceback.format_exc())
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 # -------------------------------------------------
 # INFO & SETTINGS
@@ -447,3 +476,18 @@ def set_language(code):
         # Optional: Re-trigger the rules loading so the suitcase is updated
         # engine._load_rules_to_state() 
     return redirect(request.referrer or url_for("cardgames.index"))
+
+
+@cardgames_bp.route("/api/options/autoplay", methods=["POST"])
+@cardgames_bp.route("/api/options/autoplay/", methods=["POST"])
+def set_autoplay():
+    """Toggles the 'Automatic move' wish for the player."""
+    engine = get_user_game()
+    if not engine:
+        return jsonify({"ok": False, "error": "No active session"}), 401
+
+    data = request.get_json()
+    enabled = bool(data.get("enabled", False))
+    engine.state.autoplay_enabled = enabled
+    return jsonify({"ok": True, "autoplay": enabled})
+

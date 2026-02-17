@@ -1,6 +1,6 @@
 # engine.py 
 from .model import GameState, orig_card_x_size,orig_card_y_size, gap_x, gap_y, LANG_DIR, menu_items_slo, menu_items_eng
-from .parser import load_games2, language_parser, load_game_rules, load_game_names
+from .parser import load_games2, language_parser, load_game_rules, load_game_names, read_gamenames_from_language_files
 import random
 
 ####################################################
@@ -98,11 +98,12 @@ def get_column_of_card(state, card_code):
                 return i
     return -1
 
-def card_Click(state, card_code):
+def card_Click(game, card_code):
     """
     VB: Private Sub card_Click(Index As Integer)
     Handles selecting a card, deselecting, or starting a move.
     """
+    state = game.state
     if not card_code:
         return
 
@@ -113,70 +114,71 @@ def card_Click(state, card_code):
         state.singleClickMode = True
         # Call the heart of the engine
         from .engine import column_click
-        column_click(state, col_idx, card_code)
+        column_click(game, col_idx, card_code)
         state.singleClickMode = False
 
-def card_DblClick(state, card_code):
+
+def card_DblClick(game, card_code):
     """
     VB: Private Sub card_DblClick(Index As Integer)
+    FIXED: Now takes 'game' parameter to match column_click signature.
     AUTOPLAY - Forces a move to possible destinations.
     """
+    s = game.state  # Extract state from game
+    
     try:
-        if state.singleClickMode:
+        if s.singleClickMode:
             return
 
-        csour_idx = get_column_of_card(state, card_code)
+        csour_idx = get_column_of_card(s, card_code)
         if csour_idx == -1:
             return
 
         # Check if the game script defines destination columns for double-click
-        d_str = state.kup[csour_idx].dblclick_moves_to
+        d_str = s.kup[csour_idx].dblclick_moves_to
         
         if d_str != "-1":
-            from .engine import column_click
-            
             # Split comma-separated destinations (e.g., "1,2,3")
             destinations = d_str.split(",")
             found_match = False
 
             for d_val in destinations:
-                if not d_val.strip(): continue
+                if not d_val.strip(): 
+                    continue
                 cdest_idx = int(d_val.strip())
 
                 # Save current state of source column to see if card actually moves
-                original_contents = state.kup[csour_idx].contents_str
+                original_contents = s.kup[csour_idx].contents_str
                 
                 # --- Simulate Clicks ---
-                state.usermode = 0
-                state.selectedCard = ""
-                state.selectedColumn = -1
-                state.simulateClickMode = True
-                state.doubleClickMode = True
+                s.usermode = 0
+                s.selectedCard = ""
+                s.selectedColumn = -1
+                s.simulateClickMode = True
+                s.doubleClickMode = True
                 
-                # 1. Select the card
-                column_click(state, csour_idx, card_code)
-                # 2. Try to move to destination
-                column_click(state, cdest_idx, card_code)
+                # Pass 'game' not 'state' ✅
+                column_click(game, csour_idx, card_code)
+                column_click(game, cdest_idx, card_code)
                 
                 # Check if move happened
-                from .engine import sync_column_contents
-                sync_column_contents(state.kup[csour_idx])
+                sync_column_contents(s, s.kup[csour_idx])
                 
-                if original_contents != state.kup[csour_idx].contents_str:
+                if original_contents != s.kup[csour_idx].contents_str:
                     found_match = True
                 
-                state.simulateClickMode = False
-                state.doubleClickMode = False
+                s.simulateClickMode = False
+                s.doubleClickMode = False
 
                 if found_match:
                     break
 
         # Hide selector after action
-        state.ShapeSelektor.visible = False
+        s.ShapeSelektor.visible = False
 
     except Exception as e:
-        print(f"Error in {state.GAME_NAME} dblclick: {e}")
-        raise RuntimeError(f"{state.GAME_NAME} logic malfunction.")
+        print(f"Error in {s.GAME_NAME} dblclick: {e}")
+        raise RuntimeError(f"{s.GAME_NAME} logic malfunction.")
     
 
 # engine/engine.py
@@ -314,62 +316,64 @@ def column_click(game, col_idx, card_code):
     # because the Route calls it once at the end of the voyage.
 
 
-def Form_MouseDown(state, col_idx):
+def Form_MouseDown(game, col_idx):
     """
     VB: Private Sub Form_MouseDown(...)
-    In Web, this is called when a player clicks an empty slot or the 'table' background
-    near a column.
+    FIXED: Now takes 'game' parameter to match column_click signature.
     """
-    if not (len(state.ShapeColumns) > 0):
+    s = game.state  # Extract state from game
+    
+    if not (len(s.ShapeColumns) > 0):
         return
 
-    # In Web, the 'col_idx' is determined by the frontend hit-detection
     if col_idx == -1:
         return
     
-    # Try to move the currently selected card to this column
-    from .engine import column_click, cardId
-    # Note: selectedCard in our model stores the card code string
-    column_click(state, col_idx, state.selectedCard)
+    # Pass 'game' not 'state' ✅
+    column_click(game, col_idx, s.selectedCard)
 
-def imageFaceDown_Click(state, fd_index):
+
+def imageFaceDown_Click(game, fd_index):
     """
     VB: Private Sub imageFaceDown_Click(Index As Integer)
     Handles clicking a face-down overlay.
     """
-    # Find the card hidden under this overlay
+    state = game.state
     fd = state.imageFaceDown[fd_index]
-    card_code = fd.card_code # or fd.tag depending on your model
-
+    card_code = fd.card_code
+    
     col_idx = get_column_of_card(state, card_code)
-    if col_idx == -1: return
-
+    if col_idx == -1: 
+        return
+    
     if state.kup[col_idx].allways_facedown == "1":
         # Card is in 'playable' face-down mode
-        card_Click(state, card_code)
+        card_Click(game, card_code)  # ✅ Pass game
     else:
-        # Cannot play this yet - typically requires a double click to turn
+        # Cannot play this yet
         pass
 
-def imageFaceDown_DblClick(state, fd_index):
+
+def imageFaceDown_DblClick(game, fd_index):
     """
     VB: Private Sub imageFaceDown_DblClick(Index As Integer)
     Handles double-clicking to flip a card or auto-play a face-down card.
     """
+    state = game.state
     fd = state.imageFaceDown[fd_index]
     card_code = fd.card_code
     col_idx = get_column_of_card(state, card_code)
-    if col_idx == -1: return
-
+    if col_idx == -1: 
+        return
+    
     if state.kup[col_idx].allways_facedown == "1":
         # Redirect to standard double-click logic
-        card_DblClick(state, card_code)
+        card_DblClick(game, card_code)  # ✅ Pass game
     else:
         # Check if the dbl-clicked card is the top card of the column
         # and flip it if the rules allow.
         source_col = state.kup[col_idx]
         
-        # Get the code of the last card in this column
         if source_col.contents:
             top_card_code = source_col.contents[-1].code
             
@@ -378,9 +382,8 @@ def imageFaceDown_DblClick(state, fd_index):
                 fd.visible = False
                 source_col.contents[-1].face_up = True
                 
-                # Check if this flip triggers any game rules (like auto-moving to foundation)
-                from .engine import try_every_turn_actions
-                try_every_turn_actions(state)
+                # Trigger game rules
+                game.try_every_turn_actions()  # ✅ This is why we need game
 
 
 from .model import orig_card_x_size, orig_card_y_size, gap_x, gap_y
@@ -708,7 +711,7 @@ def getGameInfo(zap_st_igre, filepath):
 
     if not matched:
         raise ValueError(f"Game with index {target_index} not found.")
-
+    
     return list_game_lines, list_actions
 
 
@@ -791,51 +794,98 @@ def hide_previous_requisites(state):
     state.ShapeSelektor.visible = False
 
 
-def check_allways_facedown_columns(state):
-    """
-    VB: check_allways_facedown_columns
-    Syncs facedown overlays with the current position of the columns.
-    """
-    s = state  # Short reference
+# def check_allways_facedown_columns(state):
+#     """
+#     VB: check_allways_facedown_columns
+#     Syncs facedown overlays with the current position of the columns.
+#     """
+#     s = state  # Short reference
 
-    # We iterate through all columns in the player's private 'kup'
-    for i, col in enumerate(s.kup):
-        # We only care about columns tagged as "always facedown" (usually the deck)
-        if col.allways_facedown == "1":
+#     # We iterate through all columns in the player's private 'kup'
+#     for i, col in enumerate(s.kup):
+#         # We only care about columns tagged as "always facedown" (usually the deck)
+#         if col.allways_facedown == "1":
             
-            # If the column has cards, the overlay must be visible and correctly positioned
-            if col.weight > 0:
-                # 1. Resolve Column Position (VB Index)
-                pos_idx = int(col.position) if col.position else 0
+#             # If the column has cards, the overlay must be visible and correctly positioned
+#             if col.weight > 0:
+#                 # 1. Resolve Column Position (VB Index)
+#                 pos_idx = int(col.position) if col.position else 0
                 
-                # 2. Vertical Position (Y)
+#                 # 2. Vertical Position (Y)
+#                 if col.custom_y not in (-1, None, ""):
+#                     # Specific override in script
+#                     s.imageFaceDown[i].top = int(col.custom_y)
+#                 else:
+#                     # Standard grid position + fan overlap
+#                     s.imageFaceDown[i].top = (
+#                         s.columnY[pos_idx] + (col.overlap_y * col.weight)
+#                     )
+
+#                 # 3. Horizontal Position (X)
+#                 if col.custom_x not in (-1, None, ""):
+#                     s.imageFaceDown[i].left = int(col.custom_x)
+#                 else:
+#                     s.imageFaceDown[i].left = (
+#                         s.columnX[pos_idx] + (col.overlap_x * col.weight)
+#                     )
+
+#                 # 4. Update the card reference (VB .Tag)
+#                 # Since col.contents is a list of Card objects, we take the last one's code
+#                 if col.contents:
+#                     s.imageFaceDown[i].card_code = col.contents[-1].code
+                
+#                 s.imageFaceDown[i].visible = True
+#             else:
+#                 # Column is empty, hide the facedown image
+#                 s.imageFaceDown[i].visible = False
+#                 s.imageFaceDown[i].card_code = ""
+
+def check_allways_facedown_columns(state):
+    s = state
+    fd_idx = 0  # <-- separate counter for imageFaceDown
+
+    for i, col in enumerate(s.kup):
+        if col.allways_facedown == "1":
+
+            # Guard: don't exceed the imageFaceDown array
+            if fd_idx >= len(s.imageFaceDown):
+                break
+
+            if col.weight > 0:
+                # Safe position resolution
+                try:
+                    pos_idx = int(str(col.position).strip()) if col.position else 0
+                except (ValueError, TypeError):
+                    pos_idx = 0
+
+                # Vertical position
                 if col.custom_y not in (-1, None, ""):
-                    # Specific override in script
-                    s.imageFaceDown[i].top = int(col.custom_y)
+                    s.imageFaceDown[fd_idx].top = int(col.custom_y)
                 else:
-                    # Standard grid position + fan overlap
-                    s.imageFaceDown[i].top = (
+                    s.imageFaceDown[fd_idx].top = (
                         s.columnY[pos_idx] + (col.overlap_y * col.weight)
                     )
 
-                # 3. Horizontal Position (X)
+                # Horizontal position
                 if col.custom_x not in (-1, None, ""):
-                    s.imageFaceDown[i].left = int(col.custom_x)
+                    s.imageFaceDown[fd_idx].left = int(col.custom_x)
                 else:
-                    s.imageFaceDown[i].left = (
+                    s.imageFaceDown[fd_idx].left = (
                         s.columnX[pos_idx] + (col.overlap_x * col.weight)
                     )
 
-                # 4. Update the card reference (VB .Tag)
-                # Since col.contents is a list of Card objects, we take the last one's code
+                # Card reference
                 if col.contents:
-                    s.imageFaceDown[i].card_code = col.contents[-1].code
-                
-                s.imageFaceDown[i].visible = True
+                    s.imageFaceDown[fd_idx].card_code = col.contents[-1].code
+
+                s.imageFaceDown[fd_idx].visible = True
+
             else:
-                # Column is empty, hide the facedown image
-                s.imageFaceDown[i].visible = False
-                s.imageFaceDown[i].card_code = ""
+                s.imageFaceDown[fd_idx].visible = False
+                s.imageFaceDown[fd_idx].card_code = ""
+
+            fd_idx += 1  # <-- only advance when we've consumed one overlay
+
 
 def match_specificCol(state, specifCol, col_idx):
     """
@@ -1153,43 +1203,70 @@ def match_crds_alternate(state, mode, c_top, c_under):
 def apply_facedown_masks(state):
     """
     VB: Logic usually found in prepareColumns or dealCards.
-    Reads 'cards_face_up' string and hides cards accordingly.
+    Sets card.face_up=False for any card that should be hidden at deal time,
+    and activates the corresponding imageFaceDown overlay.
+
+    Two independent mechanisms can hide cards:
+
+      1. allways_facedown == "1"
+            The entire column is a face-down pile (e.g. the draw deck).
+            ALL cards in it are hidden, regardless of cards_face_up.
+            The overlay is managed by check_allways_facedown_columns, but
+            we still must set card.face_up=False here so the renderer
+            doesn't show card faces underneath.
+
+      2. cards_face_up = "0,0,1,1,..."
+            Individual cards within a normal column are hidden (e.g. tableau
+            piles in Klondike where only the top card is revealed).
+            card.face_up is set per-card according to the list.
+
+    BUG THAT WAS HERE:
+      Auld Lang Syne's [1deck] has allways_facedown=1 but cards_face_up=1,1,1...
+      (all ones). apply_facedown_masks only checked cards_face_up, so it saw
+      "all face up" and left every card visible. The deck appeared face-up
+      because the column-level allways_facedown flag was never consulted.
     """
     s = state
     s.nextAvailableFaceDown = 0
-    
-    # First, hide all existing masks
+
+    # Reset all masks first
     for fd in s.imageFaceDown:
         fd.visible = False
 
     for col in s.kup:
+
+        # ── MECHANISM 1: allways_facedown column ─────────────────────────
+        # The whole column is a face-down pile. Mark every card hidden.
+        # check_allways_facedown_columns handles the overlay positioning;
+        # we only need to set the card flags here.
+        if col.allways_facedown == "1":
+            for card in col.contents:
+                card.face_up = False
+            # Don't also process cards_face_up for this column — skip to next.
+            continue
+
+        # ── MECHANISM 2: per-card cards_face_up mask ─────────────────────
         if not col.cards_face_up or col.cards_face_up == "-1":
             continue
 
-        # Convert "0,0,1" -> [False, False, True]
-        # In VB, these were often comma-separated strings
+        # Parse "0,0,1,1" → [False, False, True, True]
         rules = [r.strip() == "1" for r in str(col.cards_face_up).split(",")]
 
         for i, card in enumerate(col.contents):
-            # Check the rule for this specific card index in the pile
-            should_be_face_up = True
-            if i < len(rules):
-                should_be_face_up = rules[i]
-            
+            # If the rule list is shorter than the column, remaining cards
+            # default to face-up (safe assumption).
+            should_be_face_up = rules[i] if i < len(rules) else True
+
             if not should_be_face_up:
-                # 1. Update the Card object (The modern web way)
                 card.face_up = False
-                
-                # 2. Activate the Mask (The 'Faithful VB' way)
+
+                # Activate a mask overlay at this card's position
                 if s.nextAvailableFaceDown < len(s.imageFaceDown):
                     mask = s.imageFaceDown[s.nextAvailableFaceDown]
                     mask.visible = True
                     mask.card_code = card.code
-                    
-                    # Position the mask exactly where the card is
                     mask.left = col.x + (i * col.overlap_x)
-                    mask.top = col.y + (i * col.overlap_y)
-                    
+                    mask.top  = col.y + (i * col.overlap_y)
                     s.nextAvailableFaceDown += 1
 
 
@@ -1219,3 +1296,4 @@ def sync_visual_actors(state):
                     mask.top = col.y + (i * col.overlap_y)
                     
                     s.nextAvailableFaceDown += 1
+
