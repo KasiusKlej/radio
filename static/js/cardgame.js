@@ -340,24 +340,24 @@ document.addEventListener("mousedown", (e) => {
     }
 });
 
-document.addEventListener("click", (e) => {
-    const card = e.target.closest(".card");
-    const slot = e.target.closest(".column-requisite");
-    const table = e.target.id === "game-table" || e.target.id === "table-scroll";
 
-    if (card || slot) {
-        //const colIdx = card ? card.parentElement.dataset.columnId : slot.dataset.columnId;
-        // Walk up to find the nearest element with data-column-id
-        const colEl = e.target.closest("[data-column-id]");
-        const colIdx = colEl ? colEl.dataset.columnId : null;
-        dispatchWish({
-            event_type: "click",
+document.addEventListener("click", (e) => {
+    const cardEl = e.target.closest(".card");
+    const colEl = e.target.closest(".column-requisite");  // ✅ Changed from .column
+
+    if (!colEl && !cardEl) return;
+    
+    e.stopPropagation();  // ✅ ADD THIS to prevent bubbling
+
+    const colIdx = colEl ? colEl.dataset.columnId : (cardEl ? cardEl.parentElement.dataset.columnId : null);
+    const cardCode = cardEl ? cardEl.dataset.cardId : null;
+
+    if (colIdx !== null) {
+        handleEngineAction("/cardgames/api/click", {
+            event_type: "click",  // ✅ ADD THIS
             col_idx: colIdx,
-            card_code: card ? card.dataset.cardId : null
+            card_code: cardCode
         });
-    } else if (table) {
-        // User clicked the green background (The Stage Floor)
-        dispatchWish({ event_type: "table_click", col_idx: null, card_code: null });
     }
 });
 
