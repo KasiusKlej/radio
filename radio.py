@@ -10,7 +10,6 @@ app = Flask(
     template_folder=os.path.join(BASE_DIR, "templates")
 )
 
-#app = Flask(__name__)
 app.secret_key = "428ef008c81fd2d317876eb94ffeb68039d6a0d304b7a9e4cc5a7f47ec5fea00"
 app.register_blueprint(cardgames_bp, url_prefix="/cardgames")
 

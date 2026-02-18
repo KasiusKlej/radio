@@ -142,64 +142,63 @@ function createCardElement(card, col, index, relative = false) {
         : `1024x768face${ext}`;
     el.style.backgroundImage = `url(/static/cards/${imgName})`;
 
-    cardElements[card.code] = el;
+    //cardElements[card.code] = el;
     return el;
 }
+
 
 
 function renderImmediately(snapshot) {
     const table = document.getElementById("game-table");
     table.innerHTML = "";
-    // Reset the cardElements map since we're rebuilding everything
+    // Reset the cardElements map
     Object.keys(cardElements).forEach(k => delete cardElements[k]);
 
-    // 1. Draw Column Placeholders (Z=1)
+    // ═══════════════════════════════════════════════════════════════════════
+    // STEP 1: Draw Column Placeholders (Z=1)
+    // ═══════════════════════════════════════════════════════════════════════
     snapshot.actors.slots.forEach(slot => {
         if (!slot.visible) return;
-        const el = document.createElement("div");
-        el.className = "column-requisite";
+        
+        const slotEl = document.createElement("div");
+        slotEl.className = "column-requisite";
         
         if (slot.backstyle === 1 && slot.backcolor === 8) {
-            el.classList.add("style-grey");
+            slotEl.classList.add("style-grey");
         } else {
-            el.classList.add("win95-bevel-in"); 
+            slotEl.classList.add("win95-bevel-in"); 
         }
         
-        el.style.left = `${slot.left}px`;
-        el.style.top = `${slot.top}px`;
-        el.style.zIndex = 1;
-        table.appendChild(el);
+        slotEl.style.left = `${slot.left}px`;
+        slotEl.style.top = `${slot.top}px`;
+        slotEl.style.zIndex = 1;
+        table.appendChild(slotEl);
     });
 
-    // 2. Draw Cards (Z=100+) and populate cardElements map
+    // ═══════════════════════════════════════════════════════════════════════
+    // STEP 2: Draw Cards with ABSOLUTE coordinates (Z=100+)
+    // ═══════════════════════════════════════════════════════════════════════
     snapshot.kup.forEach(col => {
         col.cards.forEach((card, index) => {
-            const el = createCardElement(card, col, index);
-            table.appendChild(el);
-            // ✅ FIX: Register card in map BEFORE drawing selector
-            cardElements[card.code] = el;
+            const cardEl = createCardElement(card, col, index);
+            table.appendChild(cardEl);
+            cardElements[card.code] = cardEl;
         });
     });
 
-    // 3. Draw Selection Box (Z=1000) — FIXED
+    // ═══════════════════════════════════════════════════════════════════════
+    // STEP 3: Draw Selection Box (Z=1000)
+    // ═══════════════════════════════════════════════════════════════════════
     const sel = snapshot.actors.selector;
     if (sel.visible && snapshot.selected_card_code) {
-        console.log(`✨ Rendering selection box for card: ${snapshot.selected_card_code}`);
-        
         const cardEl = cardElements[snapshot.selected_card_code];
         if (cardEl) {
             const selectorEl = document.createElement("div");
             selectorEl.className = "selection-box";
-            
-            // Position exactly over the selected card
             selectorEl.style.left = cardEl.style.left;
             selectorEl.style.top = cardEl.style.top;
             selectorEl.style.zIndex = 1000;
-            
             table.appendChild(selectorEl);
-            console.log(`✅ Selection box rendered at (${cardEl.style.left}, ${cardEl.style.top})`);
-        } else {
-            console.warn(`⚠️  Card element not found for: ${snapshot.selected_card_code}`);
         }
     }
 }
@@ -207,58 +206,78 @@ function renderImmediately(snapshot) {
 
 
 function animateDiff(prev, next) {
+    // Remove old selection box if it exists
+    const oldSelector = document.querySelector('.selection-box');
+    if (oldSelector) {
+        oldSelector.remove();
+    }
+
     next.kup.forEach((col, colIdx) => {
-
-        // Find the column's wrapper div by its data-column-id.
-        // Cards must be moved/created inside this div so their
-        // left/top are relative offsets, matching renderImmediately.
-        const colEl = document.querySelector(`[data-column-id="${colIdx}"]`);
-
         col.cards.forEach((card, index) => {
             const ox = Number(col.overlap_x) || 0;
             const oy = Number(col.overlap_y) || 0;
 
-            // Relative offset inside the column div (NOT absolute table coords)
-            const newX = index * ox;
-            const newY = index * oy;
+            // ✅ ABSOLUTE coordinates (matching renderImmediately)
+            const newX = col.x + (index * ox);
+            const newY = col.y + (index * oy);
 
             const el = cardElements[card.code];
 
             if (el) {
-                // ── Move existing card ──────────────────────────────────
-                // Re-parent into the correct column div if it moved columns
-                if (el.parentElement !== colEl && colEl) {
-                    colEl.appendChild(el);
-                }
-
+                // ── Animate existing card to new position ──
                 el.style.transition = "all 0.35s ease-in-out";
-                el.style.left   = `${newX}px`;
-                el.style.top    = `${newY}px`;
+                el.style.left = `${newX}px`;
+                el.style.top = `${newY}px`;
                 el.style.zIndex = 100 + index;
 
-                // Handle face-down → face-up flip
+                // Handle face flip
                 if (card.face_up && el.classList.contains('face-down')) {
                     el.classList.replace('face-down', 'face-up');
-                    el.style.backgroundImage =
-                        `url(/static/cards/1024x768${card.code}.png)`;
+                    el.style.backgroundImage = `url(/static/cards/1024x768${card.code}.png)`;
+                } else if (!card.face_up && el.classList.contains('face-up')) {
+                    el.classList.replace('face-up', 'face-down');
+                    el.style.backgroundImage = `url(/static/cards/1024x768face.png)`;
                 }
 
             } else {
-                // ── New card (redealt / just arrived) ───────────────────
-                // relative=true so coords are column-relative, not absolute
-                const newEl = createCardElement(card, col, index, true);
-
-                if (colEl) {
-                    colEl.appendChild(newEl);   // inside column div ✅
-                } else {
-                    // Fallback: column div missing, go straight to table
-                    // (shouldn't happen, but safe to handle)
-                    document.getElementById("game-table").appendChild(newEl);
-                }
+                // ── Create new card ──
+                const newEl = createCardElement(card, col, index);
+                document.getElementById("game-table").appendChild(newEl);
+                cardElements[card.code] = newEl;
             }
         });
     });
+
+    // Remove cards that no longer exist in the snapshot
+    Object.keys(cardElements).forEach(code => {
+        const stillExists = next.kup.some(col => 
+            col.cards.some(card => card.code === code)
+        );
+        if (!stillExists) {
+            const el = cardElements[code];
+            if (el && el.parentElement) {
+                el.remove();
+            }
+            delete cardElements[code];
+        }
+    });
+
+    // Redraw selection box if a card is selected
+    const sel = next.actors.selector;
+    if (sel.visible && next.selected_card_code) {
+        const cardEl = cardElements[next.selected_card_code];
+        if (cardEl) {
+            const selectorEl = document.createElement("div");
+            selectorEl.className = "selection-box";
+            selectorEl.style.left = cardEl.style.left;
+            selectorEl.style.top = cardEl.style.top;
+            selectorEl.style.zIndex = 1000;
+            document.getElementById("game-table").appendChild(selectorEl);
+        }
+    }
 }
+
+
 
 /* ---------- MENU INTERCEPTORS ---------- */
 

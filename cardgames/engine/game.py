@@ -9,7 +9,7 @@ from .engine import sync_column_contents, check_allways_facedown_columns, getGam
 # --- Data Models & Constants ---
 from .model import GameState, Card, Column, ColumnSlot, FaceDownOverlay, SelectionOverlay, LANG_DIR, orig_card_x_size, orig_card_y_size, gap_x, gap_y
 # --- Parsers & Shufflers ---
-from .parser import load_games2, language_parser, load_game_rules, load_game_names, parse_all_games, load_gamesVB
+from .parser import load_games2, language_parser, load_game_rules, load_game_names, parse_all_games, load_gamesVB, read_gamenames_from_language_files
 from .shuffler_girl import shuffleDeck
 from .card_dealer import dealCards
 
@@ -127,43 +127,7 @@ class CardGame:
             # This is the ONLY entry point for a fresh game.
             # We call the faithful VB port directly.
             self._start_new_game(game_id)
-
-
-    # def __init__(self, game_id, session_id=None, from_snapshot=None):
-    #     # 1. Initialize the State (The Big Move)
-    #     # This object holds ALL player-specific data.
-    #     #self.state = GameState(game_id, session_id)
-
-    #     self.state = GameState(game_id, session.get('user_sid'))
-    #     print(f"DEBUG: Initializing game {game_id}")
-
-    #     if from_snapshot:
-    #         # Reconstruct state from a saved dictionary (JSON from frontend)
-    #         self._load_from_dict(from_snapshot)
-    #     else:
-    #         # Start a fresh game
-    #         self._initialize_new_game(game_id)
-
-    # def _initialize_new_game(self, game_id):
-    #     """VB Phase 1 & 2: Setup memory and load script."""
-        
-    #     # Set session-based defaults
-    #     self.state.zap_st_igre = game_id
-    #     self.state.CURRENT_LANGUAGE = session.get("lang", "eng")
-        
-    #     # Load the game definition from the text file (numeric index lookup)
-    #     # We pass self.state so the parser can fill LIST_GAME_LINES and GAME_NAME
-    #     self._load_game_definition(game_id)
-
-    #     # Initialize engine flags to starting values
-    #     self._vb_init_globals()
-
-    #     # VB Phase 3: Shuffling and Dealing
-    #     shuffleDeck(self.state)  # Pass state to shuffler
-    #     dealCards(self.state)    # Pass state to dealer
-
-    #     # Setup visual coordinates and overlays
-    #     self.prepareRequisites()
+   
 
     def _load_game_definition(self, game_id):
         """
@@ -856,95 +820,7 @@ class CardGame:
         )
         
         self.state.rules_of_currently_played_game = rules_text
-
-    # def _start_new_game(self, game_id):
-    #     """
-    #     VB Form_Load equivalent.
-    #     Called exactly once to initialize the table.
-    #     """
-    #     s = self.state # Short reference for cleaner code
         
-    #     # ------------------------------------------------------------
-    #     # VB → Python Migration Tracker (Preserved for your orientation)
-    #     # #### irrelevant / intentionally not ported
-    #     # ###  ported & working
-    #     # ##   planned, not ported yet
-    #     # #    decision pending
-    #     # ------------------------------------------------------------
-
-    #     #### statistics(gamename, "modify", 0, 0, 1)
-    #     # (statistics system will be ported later)
-
-    #     ### gamename
-    #     # Already mapped → self.state.name
-
-    #     ### youWon
-    #     s.youWon = False  # VB Boolean → Boolean inside State
-
-    #     ### Form1.Caption
-    #     # Ported → HTML <title> (via Flask template)
-
-    #     #### menu enabling
-    #     # mnuStatistics.Enabled, mnuRules.Enabled
-    #     # (menus handled by web navigation, not state)
-
-    #     #### TimerAnimate
-    #     # Web animations handled via CSS/JS
-
-    #     ### cardJustMoved
-    #     # Will be used by engine for move validation
-    #     s.cardJustMoved = False
-
-    #     ## Screen.MousePointer
-    #     # Ported conceptually → CSS cursor: wait on body.busy
-
-    #     ### hidePreviousRequsites
-    #     # Not applicable (DOM handles visibility)
-    #     # hide_previous_requisites() 
-
-    #     ### getGameInfo
-    #     # This is now handled by load_game() above which populates s.LIST_GAME_LINES
-
-    #     ### calcColumnXY
-    #     # This function should be updated to: calcColumnXY(self.state)
-    #     # from .engine import calcColumnXY
-    #     # calcColumnXY(s)
-
-    #     ### prepareColumns
-    #     print(f"DEBUG: prepare columns")        
-    #     self._prepare_columns() # Should be a method that populates s.kup
-                
-    #     ### prepareRequisites
-    #     # sets up visual actors in s.ShapeColumns and s.imageFaceDown
-    #     self.prepareRequisites()
-        
-    #     ### shuffleDeck
-    #     # Correct Syntax: pass the state object
-    #     shuffleDeck(s)
-
-    #     ### dealCards
-    #     # Correct Syntax: pass the state object
-    #     dealCards(s)
-
-    #     # debug        
-    #     total_on_table = sum(len(col.contents) for col in s.kup)
-    #     print(f"DEBUG: After deal, total cards in 'kup': {total_on_table}")        
-
-    #     # --- Debug info (Server Console) ---
-    #     total_cards_on_table = sum(len(col.contents) for col in s.kup)
-    #     print(f"Game Started: {s.name} (ID: {s.zap_st_igre})")
-    #     print(f"Total cards on table: {total_cards_on_table}")
-        
-    #     # 🔒 critical invariant enforcement
-    #     for col in s.kup:
-    #         sync_column_contents(col)
-      
-    #     ## check_allways_facedown_columns
-    #     # Updated to take state
-    #     check_allways_facedown_columns(s)
-
-    #     ## do_whole_action("[autostart]")
-    #     # Engine-driven automation (future)        
 
     def _start_new_game(self, game_id):
         """
@@ -1096,37 +972,7 @@ class CardGame:
             col.x = col.custom_x
             col.y = col.custom_y
 
-    # def _normalize_column_overlaps(self):
-    #     """Column overlap normalization (VB-faithful)."""
-    #     s = self.state
-    #     for col in s.kup:
-    #         # Normalize overlap values (VB style: 0 or empty means use system default)
-    #         if col.overlap_x in (0, "", None):
-    #             col.overlap_x = s.default_overlap_x             # fishy bug
-
-    #         if col.overlap_y in (0, "", None):
-    #             col.overlap_y = s.default_overlap_y             # fishy bug
-
-    # def _normalize_column_overlaps(self):
-    #     """
-    #     Uses the game-wide defaults if a specific column 
-    #     doesn't have its own custom spread.
-    #     """
-    #     s = self.state
-    #     for col in s.kup:
-    #         # If col.overlap_x is -1, it means 'use the game default'
-    #         if col.overlap_x == -1:
-    #             col.overlap_x = s.default_overlap_x
-            
-    #         if col.overlap_y == -1:
-    #             col.overlap_y = s.default_overlap_y
-        
-    #     # FINAL SAFETY: If even the game default was missing (-1),
-    #     # force a tiny spread so cards aren't invisible.
-    #     for col in s.kup:
-    #         if col.overlap_x == -1: col.overlap_x = 0
-    #         if col.overlap_y == -1: col.overlap_y = 20
-
+    
     def _normalize_column_overlaps(self):
         """
         Improved Normalizer: Prevents 'Leaking Axis' bugs.
@@ -1212,63 +1058,81 @@ class CardGame:
         """
         VB: prepareColumns
         Full 3-stage parser: Defaults -> Layout -> Behaviour
+        
+        Now fully synchronized with Column.__init__ to handle all attributes.
         """
         s = self.state
         lines = s.LIST_GAME_LINES
         i = 0
 
-        # ---- STAGE 1: [COLUMNS DEFAULTS] ----
-        # (Already mostly correct in your version)
+        # ═══════════════════════════════════════════════════════════════════════
+        # STAGE 1: [COLUMNS DEFAULTS]
+        # ═══════════════════════════════════════════════════════════════════════
         while i < len(lines):
             line = lines[i].strip()
             if line == "[COLUMNS DEFAULTS]":
                 i += 1
                 while i < len(lines) and lines[i].strip() != "[END COLUMNS DEFAULTS]":
                     l = lines[i].strip()
-
-                    if line.startswith("overlap_x="):
-                        s.default_overlap_x = to_px(line.split("=")[1])
-                    elif line.startswith("overlap_y="):
-                        s.default_overlap_y = to_px(line.split("=")[1])
-
+                    
+                    # Note: Check 'l' not 'line' (bug fix)
+                    if l.startswith("overlap_x="):
+                        s.default_overlap_x = to_px(l.split("=")[1])
+                    elif l.startswith("overlap_y="):
+                        s.default_overlap_y = to_px(l.split("=")[1])
+                    elif l.startswith("zoom="):
+                        try:
+                            s.zoom = float(l.split("=")[1])
+                        except ValueError:
+                            s.zoom = 1.0
+                    
                     i += 1
-            if line == "[COLUMNS]": break
+            if line == "[COLUMNS]": 
+                break
             i += 1
 
-        # ---- STAGE 2: [COLUMNS] ----
-        # (Where we create the objects)
+        # ═══════════════════════════════════════════════════════════════════════
+        # STAGE 2: [COLUMNS] — Create Column objects
+        # ═══════════════════════════════════════════════════════════════════════
         i = 0
-        while i < len(lines) and lines[i].strip() != "[COLUMNS]": i += 1
-        i += 1
+        while i < len(lines) and lines[i].strip() != "[COLUMNS]": 
+            i += 1
+        i += 1  # Skip past [COLUMNS] header
         
         c_idx = 0
         s.kup = [] 
+        
         while i < len(lines):
             line = lines[i].strip()
-            if line == "[END COLUMNS]": break
+            if line == "[END COLUMNS]": 
+                break
             if not line or line.startswith("#"): 
                 i += 1
                 continue
-
+            
+            # Create new Column with all defaults from __init__
             col = Column(index=c_idx)
+            
+            # Parse the compact format: "name, position, num_cards, shuffle_flag"
             parts = [p.strip() for p in line.split(",")]
             col.column_name = parts[0]
-            col.position = parts[1][:2]
-            col.num_cards = int(parts[2]) if parts[2].isdigit() else 0
-            col.shufle_any_cards = line[-1] 
-
-            # FLAG: Initialize with -1 to indicate "not set yet"
-            col.overlap_x = -1
-            col.overlap_y = -1
+            col.position = parts[1][:2] if len(parts) > 1 else ""
+            col.num_cards = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+            col.shufle_any_cards = parts[-1] if len(parts) > 3 else "0"
+            
+            # Keep overlap as -1 (unset) so Stage 3 can override or normalize can apply defaults
+            # col.overlap_x and col.overlap_y already = -1 from __init__
             
             s.kup.append(col)
             c_idx += 1
             i += 1
 
-        # ---- STAGE 3: [COLUMNS BEHAVIOUR] (THE MISSING PIECE) ----
-        # This is where 'overlap_y=default' lives!
+        # ═══════════════════════════════════════════════════════════════════════
+        # STAGE 3: [COLUMNS BEHAVIOUR] — Apply per-column settings
+        # ═══════════════════════════════════════════════════════════════════════
         i = 0
         current_col = None
+        
         while i < len(lines):
             line = lines[i].strip()
             if line == "[COLUMNS BEHAVIOUR]":
@@ -1278,62 +1142,136 @@ class CardGame:
                     if line == "[END COLUMNS BEHAVIOUR]":
                         break
                     
+                    # Column header: [column_name]
                     if line.startswith("[") and line.endswith("]"):
-                        # Found a header like [column1]
                         col_name = line[1:-1]
                         current_col = next((c for c in s.kup if c.column_name == col_name), None)
+                        if not current_col:
+                            print(f"Warning: Column '{col_name}' not found in kup")
                     
+                    # Key=Value pairs
                     elif current_col and "=" in line:
                         key, val = [p.strip() for p in line.split("=", 1)]
                         
-                        # --- OVERLAP LOGIC (The Gordian Knot Fix) ---
+                        # ───────────────────────────────────────────────────────
+                        # GEOMETRY & POSITIONING
+                        # ───────────────────────────────────────────────────────
                         if key == "overlap_x":
                             if val == "default":
                                 current_col.overlap_x = s.default_overlap_x
                             else:
                                 current_col.overlap_x = to_px(val)
-                                
+                        
                         elif key == "overlap_y":
                             if val == "default":
                                 current_col.overlap_y = s.default_overlap_y
                             else:
                                 current_col.overlap_y = to_px(val)
-
-                        # --- GEOMETRY OVERRIDES ---
+                        
                         elif key == "custom_x":
                             current_col.custom_x = to_px(val)
+                        
                         elif key == "custom_y":
                             current_col.custom_y = to_px(val)
-
-                        # --- PERMISSIONS & RULES (The 'Other Keys') ---
+                        
+                        # ───────────────────────────────────────────────────────
+                        # PLAYER INTERACTION PERMISSIONS
+                        # ───────────────────────────────────────────────────────
                         elif key == "player_can_take_card":
                             current_col.player_can_take_card = val
+                        
                         elif key == "player_can_put_card":
                             current_col.player_can_put_card = val
+                        
                         elif key == "player_can_put_card_if_empty":
                             current_col.player_can_put_card_if_empty = val
+                        
+                        # ───────────────────────────────────────────────────────
+                        # VISUAL SETTINGS
+                        # ───────────────────────────────────────────────────────
+                        elif key == "backstyle":
+                            current_col.backstyle = val  # Store as string, will convert in prepareRequisites
+                        
+                        elif key == "backcolor":
+                            current_col.backcolor = val  # Store as string, will convert in prepareRequisites
+                        
                         elif key == "allways_facedown":
                             current_col.allways_facedown = val
+                        
                         elif key == "cards_face_up":
                             current_col.cards_face_up = val
-                        elif key == "dblclick_moves_to":
-                            current_col.dblclick_moves_to = val
+                        
+                        elif key == "use_facedown":
+                            current_col.use_facedown = val
+                        
+                        # ───────────────────────────────────────────────────────
+                        # CARD DEALING
+                        # ───────────────────────────────────────────────────────
+                        elif key == "contents_at_start":
+                            current_col.contents_at_start = val
+                        
+                        # ───────────────────────────────────────────────────────
+                        # GAME RULES (card matching logic)
+                        # ───────────────────────────────────────────────────────
+                        elif key == "suit":
+                            current_col.suit = val
+                        
+                        elif key == "card_value":
+                            current_col.card_value = val
+                        
+                        elif key == "alternate":
+                            current_col.alternate = val
+                        
+                        elif key == "suit_or_card":
+                            current_col.suit_or_card = val
+                        
+                        elif key == "max_cards":
+                            current_col.max_cards = int(val) if val.isdigit() else 0
+                        
                         elif key == "aces_on_kings":
                             current_col.aces_on_kings = val
-                        elif key == "backstyle":
-                            current_col.backstyle = int(val)
-                        elif key == "backcolor":
-                            current_col.backcolor = int(val)
                         
-                        # Rule types (0=descending, 1=ascending, etc.)
-                        elif key in ("alternate", "suit", "card_value", "suit_or_card"):
+                        # ───────────────────────────────────────────────────────
+                        # PLAYER ACTIONS
+                        # ───────────────────────────────────────────────────────
+                        elif key == "dblclick_moves_to":
+                            current_col.dblclick_moves_to = val
+                        
+                        elif key == "after_move_action":
+                            current_col.after_move_action = val
+                        
+                        elif key == "after_playermove_action":
+                            current_col.after_playermove_action = val
+                        
+                        elif key == "attempted_move_action":
+                            current_col.attempted_move_action = val
+                        
+                        elif key == "attempted_playermove_action":
+                            current_col.attempted_playermove_action = val
+                        
+                        # ───────────────────────────────────────────────────────
+                        # ADDITIONAL RULES (if any new ones appear in game data)
+                        # ───────────────────────────────────────────────────────
+                        elif key == "always_allowed_from_columns":
+                            # Not in Column.__init__, but might be used by engine
                             setattr(current_col, key, val)
-                            
+                        
+                        elif key == "overlap":
+                            # Legacy VB attribute, store it if present
+                            setattr(current_col, key, val)
+                        
+                        else:
+                            # Future-proofing: store any unknown keys
+                            # print(f"Info: Unknown column attribute '{key}' for column '{current_col.column_name}'")
+                            setattr(current_col, key, val)
+                    
                     i += 1
                 break
             i += 1
 
-        # Finalize
+        # ═══════════════════════════════════════════════════════════════════════
+        # FINALIZE: Apply geometry and normalize overlaps
+        # ═══════════════════════════════════════════════════════════════════════
         self._apply_slot_geometry()
         self._normalize_column_overlaps()
 
