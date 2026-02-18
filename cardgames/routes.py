@@ -10,6 +10,11 @@ from .engine.engine import column_click, card_DblClick, Form_MouseDown, sync_vis
 
 cardgames_bp = Blueprint("cardgames", __name__, template_folder="templates")
 
+
+
+
+
+
 # Global in-memory storage: sid -> CardGame instance
 active_games = {}
 
@@ -106,10 +111,12 @@ def play_game(game_id):
 # -------------------------------------------------
 # MASTER DISPATCHER (One Route to Rule Them All)
 # -------------------------------------------------
-
 @cardgames_bp.route("/api/click", methods=["POST"])
 @cardgames_bp.route("/api/click/", methods=["POST"])
 def handle_click():
+    """
+    The Event Dispatcher - Routes frontend events to VB event handlers.
+    """
     try:
         engine = get_user_game()
         data = request.get_json()
@@ -119,43 +126,56 @@ def handle_click():
                 return jsonify({"success": False}), 200
             return jsonify({"success": False, "error": "Session expired"}), 401
 
-        s = engine.state
+        # Import VB EVENT HANDLERS
+        from .engine.engine import (
+            card_Click, card_DblClick, Form_MouseDown, 
+            sync_visual_actors
+        )
+        
         event_type = data.get("event_type", "click")
         col_idx = data.get("col_idx")
         card_code = data.get("card_code")
-
-        # Harbor Log
-        print(f"⚓ DISPATCHER: {event_type.upper()} | Col: {col_idx} | Card: {card_code}")
-
-        # ── BUG FIX: All engine functions now take 'engine' not 'state' ──
-        # The signature changed when we needed access to engine.do_whole_action()
-        # in column_click and engine.try_every_turn_actions(), etc.
         
-        if event_type == "dblclick":
-            # FIXED: Pass engine, not state
+        print(f"⚓ EVENT: {event_type.upper()} | Col: {col_idx} | Card: {card_code}")
+        
+        # ────────────────────────────────────────────────────────────────
+        # EVENT ROUTING (VB-style)
+        # ────────────────────────────────────────────────────────────────
+        
+        if event_type == "dblclick" and card_code:
+            # VB: card_DblClick(Index)
+            # ✅ FIX: Pass 'engine' not 'engine.state'
             card_DblClick(engine, card_code)
-            
-        elif event_type == "mousedown" and col_idx is not None:
-            # FIXED: Pass engine, not state
+        
+        elif event_type == "click" and card_code:
+            # VB: card_Click(Index)
+            # ✅ FIX: Pass 'engine' not 'engine.state'
+            card_Click(engine, card_code)
+        
+        elif event_type == "click" and col_idx is not None and not card_code:
+            # VB: Form_MouseDown(Button, Shift, X, Y)
+            # Player clicked empty slot
+            # ✅ FIX: Pass 'engine' not 'engine.state'
+            # ✅ FIX: Convert col_idx to int (it comes as string from JSON)
             Form_MouseDown(engine, int(col_idx))
-            
+        
         elif event_type == "table_click":
-            # Table click doesn't call engine functions - just resets state
+            # VB: Form background click - Deselect
+            s = engine.state
             s.usermode = 0
             s.selectedCard = ""
             s.selectedColumn = -1
             s.ShapeSelektor.visible = False
-            
-        elif col_idx is not None:
-            # This one was already correct ✅
-            column_click(engine, int(col_idx), card_code)
-
-        # The Argonauts Sync
-        sync_visual_actors(s)
-
+        
+        # ────────────────────────────────────────────────────────────────
+        # POST-EVENT SYNC (VB's Form.Refresh equivalent)
+        # ────────────────────────────────────────────────────────────────
+        sync_visual_actors(engine.state)
+        
         return jsonify({"success": True, "game": engine.to_dict()})
-
+    
     except Exception as e:
+        import traceback
         print(traceback.format_exc())
         return jsonify({"success": False, "error": str(e)}), 500
 

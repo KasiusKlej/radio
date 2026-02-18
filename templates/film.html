@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Film</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cardgames.css') }}">
+
+
+    <style>
+        body {
+            background-color: #008080; /* classic teal desktop */
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #f0ebeb;
+        }
+ 
+        /* FILM AREA */
+        #table-scroll {
+            padding: 20px;
+        }
+
+        .film-area {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .film-review {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding: 15px;
+            border: 2px solid #258215;
+            background-color: #0d4c18;
+        }
+
+        .film-media {
+            width: 260px;
+            text-align: left;
+            border: 2px inset #fff; /* classic Win95 inset */
+            padding: 5px;
+        }
+
+        
+        .film-text {
+            flex: 1;
+        }
+
+        .film-text h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .film-text p {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- TITLE BAR -->
+    <div id="title-bar">
+        <span class="title-text"> Film </span>
+    </div>
+
+    <!-- MENU BAR -->
+    <div id="menu-bar">
+        {% include "filmmenu.html" %}
+    </div>
+
+    <!-- GAME AREA -->
+    <div id="table-scroll">
+        <!-- data-game-id is vital for cardgame.js -->
+    <!-- FILM AREA -->
+<div id="table-scroll">
+    <div class="film-area">
+
+        <!-- REVIEW 1 -->
+        <div class="film-review">
+            <div class="film-media">
+                <a href="https://www.youtube.com/watch?v=_zHZsYeCPPs&list=PLWc6LGW6D_OTrAXH3E-zUa0uRhX8WgpcP" >
+                    <img src="{{ url_for('static', filename='thumbnail1.png') }}" alt="video">
+                </a>
+            </div>
+            <div class="film-text">
+                <h2>Animirani film – prelomni trenutek žanra</h2>
+                <div class="film-meta">Kraj: ZDA · Leto: 1995 · Žanr: Animacija</div>
+                <p>Film predstavlja zgodovinski mejnik računalniško animiranega filma, saj je prvič v celoti opustil klasično risano tehniko. 
+                    Zgodba spremlja svet igrač, ki oživijo v odsotnosti ljudi, pri tem pa odpira vprašanja prijateljstva, identitete in strahu pred pozabo. </p> 
+                <p> Uspeh filma temelji na jasni pripovedni strukturi, dovršenih likih in humorju, ki deluje na več ravneh. Gre za delo, ki je animacijo 
+                    dokončno uveljavilo kot resen filmski medij.</p>
+            </div>
+        </div>
+
+        <!-- REVIEW 2 -->
+        <div class="film-review">
+            <div class="film-media">
+                <a href="https://www.youtube.com/watch?v=OiCBSUHV6Fc&list=PLWc6LGW6D_OSdT_y8gsPnPlMbR9m1MUJr" >
+                    <img src="{{ url_for('static', filename='thumbnail2.png') }}" alt="video">
+                </a>
+            </div>
+            <div class="film-text">
+                <h2>The Life and Times of Carl Barks</h2>
+                <div class="film-meta">Dokumentarni film · Umetnost stripa · 20. stoletje</div>
+                <p>Dokumentarec raziskuje življenje in delo Carla Barksa, enega najvplivnejših avtorjev stripovske zgodovine, 
+                    ki je desetletja ustvarjal zgodbe o Jaki Racmanu in svetu Račjega mesta. </p> 
+                <p> Film z arhivskimi posnetki, pričevanji in analizami pokaže, kako je avtor kljub anonimnosti oblikoval vizualni 
+                    in pripovedni jezik, ki še danes vpliva na popularno kulturo.</p>
+            </div>
+        </div>
+
+        <!-- REVIEW 3 -->
+        <div class="film-review">
+            <div class="film-media">
+               
+                <a href="https://www.youtube.com/watch?v=KKMg8Uj-wN0&list=PLWc6LGW6D_OR7vEJhu_yj1Ap66gmCKhZG" >
+                    <img src="{{ url_for('static', filename='thumbnail3.png') }}" alt="video">
+                </a>
+                
+            </div>
+            <div class="film-text">
+                <h2>Ulični glasbeni festival – dokument časa</h2>
+                <div class="film-meta">Poletje · Mestno jedro · Dokumentarni film</div>
+                <p>Film beleži večdnevni ulični glasbeni festival, kjer se mesto spremeni v oder, 
+                    mimoidoči pa postanejo občinstvo. Kamera sledi glasbenikom z različnih koncev s
+                    veta in njihovi neposredni interakciji z okoljem. </p> 
+                <p> Gre za opazovalni dokumentarec brez razlage in komentarjev, ki gledalcu ponudi surov, 
+                    avtentičen vpogled v spontanost ulične umetnosti in skupnostni značaj dogodka.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+    </div>
+
+    
+</body>
+</html>

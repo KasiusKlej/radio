@@ -17,8 +17,9 @@ app.register_blueprint(cardgames_bp, url_prefix="/cardgames")
 def hello():
     return render_template('test2.html')
     
-
-
+@app.route("/umetnost/film/")
+def film():
+    return render_template("film.html")
 
 
 #january 2026

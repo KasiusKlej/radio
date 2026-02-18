@@ -1,9 +1,0 @@
-FORM1.FRM
-MODULE3.BAS
-ABOUT.FRM
-REDEFKEY.FRM
-ProjWinSize=2,547,252,217
-ProjWinShow=2
-IconForm="Form1"
-Title="Opoldne"
-ExeName="OPOLDNE.EXE"
