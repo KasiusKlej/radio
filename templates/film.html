@@ -22,7 +22,8 @@
 
         .film-area {
             max-width: 700px;
-            margin: 0 auto;
+            margin: 0;
+            padding-left: 10px;
         }
 
         .film-review {
@@ -35,10 +36,23 @@
         }
 
         .film-media {
-            width: 260px;
-            text-align: left;
-            border: 2px inset #fff; /* classic Win95 inset */
-            padding: 5px;
+            width: 250px;
+            height: 150px;                 /* fixed thumbnail viewport */
+            border: 2px inset #fff;        /* Win95 inset */
+            background-color: #0d2d09;     /* classic Win95 gray */
+            display: flex;
+            align-items: center;           /* vertical centering */
+            justify-content: center;       /* horizontal centering */
+            padding: 6px;
+            box-sizing: border-box;
+        }
+
+        .film-media img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            image-rendering: auto;         /* keep PNG clean */
         }
 
         

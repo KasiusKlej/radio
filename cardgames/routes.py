@@ -114,9 +114,6 @@ def play_game(game_id):
 @cardgames_bp.route("/api/click", methods=["POST"])
 @cardgames_bp.route("/api/click/", methods=["POST"])
 def handle_click():
-    """
-    The Event Dispatcher - Routes frontend events to VB event handlers.
-    """
     try:
         engine = get_user_game()
         data = request.get_json()
@@ -126,7 +123,6 @@ def handle_click():
                 return jsonify({"success": False}), 200
             return jsonify({"success": False, "error": "Session expired"}), 401
 
-        # Import VB EVENT HANDLERS
         from .engine.engine import (
             card_Click, card_DblClick, Form_MouseDown, 
             sync_visual_actors
@@ -139,28 +135,29 @@ def handle_click():
         print(f"⚓ EVENT: {event_type.upper()} | Col: {col_idx} | Card: {card_code}")
         
         # ────────────────────────────────────────────────────────────────
-        # EVENT ROUTING (VB-style)
+        # EVENT ROUTING
         # ────────────────────────────────────────────────────────────────
         
         if event_type == "dblclick" and card_code:
-            # VB: card_DblClick(Index)
-            # ✅ FIX: Pass 'engine' not 'engine.state'
             card_DblClick(engine, card_code)
         
         elif event_type == "click" and card_code:
-            # VB: card_Click(Index)
-            # ✅ FIX: Pass 'engine' not 'engine.state'
             card_Click(engine, card_code)
         
         elif event_type == "click" and col_idx is not None and not card_code:
-            # VB: Form_MouseDown(Button, Shift, X, Y)
-            # Player clicked empty slot
-            # ✅ FIX: Pass 'engine' not 'engine.state'
-            # ✅ FIX: Convert col_idx to int (it comes as string from JSON)
-            Form_MouseDown(engine, int(col_idx))
+            # ✅ FIX: Validate col_idx before converting to int
+            try:
+                col_idx_int = int(col_idx)
+                # Additional validation: check if column exists
+                if 0 <= col_idx_int < len(engine.state.kup):
+                    Form_MouseDown(engine, col_idx_int)
+                else:
+                    print(f"⚠️  Invalid column index: {col_idx_int}")
+            except (ValueError, TypeError):
+                print(f"⚠️  Cannot convert col_idx to int: {col_idx}")
+                # Don't crash - just ignore invalid clicks
         
         elif event_type == "table_click":
-            # VB: Form background click - Deselect
             s = engine.state
             s.usermode = 0
             s.selectedCard = ""
@@ -168,7 +165,7 @@ def handle_click():
             s.ShapeSelektor.visible = False
         
         # ────────────────────────────────────────────────────────────────
-        # POST-EVENT SYNC (VB's Form.Refresh equivalent)
+        # POST-EVENT SYNC
         # ────────────────────────────────────────────────────────────────
         sync_visual_actors(engine.state)
         
@@ -257,3 +254,20 @@ def set_autoplay():
     engine.state.autoplay_enabled = enabled
     return jsonify({"ok": True, "autoplay": enabled})
 
+
+@cardgames_bp.route("/exit")
+@cardgames_bp.route("/exit/")
+def exit_game():
+    """Cleans up the active game and returns to the site root."""
+    sid = session.get("user_sid")
+    
+    # 1. Remove the engine instance from memory to save RAM
+    if sid in active_games:
+        del active_games[sid]
+    
+    # 2. Clear the 'current game' marker from the session
+    session.pop("zap_st_igre", None)
+    
+    # 3. Redirect to the main homepage
+    # If your main homepage route is named 'index' in your main app:
+    return redirect("/")

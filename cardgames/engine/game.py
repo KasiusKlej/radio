@@ -1230,6 +1230,9 @@ class CardGame:
                         
                         elif key == "aces_on_kings":
                             current_col.aces_on_kings = val
+
+                        elif key == "always_allowed_from_columns":
+                            current_col.always_allowed_from_columns = val
                         
                         # ───────────────────────────────────────────────────────
                         # PLAYER ACTIONS

@@ -94,6 +94,7 @@ class Column:
         self.max_cards = 0
         self.aces_on_kings = "yes"
         self.use_facedown = "0"
+        self.always_allowed_from_columns = "-1"
 
     def to_dict(self):
         # 🛡️ Safety check: ensure cards are objects before serializing
@@ -130,7 +131,8 @@ class Column:
             "suit_or_card" : self.suit_or_card,
             "max_cards" : self.max_cards,
             "aces_on_kings" : self.aces_on_kings,
-            "use_facedown" : self.use_facedown
+            "use_facedown" : self.use_facedown,
+            "always_allowed_from_columns" : self.always_allowed_from_columns
         }
 
 
@@ -153,6 +155,7 @@ class ColumnSlot(TableObject):
         self.backcolor = -1
     def to_dict(self):
         d = super().to_dict()
+        d["column_index"] = self.column_index
         d["backstyle"] = self.backstyle
         d["backcolor"] = self.backcolor
         return d

@@ -144,6 +144,8 @@ function renderImmediately(snapshot) {
         
         const slotEl = document.createElement("div");
         slotEl.className = "column-requisite";
+        
+        // ✅ FIX: Set the column ID so clicks can identify which column was clicked
         slotEl.dataset.columnId = slot.column_index;
         
         // Apply styling based on backstyle/backcolor
@@ -173,7 +175,18 @@ function renderImmediately(snapshot) {
     // ═══════════════════════════════════════════════════════════════════════
     // STEP 3: Draw Selection Box (Z=1000)
     // ═══════════════════════════════════════════════════════════════════════
-    renderSelectionBox(snapshot);
+    const sel = snapshot.actors.selector;
+    if (sel.visible && snapshot.selected_card_code) {
+        const cardEl = cardElements[snapshot.selected_card_code];
+        if (cardEl) {
+            const selectorEl = document.createElement("div");
+            selectorEl.className = "selection-box";
+            selectorEl.style.left = cardEl.style.left;
+            selectorEl.style.top = cardEl.style.top;
+            selectorEl.style.zIndex = 1000;
+            table.appendChild(selectorEl);
+        }
+    }
 }
 
 

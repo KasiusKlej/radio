@@ -9,7 +9,7 @@
             </li>
             {% endfor %}
             <li class="separator"></li>
-            <li onclick="location.href='/exit'">{{ m.exit or 'Exit' }}</li>
+            <li onclick="location.href='{{ url_for('cardgames.exit_game') }}'">{{ m.exit or 'Exit' }}</li>
         </ul>
     </li>
 

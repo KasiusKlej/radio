@@ -61,9 +61,33 @@ html, body {
 .dropdown li:hover { background: var(--win-blue); color: white !important; }
 
 .separator {
-    height: 1px; background: var(--win-dark-gray);
-    margin: 4px 2px; border-bottom: 1px solid var(--win-white);
+    height: 1px;
+    margin: 4px 3px;
+    background: #808080;
+    border-bottom: 1px solid #ffffff;
+    pointer-events: none;
 }
+
+.separator:hover,
+.separator:active,
+.separator:focus {
+    background: none !important;
+}
+
+.dropdown .separator {
+    padding: 0;
+    margin: 2px 2px;
+    height: 2px;
+    line-height: 0;
+    min-height: 0;
+
+    background: none;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #ffffff;
+
+    pointer-events: none;
+}
+
 
 /* --- GAME AREA --- */
 #table-scroll {
