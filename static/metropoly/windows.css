@@ -1,0 +1,89 @@
+/* Overlay */
+#win-dialog-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 900;
+}
+
+/* Dialog Window */
+#win-dialog {
+    position: fixed;
+    width: 320px;
+    background: #c0c0c0;
+    border: 2px solid #000;
+    z-index: 1000;
+    box-shadow: 4px 4px #808080;
+    font-family: "MS Sans Serif", sans-serif;
+}
+
+/* Title Bar */
+.win-title-bar {
+    background: #000080;
+    color: #fff;
+    padding: 2px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    cursor: move;
+}
+
+/* Close button */
+.win-close {
+    background: #c0c0c0;
+    border: 1px solid #fff;
+    width: 20px;
+    height: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Body */
+.win-body {
+    padding: 8px;
+    background: #c0c0c0;
+}
+
+/* Input */
+.win-input {
+    width: calc(100% - 12px);
+    margin-bottom: 8px;
+    border: 2px inset #fff #808080 #808080 #fff;
+    padding: 2px 4px;
+    font-family: "MS Sans Serif", sans-serif;
+}
+
+/* File list container */
+.win-file-list-container {
+    border: 2px inset #fff #808080 #808080 #fff;
+    height: 120px;
+    overflow-y: auto;
+    background: #fff;
+    padding: 2px;
+}
+
+/* File items */
+.win-file-list li {
+    padding: 2px 4px;
+    cursor: pointer;
+}
+.win-file-list li:hover,
+.win-file-list li.selected {
+    background: #000080;
+    color: #fff;
+}
+
+/* Buttons */
+.win-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px;
+    gap: 4px;
+}
+.win-buttons button {
+    padding: 2px 6px;
+    font-family: "MS Sans Serif", sans-serif;
+    border: 2px outset #fff #808080 #808080 #fff;
+    cursor: pointer;
+}

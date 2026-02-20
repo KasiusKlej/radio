@@ -1,0 +1,224 @@
+Inglês 
+Espanhol 
+Portugese 
+Italiano 
+Francês 
+Alemão 
+Chinês 
+Japonês 
+Korean 
+Esloveno 
+Russian 
+Serbocroatian 
+Outro 
+Língua 
+Metropoly 
+
+Lima 
+Novo 
+Aberto 
+Excepto 
+Excepto o mapa 
+Retire o editor do mapa 
+Retire 
+
+Ordens 
+Estrada da configuração 
+Sell 
+Semaphors 
+Críe o semaphor 
+Remova o semaphor 
+Gire semaphors 
+Termine a volta 
+
+Opções 
+Rápido 
+Mostre a grade 
+Volta automática do fim 
+Som 
+Gráficos 
+
+Ferramentas 
+Editor do mapa 
+
+Ajuda 
+Índices 
+Sobre 
+Registo 
+
+Jogo novo 
+x 
+y 
+mapa 
+APROVAÇÃO 
+Cancelamento 
+
+Aberto 
+Excepto 
+Excepto o mapa 
+Nome da lima 
+
+Gráficos de Metropoly 
+Estale para browse gráficos, direito-clique para browse reversly, controle-clique para browse detalhes. 
+
+Trace o editor 
+Novo 
+x 
+y 
+Aberto 
+
+Ajuda De Metropoly 
+Você começa dentro 
+cadeia. 
+Você joga 
+dados e caminhada no 
+estrada. 
+Vá a  
+escola a aprender e ir a  
+dinheiro a ganhar. 
+Compra 
+terra. Compra  
+casas em sua terra. 
+
+Estale sobre a terra onde você quer o semaphore 
+Estale sobre um semaphore para removê-lo 
+$ 
+Teritories: 
+Casas: 
+Ganha: 
+$/week 
+Volta do fim? 
+paga 
+$ a 
+terra das compras para  
+configurações 
+casas para 
+pergunta para 
+$/week. 
+Você quer a escola da visita para  
+Estale sobre a terra que você quer vender 
+Você quer vender casas para  
+$? 
+Você quer vender a terra para  
+A estrada era configuração 
+Semaphor era configuração 
+Semaphor foi removido 
+está para fora. 
+O vencedor é  
+ganha o jogo. 
+teritories,  
+casas.  
+ganha  
+Fim da semana 
+Estale sobre sua terra onde você quer construir a estrada. 
+Preço da compra:  
+Preço do sell:  
+A casa custou:  
+Pagamento: 
+Para  
+casas 
+Estrada 
+Escola 
+Trabalho 
+Cadeia 
+Compre a terra para 
+Construa casas para 
+Semaphores de giro 
+
+Segunda-feira 
+Terça-feira 
+Quarta-feira 
+Quinta-feira 
+Sexta-feira 
+Sábado 
+Domingo 
+pupila 
+estudante 
+ingeneer 
+doutor 
+vencedor do prêmio de nobel 
+
+É 
+' volta de s 
+
+sim 
+não 
+Freqüência da visita 
+Inteligence do computador 
+Mau, Médio, Bom 
+
+[Registration form]
+Formulário de registo 
+---
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+---
+Eu quero comprar jogos do cartão 
+
+Eu pagarei com 
+dinheiro 
+ordem de dinheiro 
+cheque 
+cartão de crédito 
+VISTO 
+Mastercard 
+outro... 
+
+Eu quero receber 
+Número De série 
+Disco Flexível De 3,5" 
+Cópia mais escura-ROM 
+
+Eu quero receber o produto 
+pelo correio 
+pelo E-mail 
+Meu endereço 
+Meu E-mail 
+Nome:  
+Rua:  
+Cidade:  
+Código de FECHO DE CORRER (E. U. somente) 
+Estado (E. U. somente) 
+País:  
+
+Eu não quero todos os jogos 
+(isto reduzirá o preço) 
+
+Uma quantidade 
+Custo do shipment 
+Uma quantidade total 
+--- 
+Formulário de registo da cópia 
+Emita a ordem pelo correio 
+Para emitir a ordem pelo correio, imprima o formulário de registo e emita-o ao endereço acima. 
+Emita a ordem pelo E-mail 
+Incorpore o número de série 
+APROVAÇÃO 
+Fim 
+--- 
+: 
+Assunto: 
+--- 
+
+[GAMENAME]
+Jogos do cartão 
+[GAMENAME]
+Não comece o homem irritado 
+[GAMENAME]
+Rambo 
+[GAMENAME]
+Highnoon 
+[GAMENAME]
+Tenis 
+[GAMENAME]
+Anteater subaquático 
+[GAMENAME]
+Wau de Wau 
+
+
+

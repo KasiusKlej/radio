@@ -126,6 +126,12 @@ function onEngineUpdate(newSnapshot) {
     }
     
     prevSnapshot = newSnapshot;
+    
+    // ✅ CRITICAL: Start autoplay if enabled
+    if (newSnapshot.autoplay_enabled && !autoplayRunning) {
+        // Small delay to let current move animation finish
+        setTimeout(() => startAutoplayLoop(newSnapshot), 100);
+    }
 }
 
 
@@ -315,6 +321,11 @@ function toggleAutoplay(element) {
         body: JSON.stringify({ enabled: isEnabled })
     })
     .then(res => res.json())
+    .then(data => {
+        if (data.game) {
+            onEngineUpdate(data.game);
+        }
+    })
     .catch(err => console.error("Autoplay toggle error:", err));
 }
 
@@ -349,4 +360,68 @@ function openMsgBox(title, content) {
 
 function closeMsgBox() {
     document.getElementById('win95-modal-overlay').style.display = 'none';
+}
+
+
+// ────────────────────────────────────────────────────────────
+// AUTOPLAY TIMER SYSTEM
+// ────────────────────────────────────────────────────────────
+let autoplayRunning = false;
+let autoplayDelay = 300; // ms between moves (adjust for animation speed)
+
+async function startAutoplayLoop(snapshot) {
+    // Only start if autoplay is enabled and not already running
+    if (!snapshot.autoplay_enabled || autoplayRunning) {
+        return;
+    }
+    
+    autoplayRunning = true;
+    console.log("🔄 Autoplay loop started");
+    
+    // Lock player input
+    document.getElementById("game-table").style.pointerEvents = "none";
+    
+    while (autoplayRunning) {
+        try {
+            const response = await fetch("/cardgames/api/autoplay/tick", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                console.error("Autoplay tick failed:", data.error);
+                break;
+            }
+            
+            // Update game state
+            if (data.game) {
+                onEngineUpdate(data.game);
+            }
+            
+            // Check if we should continue
+            if (!data.continue) {
+                console.log("✅ Autoplay complete - no more moves");
+                break;
+            }
+            
+            // Wait before next tick (allows animation to play)
+            await new Promise(resolve => setTimeout(resolve, autoplayDelay));
+            
+        } catch (error) {
+            console.error("Autoplay error:", error);
+            break;
+        }
+    }
+    
+    autoplayRunning = false;
+    
+    // Unlock player input
+    document.getElementById("game-table").style.pointerEvents = "auto";
+    console.log("🛑 Autoplay loop stopped");
+}
+
+function stopAutoplayLoop() {
+    autoplayRunning = false;
 }

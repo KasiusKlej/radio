@@ -1,0 +1,229 @@
+&Engleski
+&Španski
+&Portugalski
+&Italijanski
+&Francuski
+&Nemački
+&Kineski
+&Japanski
+K&orejski
+&Slovenski
+&Ruski
+Sr&bohrvatski
+&Drugo
+&Jezik
+Metropoli
+
+&Datoteka
+&Nova
+&Otvori
+&Shrani
+Shrani &mapu
+Izlaz iz editora &mape
+I&zlaz
+
+&Komande
+Gradi &put
+&Prodaj
+&Semafor
+&Postavi
+&Skini
+&Rotiraj semafore
+&Kraj poteza
+
+&Opcije
+&Brzo
+&Pokaži mrežu
+&Automatski kraj poteza
+&Zvuk
+&Grafika
+
+&Alati
+&Editor mape
+
+&Pomoć
+&Sadržaj...
+&O programu...
+&Registriraj se...
+
+Nova igra
+x:
+y:
+mapa:
+U redu
+Ostavi
+
+Otvori
+Shrani
+Shrani mapu
+Ime datoteke:
+
+Metropoli grafika
+Klikni za promenu grafike, desno-klikni za reverznu promenu, control-klik za detajlne promene.
+
+Editor mape
+Nova
+x:
+y:
+Otvori
+
+Metropoli pomoć
+Počneš u 
+zatvoru.
+Bacaš
+kocku i hodaš po 
+putu.
+Idi u
+školu da učiš i idi 
+po novac.
+Kupuj
+zemlju i  
+kuče na svojoj zemlji.
+
+Klikni na zemlji gde želiš semafor
+Klikni na semaforu da ga odstraniš
+$
+ Zemlja:
+ Hiše:
+ Profit:
+$/tjedan
+Kraj poteza?
+plati
+$ za
+kupi zemlju za 
+gradi
+kuče za
+pita za
+$/tjedan.
+Da li češ da ideš u školu za 
+Klikni na zemlji, koju želiš prodati
+Hočeš da prodaš kuče za 
+$ ?
+Hočeš da prodaš zemlju za 
+Izgrađen je bio put.
+Postavljen je bio semafor
+Semafor je bio odstranjen
+ je ispao.
+Pobednik je 
+ je pobedio.
+ teritoriji, 
+ kuče. 
+ zasluži 
+Kraj sedmice
+Klikni na zemlji gde želiš graditi cestu.
+Cena nakupa: 
+Cena prodaje: 
+Cena kuče: 
+Naplata:
+Za 
+kuče
+Put
+Škola
+Posao
+Zatvor
+Kupiš zemlju za 
+Gradiš kuče za 
+Obračanje semafora
+
+Ponedeljak
+Utorak
+Sreda
+Četvrtak
+Petak
+Subota
+Nedelja
+učenik
+student
+inženjer
+doktor
+nobelovac
+
+Na redu je 
+.
+
+da
+ne
+Visit frequency
+Computer inteligence
+Bad,Average,Good
+
+[Registration form]
+Registracijski formular
+---
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+---
+Kupiti želim još druge igre za Windows
+
+Platiču
+gotovinom
+nov. nakaz.
+ček
+kredit. kart.
+VISA
+Mastercard
+drugo...
+
+Dobiti želim
+serijski broj
+3,5" disketu
+CD-ROM
+
+Proizvod želim dobiti po
+po pošti
+e-mailu
+Moj naslov
+Moj e-mail
+Ime: 
+Ulica: 
+Kraj: 
+ZIP koda (samo ZDA)
+State (samo ZDA)
+Država: 
+
+Ne želim svih igara
+(to može pojeftiniti kupnju)
+
+Cena
+Putni troškovi
+Zajedno
+---
+Štampaj formular
+Šalji narudžbu poštom
+Da bi poslao narudžbu poštom, štampaj formular i šalji ga na gornji naslov.
+Šalji narudžbu po elektronskoj pošti
+Unesi serijski broj
+OK
+Zatvori
+---
+To:
+Subject:
+---
+
+
+
+[GAMENAME]
+Igre s kartama
+[GAMENAME]
+Ne ljuti se čovječe
+[GAMENAME]
+Rambo
+[GAMENAME]
+U podne
+[GAMENAME]
+Tenis
+[GAMENAME]
+Podvodni mravožder
+[GAMENAME]
+Hov hov
+
+
+
+
+

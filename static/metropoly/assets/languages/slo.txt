@@ -1,0 +1,229 @@
+&Angleški
+&Španski
+&Portugalski
+&Italijanski
+&Francoski
+&Nemški
+&Kitajski
+&Japonski
+K&orejski
+&Slovenski
+&Ruski
+Sr&bohrvaški
+&Drugo
+&Jezik
+Metropoli
+
+&Datoteka
+&Nova
+&Odpri
+&Shrani
+Shrani &zemljevid
+Izhod iz &urejevalnika zemljevida
+I&zhod
+
+&Ukazi
+Zgradi &cesto
+&Prodaj
+&Semafor
+&Zgradi
+&Odstrani
+&Rotiraj semaforje
+&Konec kroga
+
+&Možnosti
+&Hitro
+&Pokaži mrežo
+&Samodejen konec kroga
+&Zvok
+&Grafika
+
+&Orodja
+&Urejevalnik zemljevida
+
+&Pomoč
+&Vsebina...
+&O programu...
+&Registriraj se...
+
+Nova igra
+x:
+y:
+mapa:
+V redu
+Prekliči
+
+Odpri
+Shrani
+Shrani zemljevid
+Ime datoteke:
+
+Metropoli grafika
+Klikni za spremembo grafike, desno-klikni za reverzno spremembo, control-klik za detajlne spremembe.
+
+Urejevalnik zemljevida
+Nov
+x:
+y:
+Odpri
+
+Metropoli pomoč
+Začneš v 
+ječi.
+Mečeš
+kocko in hodiš po 
+cesti.
+Pojdi v
+šolo da se učiš in pojdi 
+po denar.
+Kupuj
+zemljo in  
+hiše na svoji zemlji.
+
+Klikni na ozemlju kjer želiš semafor
+Klikni na semaforju da ga odstraniš
+$
+ Ozemlja:
+ Hiše:
+ Zaslužek:
+$/teden
+Konec poteze?
+plača
+$ za
+kupi ozemlje za 
+gradi
+hiše za
+vpraša za
+$/teden.
+Ali boš obiskal šolo za 
+Klikni na ozemlju, ki ga želiš prodati
+Boš prodal hiše za 
+$ ?
+Boš prodal ozemlje za 
+Zgrajena je bila cesta.
+Postavljen je bil semafor
+Semafor je bil odstranjen
+ je izpadel.
+Zmagovalec je 
+ je zmagal.
+ ozemlja, 
+ hiše. 
+ zasluži 
+Konec tedna
+Klikni na ozemlju kjer želiš graditi cesto.
+Cena nakupa: 
+Cena prodaje: 
+Cena hiše: 
+Plačilo:
+Za 
+hiše
+Cesta
+Šola
+Služba
+Zapor
+Kupiš ozemlje za 
+Gradiš hiše za 
+Obračanje semaforjev
+
+Ponedeljek
+Torek
+Sreda
+Četrtek
+Petek
+Sobota
+Nedelja
+učenec
+študent
+inženir
+doktor
+nobelov nagrajenec
+
+Na vrsti je 
+.
+
+da
+ne
+Visit frequency
+Computer inteligence
+Bad,Average,Good
+
+[Registration form]
+Registracijski obrazec
+---
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+---
+Kupiti hočem še druge igre za Windows
+
+Plačal bom z
+gotovino
+den. nakaz.
+ček
+kredit. kart.
+VISA
+Mastercard
+drugo...
+
+Prejeti želim
+serijsko številko
+3,5" disketo
+CD-ROM
+
+Izdelek želim prejeti po
+po pošti
+e-pošti
+Moj naslov
+Moj e-mail
+Ime: 
+Ulica: 
+Kraj: 
+ZIP koda (samo ZDA)
+State (samo ZDA)
+Država: 
+
+Ne želim vseh iger
+(to bi lahko pocenilo nakup)
+
+Cena
+Poštni stroški
+Skupaj
+---
+Natisni obrazec
+Pošlji naročilo po pošti
+Da bi poslal naročilo po pošti, natisni formular in ga pošlji na zgornji naslov.
+Pošlji naročilo po elektronski pošti
+Vnesi serijsko številko
+OK
+Zapri
+---
+To:
+Subject:
+---
+
+
+
+[GAMENAME]
+Igre s kartami
+[GAMENAME]
+Človek ne jezi se
+[GAMENAME]
+Rambo
+[GAMENAME]
+Opoldne
+[GAMENAME]
+Tenis
+[GAMENAME]
+Podvodni mravljinčar
+[GAMENAME]
+Hov hov
+
+
+
+
+

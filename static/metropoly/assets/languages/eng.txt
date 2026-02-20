@@ -1,0 +1,226 @@
+&English
+Spa&nish
+&Portugese
+&Italian
+&French
+&German
+&Chinese
+&Japanese
+&Korean
+&Slovenian
+&Russian
+Ser&bocroatian
+&Other
+&Language
+Metropoly
+
+&File
+&New
+&Open
+&Save
+Save &map
+&Exit map editor
+E&xit
+
+O&rders
+Build &road
+&Sell
+S&emaphors
+&Create semaphor
+&Remove semaphor
+R&otate semaphors
+End &turn
+
+&Options
+&Fast
+Show &grid
+&Automatic end turn
+&Sound
+G&raphics
+
+&Tools
+&Map editor
+
+&Help
+&Contents
+&About
+&Register
+
+New game
+x:
+y:
+map:
+OK
+Cancel
+
+Open
+Save
+Save map
+File name:
+
+Metropoly graphics
+Click to browse graphics, right-click to browse reversly, control-click to browse details.
+
+Map editor
+New
+x:
+y:
+Open
+
+Metropoly Help
+You begin in
+jail.
+You throw
+dice and walk on the
+road.
+Go to 
+school to learn and go to 
+money to earn.
+Buy
+land. Buy 
+houses on your land.
+
+Click on land where you want semaphore
+Click on a semaphore to remove it
+$
+ Teritories:
+ Houses:
+ Earns:
+$/week
+End turn?
+pays
+$ to
+buys land for 
+builds 
+houses for 
+asks for 
+$/week.
+Do you want visit school for 
+Click on land that you want to sell
+Do you want to sell houses for 
+$ ?
+Do you want to sell land for 
+Road was build
+Semaphor was build
+Semaphor was removed
+ is out.
+The winner is 
+ wins the game.
+ teritories, 
+ houses. 
+ earns 
+End of the week
+Click on your land where you want to build road.
+Buy price: 
+Sell price: 
+House cost: 
+Payment:
+For 
+houses
+Road
+School
+Job
+Jail
+Buy land for
+Build houses for
+Turning semaphores
+
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+pupil
+student
+ingeneer
+doctor
+nobel prize winner
+
+It is
+'s turn
+
+yes
+no
+Visit frequency
+Computer inteligence
+Bad,Average,Good
+
+[Registration form]
+Registration form
+---
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+---
+I want to buy Card Games
+
+I will pay with
+cash
+money order
+cheque
+credit card
+VISA
+Mastercard
+other...
+
+I want to receive
+Serial Number
+3,5" Floppy Disk
+CD-ROM
+
+I want to receive the product
+by mail
+by e-mail
+My address
+My e-mail
+Name: 
+Street: 
+City: 
+ZIP code (US only)
+State (US only)
+Country: 
+
+I don't want all of the games
+(this will reduce the price)
+
+Amount
+Shipment cost
+Total amount
+---
+Print registration form
+Send order by mail
+To send order by mail, print registration form and send it to to the above address.
+Send order by e-mail
+Enter serial number
+OK
+Close
+---
+To:
+Subject:
+---
+
+[GAMENAME]
+Card games
+[GAMENAME]
+Don't get angry man
+[GAMENAME]
+Rambo
+[GAMENAME]
+Highnoon
+[GAMENAME]
+Tenis
+[GAMENAME]
+Underwater anteater
+[GAMENAME]
+Hov hov
+
+
+
+
+

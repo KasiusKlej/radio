@@ -1,0 +1,16 @@
+<h2>{{ caption }}</h2>
+
+<input type="text" name="filename" value="{{ filename }}">
+
+<select name="existing_files">
+  {% for f in files %}
+    <option value="{{ f }}">{{ f }}</option>
+  {% endfor %}
+</select>
+
+{% if mode == "save" %}
+  <button>Save</button>
+{% else %}
+  <button>Open</button>
+{% endif %}
+

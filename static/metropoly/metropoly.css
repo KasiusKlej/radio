@@ -1,0 +1,25 @@
+.pawn-offset-1 { transform: translate(0, 0); }
+.pawn-offset-2 { transform: translate(16px, 16px); }
+.pawn-offset-3 { transform: translate(16px, 0); }
+/* matches your VB figuraXoffset logic exactly */
+
+/* Hide game elements when editor is active */
+.mode-editor .game-only-ui {
+    display: none !important;
+}
+
+/* Hide editor elements when game is active (default) */
+.editor-only-ui {
+    display: none;
+}
+
+/* Show editor elements when editor is active */
+.mode-editor .editor-only-ui {
+    display: block;
+}
+
+/* Gray out the background to signify 'Pause' */
+.mode-editor #game-board {
+    opacity: 0.8;
+    cursor: crosshair;
+}

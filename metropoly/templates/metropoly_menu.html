@@ -1,0 +1,99 @@
+<ul class="menu-root win95-bevel-out">
+
+    <!-- FILE -->
+    <li class="menu-item">{{ m.file or 'File' }}
+        <ul class="dropdown win95-bevel-out">
+            <li onclick="newGame()">{{ m.new or 'New' }}</li>
+            <li onclick="openGameDialog()">{{ m.open or 'Open' }}</li>
+            <li onclick="saveGameDialog()">{{ m.save or 'Save' }}</li>
+            <li onclick="saveMapDialog()">{{ m.save_map or 'Save map' }}</li>
+            <li class="separator"></li>
+            <li onclick="exitMapEditor()">{{ m.exit_map_editor or 'Exit map editor' }}</li>
+            <li class="separator"></li>
+            <li onclick="exitGame()">{{ m.exit or 'Exit' }}</li>
+        </ul>
+    </li>
+
+    <!-- ORDERS -->
+    <li class="menu-item">{{ m.orders or 'Orders' }}
+        <ul class="dropdown win95-bevel-out">
+            <li onclick="buildRoad()">{{ m.build_road or 'Build road' }}</li>
+            <li onclick="sellItem()">{{ m.sell or 'Sell' }}</li>
+            <li class="separator"></li>
+            <li onclick="openSemaphores()">{{ m.semaphores or 'Semaphores' }}</li>
+            <li onclick="createSemaphore()">{{ m.create_semaphore or 'Create semaphore' }}</li>
+            <li onclick="removeSemaphore()">{{ m.remove_semaphore or 'Remove semaphore' }}</li>
+            <li onclick="rotateSemaphores()">{{ m.rotate_semaphores or 'Rotate semaphores' }}</li>
+            <li class="separator"></li>
+            <li onclick="endTurn()">{{ m.end_turn or 'End turn' }}</li>
+        </ul>
+    </li>
+
+    <!-- OPTIONS -->
+    <li class="menu-item">{{ m.options or 'Options' }}
+        <ul class="dropdown win95-bevel-out">
+            <li class="checkable {{ 'checked' if game and game.fast_mode }}"
+                onclick="toggleFast(this)">
+                {{ m.fast or 'Fast' }}
+            </li>
+            <li class="checkable {{ 'checked' if game and game.show_grid }}"
+                onclick="toggleGrid(this)">
+                {{ m.show_grid or 'Show grid' }}
+            </li>
+            <li class="checkable {{ 'checked' if game and game.auto_end_turn }}"
+                onclick="toggleAutoEndTurn(this)">
+                {{ m.auto_end_turn or 'Automatic end turn' }}
+            </li>
+            <li class="checkable {{ 'checked' if game and game.sound_enabled }}"
+                onclick="toggleSound(this)">
+                {{ m.sound or 'Sound' }}
+            </li>
+            <li class="checkable {{ 'checked' if game and game.graphics_enabled }}"
+                onclick="toggleGraphics(this)">
+                {{ m.graphics or 'Graphics' }}
+            </li>
+        </ul>
+    </li>
+
+    <!-- TOOLS -->
+    <li class="menu-item">{{ m.tools or 'Tools' }}
+        <ul class="dropdown win95-bevel-out">
+            <li onclick="openMapEditor()">{{ m.map_editor or 'Map editor' }}</li>
+        </ul>
+    </li>
+
+    <!-- HELP -->
+    <li class="menu-item">{{ m.help or 'Help' }}
+        <ul class="dropdown win95-bevel-out">
+            <li onclick="showContents()">{{ m.contents or 'Contents' }}</li>
+            <li onclick="showAbout()">{{ m.about or 'About' }}</li>
+            <li onclick="showRegister()">{{ m.register or 'Register' }}</li>
+        </ul>
+    </li>
+
+    <!-- LANGUAGE -->
+    <li class="menu-item">{{ m.language or 'Language' }}
+        <ul class="dropdown win95-bevel-out">
+            {% for code, label in [
+                ('eng','English'),
+                ('spa','Spanish'),
+                ('por','Portuguese'),
+                ('it','Italian'),
+                ('fr','French'),
+                ('ger','German'),
+                ('chn','Chinese'),
+                ('jap','Japanese'),
+                ('kor','Korean'),
+                ('slo','Slovenian'),
+                ('rus','Russian'),
+                ('yu','Serbocroatian'),
+                ('other','Other')
+            ] %}
+            <li onclick="location.href='{{ url_for('metropoly.set_language', code=code) }}'">
+                {{ label }}
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+
+</ul>

@@ -1,0 +1,224 @@
+Anglais 
+Espagnol 
+Portugese 
+Italien 
+Français 
+Allemand 
+Chinois 
+Japonais 
+Coréen 
+Slovène 
+Russe 
+Serbocroatian 
+Autre 
+Langue 
+Metropoly 
+
+Dossier 
+Nouveau 
+Ouvert 
+Économiser 
+Économiser la carte 
+Sortez le rédacteur de carte 
+Sortez 
+
+Ordres 
+Route de construction 
+Vente 
+Semaphors 
+Créez le semaphor 
+Enlevez le semaphor 
+Tournez les semaphors 
+Finissez le tour 
+
+Options 
+Rapide 
+Montrez la grille 
+Tour automatique de fin 
+Bruit 
+Graphiques 
+
+Outils 
+Rédacteur de carte 
+
+Aide 
+Table des matières 
+Au sujet de 
+Registre 
+
+Nouveau jeu 
+X 
+y 
+carte 
+OK 
+Annulation 
+
+Ouvert 
+Économiser 
+Économiser la carte 
+Nom de fichier 
+
+Graphiques de Metropoly 
+Cliquetez pour passer en revue des graphiques, droit-déclic pour passer en revue reversly, commande-déclic pour passer en revue des détails. 
+
+Tracez le rédacteur 
+Nouveau 
+X 
+y 
+Ouvert 
+
+Aide De Metropoly 
+Vous commencez dedans 
+prison. 
+Vous jetez 
+matrices et promenade sur 
+route. 
+Allez à  
+école à apprendre et aller à  
+argent à gagner. 
+Achat 
+terre. Achat  
+maisons sur votre terre. 
+
+Cliquetez dessus la terre où vous voulez la sémaphore 
+Cliquetez dessus une sémaphore pour l'enlever 
+$ 
+Teritories: 
+Chambres: 
+Gagne: 
+$/week 
+Tour de fin? 
+paye 
+$ à 
+terre d'achats pour  
+constructions 
+maisons pour 
+demande 
+$/week. 
+Vous voulez l'école de visite pour  
+Cliquetez dessus la terre que vous voulez vendre 
+Vous voulez vendre des maisons pour  
+$? 
+Vous voulez vendre la terre pour  
+La route était construction 
+Semaphor était construction 
+Semaphor a été enlevé 
+est dehors. 
+Le gagnant est  
+gagne le jeu. 
+teritories,  
+maisons.  
+gagne  
+Fin de la semaine 
+Cliquetez dessus votre terre où vous voulez construire la route. 
+Prix d'achat:  
+Prix de vente:  
+Chambre coûtée:  
+Paiement: 
+Pour  
+maisons 
+Route 
+École 
+Le travail 
+Prison 
+Achetez la terre pour 
+Construisez les maisons pour 
+Sémaphores de rotation 
+
+Lundi 
+Mardi 
+Mercredi 
+Jeudi 
+Vendredi 
+Samedi 
+Dimanche 
+pupille 
+étudiant 
+ingeneer 
+docteur 
+gagnant de prix Nobel 
+
+Il est 
+'tour de s 
+
+oui 
+non 
+Fréquence de visite 
+Inteligence d'ordinateur 
+Mauvais, Moyen, Bon 
+
+[Registration form]
+Fiche 
+---
+
+
+
+
+
+
+
+---
+Je veux acheter des jeux de carte 
+
+Je payerai avec 
+argent comptant 
+mandat 
+chèque 
+carte de crédit 
+VISA 
+Mastercard 
+autre... 
+
+Je veux recevoir 
+Numéro de série 
+Disquette De 3,5" 
+CD-ROM 
+
+Je veux recevoir le produit 
+par la poste 
+par E-mail 
+Mon adresse 
+Mon E-mail 
+Nom:  
+Rue:  
+Ville:  
+Code postal (USA seulement) 
+État (USA seulement) 
+Pays:  
+
+Je ne veux pas tous les jeux 
+(ceci réduira le prix) 
+
+Quantité 
+Coût d'expédition 
+Montant total 
+--- 
+Fiche d'impression 
+Envoyez l'ordre par la poste 
+Pour envoyer l'ordre par la poste, imprimez la fiche et envoyez-l'à à l'adresse ci-dessus. 
+Envoyez l'ordre par E-mail 
+Écrivez le numéro de série 
+OK 
+Fin 
+--- 
+: 
+Objet: 
+--- 
+
+[GAMENAME]
+Jeux de carte 
+[GAMENAME]
+N'obtenez pas l'homme fâché 
+[GAMENAME]
+Rambo 
+[GAMENAME]
+Highnoon 
+[GAMENAME]
+Tenis 
+[GAMENAME]
+Anteater sous-marin 
+[GAMENAME]
+Wau de Wau 
+
+
+

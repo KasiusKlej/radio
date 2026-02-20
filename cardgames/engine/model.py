@@ -64,8 +64,8 @@ class Column:
         self.player_can_put_card_if_empty = "-1"
         self.player_can_take_card = "-1"
         self.cards_face_up = ""
-        self.backstyle = "-1"
-        self.backcolor = "-1"
+        self.backstyle = -1
+        self.backcolor = -1
         self.overlap_x = -1
         self.overlap_y = -1
         self.custom_x = -1

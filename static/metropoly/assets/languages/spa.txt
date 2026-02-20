@@ -1,0 +1,225 @@
+Inglés 
+Espańol 
+Portugese 
+Italiano 
+Francés 
+Alemán 
+Chino 
+Japonés 
+Coreano 
+Esloveno 
+Ruso 
+Serbocroatian 
+Otro 
+Idioma 
+Metropoly 
+
+Archivo 
+Nuevo 
+Abrir 
+Guardiar 
+Excepto mapa 
+Salga del redactor del mapa 
+Salida 
+
+Órdenes 
+Construir camino 
+Vender 
+Semaphores 
+Cree el semaphor 
+Quite el semaphor 
+Rote los semaphors 
+Acaba dar vuelta 
+
+Opciones 
+Rápido 
+Demuestre la rejilla 
+Vuelta automática del final 
+Sonido 
+Gráficos 
+
+Herramienta 
+Redactor del mapa 
+
+Ayuda 
+Contenido 
+Sobre 
+Registro 
+
+Nuevo juego 
+x 
+y 
+mapa 
+AUTORIZACIÓN 
+Cancelación 
+
+Abierto 
+Excepto 
+Excepto mapa 
+Nombre del archivo 
+
+Gráficos de Metropoly 
+Hacer para hojear los gráficos, derecho-tecleo para hojear inverso, control-tecleo para hojear los detalles. 
+
+Editor del mapa 
+Nuevo 
+x 
+y 
+Abierto 
+
+Ayuda De Metropoly 
+Tu comienza en la 
+cárcel. 
+Usted lanza 
+dados y caminasa en 
+caretera. 
+Vaya a  
+la escuela para aprender y vaya  
+dinero a ganar. 
+Compra 
+tierra. Compra  
+casas en su tierra. 
+
+Haz click en la tierra en donde usted desea semáforo 
+Haz click en el semáforo para quitarlo 
+$ 
+Teritories: 
+Casas: 
+Gana: 
+$/semana 
+Vuelta del final? 
+paga 
+$ para 
+comprar la tierra para 
+construir 
+casas para 
+pide 
+$/semana. 
+Visitar le escuela para 
+Hazclick en la tierra que usted desea vender 
+Usted desea vender las casas para  
+$? 
+Usted desea vender la tierra para  
+En carretera fue construida 
+Semaphor fue construido
+Semaphor fue quitado 
+está fuera. 
+El ganador es  
+gana el juego. 
+teritories,  
+casas.  
+ucias  
+Final de la semana 
+Hazclick encendido en su tierra en donde usted desea construir la carretera. 
+El precio de la compra:  
+El precio de la venta:  
+El precio de la casa:  
+Pago: 
+Para  
+casas 
+Carretero 
+Escuela 
+Trabajo 
+Cárcel 
+Comprar la tierra para 
+Construya las casas para 
+Semáforos que dan vuelta 
+
+Lunes 
+Martes 
+Miércoles 
+Jueves 
+Viernes 
+Sábado 
+Domingo 
+pupilo 
+estudiante 
+ingeneer 
+doctor 
+ganador del premio Nobel 
+
+Es 
+' vuelta de s 
+
+sí 
+no 
+Frecuencia de la visita 
+Inteligencia de la computadora 
+Malo, Medio, Bueno 
+
+[Registration form]
+Forma de registro 
+--- 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- 
+Deseo comprar Juegos de la tarjeta 
+
+Pagaré con 
+efectivo 
+orden de dinero 
+cheque 
+tarjeta de crédito 
+VISA 
+Mastercard 
+otro... 
+
+Deseo recibir 
+Número de serie 
+Diskette Del 3,5" 
+CD-ROM 
+
+Deseo recibir el producto 
+por correo 
+por E-mail 
+Mi dirección 
+Mi E-mail 
+Nombre:  
+Calle:  
+Ciudad:  
+Código postal (los E.U. solamente) 
+Estado (los E.U. solamente) 
+País:  
+
+No deseo todos los juegos 
+(esto reducirá el precio) 
+
+Cantidad 
+Coste del envío 
+Cantidad total 
+--- 
+Imprima formulariode registro 
+Envía la orden por correo 
+Para enviar orden por correo, imprima la formulario de registro y envíela a la dirección antedicha. 
+Envíe la orden por E-mail 
+Entra el número de serie 
+AUTORIZACIÓN 
+Cierra 
+--- 
+Para: 
+Tema: 
+--- 
+
+[GAMENAME]
+Juegos de las cartas 
+[GAMENAME]
+No te pones enojade 
+[GAMENAME]
+Rambo 
+[GAMENAME]
+Alto mediodia 
+[GAMENAME]
+Tenis 
+[GAMENAME]
+Anteater subacuático 
+[GAMENAME]
+Wau de Wau 
+
+
+
+

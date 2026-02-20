@@ -1,0 +1,224 @@
+Inglese 
+Spagnolo 
+Portugese 
+Italiano 
+Francese 
+Tedesco 
+Cinese 
+Giapponese 
+Coreano 
+Sloveno 
+Russo 
+Serbocroatian 
+Altro 
+Lingua 
+Metropoly 
+
+Lima 
+Nuovo 
+Aperto 
+Risparmi 
+Risparmi il programma 
+Rimuova il redattore del programma 
+Rimuova 
+
+Ordini 
+Strada di configurazione 
+Vendita 
+Semaphors 
+Generi il semaphor 
+Rimuova il semaphor 
+Ruoti i semaphors 
+Concluda la girata 
+
+Opzioni 
+Veloce 
+Mostri la griglia 
+Girata automatica di conclusione 
+Suono 
+Grafici 
+
+Attrezzi 
+Redattore del programma 
+
+Aiuto 
+Indice 
+Circa 
+Registro 
+
+Nuovo gioco 
+x 
+y 
+programma 
+APPROVAZIONE 
+Annullamento 
+
+Aperto 
+Risparmi 
+Risparmi il programma 
+Nome di archivio 
+
+Grafici di Metropoly 
+Scattisi per passare in rassegna i grafici, di destra-scatto per passare in rassegna reversly, controllo-scatto per passare in rassegna i particolari. 
+
+Tracci il redattore 
+Nuovo 
+x 
+y 
+Aperto 
+
+Aiuto Di Metropoly 
+Cominciate dentro 
+prigione. 
+Gettate 
+dadi e camminata sul 
+strada. 
+Vada a  
+scuola da imparare ed andare a  
+soldi da guadagnare. 
+Buy 
+terra. Buy  
+case sulla vostra terra. 
+
+Scatti sopra la terra in cui desiderate il semaphore 
+Scatti sopra un semaphore per rimuoverlo 
+$ 
+Teritories: 
+Camere: 
+Guadagna: 
+$/week 
+Girata di conclusione? 
+paga 
+$ a 
+terra dei buys per  
+configurazioni 
+case per 
+_ chied per 
+$/week. 
+Desiderate la scuola di chiamata per  
+Scatti sopra la terra che desiderate vendere 
+Desiderate vendere le case per  
+$? 
+Desiderate vendere la terra per  
+La strada era configurazione 
+Semaphor era configurazione 
+Semaphor è stato rimosso 
+è fuori. 
+Il vincitore è  
+vince il gioco. 
+teritories,  
+case.  
+guadagna  
+Conclusione della settimana 
+Scatti sopra la vostra terra in cui desiderate costruire la strada. 
+Prezzo del buy:  
+Prezzo di vendita:  
+Camera costata:  
+Pagamento: 
+Per  
+case 
+Strada 
+Scuola 
+Lavoro 
+Prigione 
+Compri la terra per 
+Costruisca le case per 
+Semaphores di rotazione 
+
+Lunedì 
+Martedì 
+Mercoledì 
+Giovedì 
+Venerdì 
+Sabato 
+Domenica 
+pupilla 
+allievo 
+ingeneer 
+medico 
+vincitore del premio Nobel 
+
+È 
+'girata di s 
+
+sì 
+no 
+Frequenza di chiamata 
+Inteligence del calcolatore 
+Difettoso, Medio, Buon 
+
+[Registration form]
+Forma di registro 
+---
+
+
+
+
+
+
+
+---
+Desidero comprare i giochi della scheda 
+
+_ io pag con 
+contanti 
+ordine di soldi 
+assegno 
+carta di credito 
+VISTO 
+Mastercard 
+altro... 
+
+Desidero ricevere 
+Numero di serie 
+Dischetto Di 3,5" 
+Di copia più scura-ROM 
+
+Desidero ricevere il prodotto 
+per posta 
+dal E-mail 
+Il mio indirizzo 
+Il mio E-mail 
+Nome:  
+Via:  
+Città:  
+Codice di POSTALE (Stati Uniti soltanto) 
+Condizione (Stati Uniti soltanto) 
+Paese:  
+
+Non desidero tutti i giochi 
+(questo ridurrà il prezzo) 
+
+Importo 
+Costo della spedizione 
+Importo totale 
+--- 
+Forma di registro della stampa 
+Trasmetta l'ordine per posta 
+Per trasmettere l'ordine per posta, stampi la forma di registro e trasmettala al suddetto indirizzo. 
+Trasmetta l'ordine dal E-mail 
+Entri nel numero di serie 
+APPROVAZIONE 
+Fine 
+--- 
+: 
+Oggetto: 
+--- 
+
+[GAMENAME]
+Giochi della scheda 
+[GAMENAME]
+Non ottenga l'uomo arrabbiato 
+[GAMENAME]
+Rambo 
+[GAMENAME]
+Highnoon 
+[GAMENAME]
+Tenis 
+[GAMENAME]
+Anteater subacqueo 
+[GAMENAME]
+Wau di Wau 
+
+
+

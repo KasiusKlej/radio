@@ -1,0 +1,224 @@
+Englisch 
+Spanisch 
+Portugese 
+Italienisch 
+Französisch 
+Deutsch 
+Chinesisch 
+Japanisch 
+Koreanisch 
+Slowenisch 
+Russisch 
+Serbocroatian 
+Anderes 
+Sprache 
+Metropoly 
+
+Akte 
+Neu 
+Geöffnet 
+Außer 
+Außer Diagramm 
+Nehmen Sie Diagrammherausgeber heraus 
+Nehmen Sie heraus 
+
+Aufträge 
+Baustraße 
+Verkauf 
+Semaphors 
+Verursachen Sie semaphor 
+Entfernen Sie semaphor 
+Drehen Sie semaphors 
+Beenden Sie Umdrehung 
+
+Wahlen 
+Schnell 
+Zeigen Sie Rasterfeld 
+Automatische Ende Umdrehung 
+Ton 
+Graphiken 
+
+Werkzeuge 
+Diagrammherausgeber 
+
+Hilfe 
+Inhalt 
+Über 
+Register 
+
+Neues Spiel 
+x 
+y 
+Diagramm 
+O.K. 
+Löschen 
+
+Geöffnet 
+Außer 
+Außer Diagramm 
+Dateiname 
+
+Metropoly Graphiken 
+Klicken Sie, um Graphiken, Rechtklicken zu grasen, um reversly zu grasen, das Steuerung-Klicken, zum der Details zu grasen. 
+
+Bilden Sie Herausgeber ab 
+Neu 
+x 
+y 
+Geöffnet 
+
+Metropoly Hilfe 
+Sie fangen innen an 
+Gefängnis. 
+Sie werfen 
+Würfel und Weg auf 
+Straße. 
+Gehen Sie zu  
+Schule, zum zu zu erlernen und zu gehen  
+zu erwerben Geld. 
+Kauf 
+Land. Kauf  
+Häuser auf Ihrem Land. 
+
+Klicken Sie an Land, in dem Sie Semaphor wünschen 
+Klicken Sie an ein Semaphor, um es zu entfernen 
+$ 
+Teritories: 
+Häuser: 
+Erwirbt: 
+$/week 
+Ende Umdrehung? 
+zahlt 
+$ zu 
+Kaufland für  
+Bauten 
+Häuser für 
+bittet um 
+$/week. 
+Wünschen Sie Besuch Schule für  
+Klicken Sie an Land, das Sie verkaufen möchten 
+Möchten Sie Häuser für verkaufen  
+$? 
+Möchten Sie Land für verkaufen  
+Straße war Bau 
+Semaphor war Bau 
+Semaphor wurde entfernt 
+ist heraus. 
+Der Sieger ist  
+gewinnt das Spiel. 
+teritories,  
+Häuser.  
+erwirbt  
+Ende der Woche 
+Klicken Sie an Ihr Land, in dem Sie Straße errichten möchten. 
+Kaufpreis:  
+Verkauf Preis:  
+Haus kostete:  
+Zahlung: 
+Für  
+Häuser 
+Straße 
+Schule 
+Job 
+Gefängnis 
+Kaufen Sie Land für 
+Errichten Sie Häuser für 
+Drehensemaphore 
+
+Montag 
+Dienstag 
+Mittwoch 
+Donnerstag 
+Freitag 
+Samstag 
+Sonntag 
+Pupille 
+Kursteilnehmer 
+ingeneer 
+Doktor 
+Nobel Preissieger 
+
+Er ist 
+' s Umdrehung 
+
+ja 
+nein 
+Besuch Frequenz 
+Computer inteligence 
+Schlecht, Durchschnittlich, Gut 
+
+[Registration form]
+Ausrichtung Form 
+---
+
+
+
+
+
+
+
+---
+Ich möchte Karte Spiele kaufen 
+
+Ich zahle mit 
+Bargeld 
+Zahlungsanweisung 
+Scheck 
+Kreditkarte 
+VISUM 
+Mastercard 
+anderes... 
+
+Ich möchte empfangen 
+Seriennummer 
+3,5"Diskette 
+Digitalschallplatte-ROM 
+
+Ich möchte das Produkt empfangen 
+durch Post 
+durch E-mail 
+Meine Adresse 
+Meine E-mail 
+Name:  
+Straße:  
+Stadt:  
+REISSVERSCHLUSS-Code (nur US) 
+Zustand (nur US) 
+Land:  
+
+Ich wünsche nicht alle Spiele 
+(dieses verringert den Preis) 
+
+Menge 
+Versandkosten 
+Gesamtmenge 
+--- 
+Druckausrichtung Form 
+Schicken Sie Auftrag mit der Post 
+Um Auftrag mit der Post zu schicken, drucken Sie Ausrichtung Form und schicken Sie sie zu zur oben genannten Adresse. 
+Senden Sie Auftrag durch E-mail 
+Tragen Sie Seriennummer ein 
+O.K. 
+Ende 
+--- 
+: 
+Thema: 
+--- 
+
+[GAMENAME]
+Karte Spiele 
+[GAMENAME]
+Erhalten Sie nicht verärgerten Mann 
+[GAMENAME]
+Rambo 
+[GAMENAME]
+Highnoon 
+[GAMENAME]
+Tenis 
+[GAMENAME]
+Unterwasseranteater 
+[GAMENAME]
+Wau wau 
+
+
+

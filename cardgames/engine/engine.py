@@ -189,8 +189,6 @@ def column_click(game, col_idx, card_code):
     Receives 'game' (the CardGame instance) to access class methods.
     """
 
-    print("column_click. usermode= {s.usermode} ")
-
     # 1. Imports from the current module (Local Math/Rule Helpers)
     from .engine import (
         move_condition, match_specificCol, 
@@ -200,7 +198,7 @@ def column_click(game, col_idx, card_code):
     s = game.state  
     target_col = s.kup[col_idx]
 
-    print("column_click. usermode= {s.usermode} ")
+    #print("column_click. usermode= {s.usermode} ")
     
     # ---------------------------------------------------------
     # MODE 0: SELECT CARD

@@ -244,15 +244,28 @@ def set_language(code):
 @cardgames_bp.route("/api/options/autoplay", methods=["POST"])
 @cardgames_bp.route("/api/options/autoplay/", methods=["POST"])
 def set_autoplay():
-    """Toggles the 'Automatic move' wish for the player."""
-    engine = get_user_game()
-    if not engine:
-        return jsonify({"ok": False, "error": "No active session"}), 401
-
-    data = request.get_json()
-    enabled = bool(data.get("enabled", False))
-    engine.state.autoplay_enabled = enabled
-    return jsonify({"ok": True, "autoplay": enabled})
+    """Toggle autoplay and immediately start if enabled."""
+    try:
+        engine = get_user_game()
+        if not engine:
+            return jsonify({"success": False}), 401
+        
+        data = request.get_json()
+        enabled = data.get("enabled", False)
+        
+        engine.state.autoplay_enabled = bool(enabled)
+        
+        from .engine.engine import sync_visual_actors
+        sync_visual_actors(engine.state)
+        
+        return jsonify({
+            "success": True,
+            "game": engine.to_dict()  # ✅ Return game state
+        })
+    
+    except Exception as e:
+        print(f"Error toggling autoplay: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @cardgames_bp.route("/exit")
@@ -271,3 +284,38 @@ def exit_game():
     # 3. Redirect to the main homepage
     # If your main homepage route is named 'index' in your main app:
     return redirect("/")
+
+
+@cardgames_bp.route("/api/autoplay/tick", methods=["POST"])
+@cardgames_bp.route("/api/autoplay/tick/", methods=["POST"])
+def autoplay_tick():
+    """
+    Autoplay timer tick - processes one round of every_turn actions.
+    Returns whether more moves are possible.
+    """
+    try:
+        engine = get_user_game()
+        if not engine:
+            return jsonify({"success": False, "error": "Session expired"}), 401
+        
+        if not engine.state.autoplay_enabled:
+            return jsonify({"success": True, "continue": False, "game": engine.to_dict()})
+        
+        from .engine.engine import sync_visual_actors
+        
+        # Run one round of autoplay
+        moves_made = engine.try_every_turn_actions()
+        
+        # Sync visuals
+        sync_visual_actors(engine.state)
+        
+        return jsonify({
+            "success": True,
+            "continue": moves_made,  # Tell frontend to keep looping
+            "game": engine.to_dict()
+        })
+    
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"success": False, "error": str(e)}), 500

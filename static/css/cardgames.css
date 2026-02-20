@@ -109,7 +109,28 @@ html, body {
     display: flex; align-items: center; justify-content: center;
 }
 
-.win95-dialog { width: 400px; padding: 2px; background: var(--win-gray); }
+.win95-dialog .win-title-bar {
+    background: var(--win-blue);
+    color: white;
+    padding: 3px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.win-close {
+    width: 16px;
+    height: 14px;
+    padding: 0;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
 
 .win95-dialog-body { padding: 20px; font-size: 13px; color: black; }
 
@@ -198,3 +219,118 @@ html, body {
         border-color: #FFA500;
     }
 }
+
+
+
+/* METROPOLY */
+
+.pawn-offset-1 { transform: translate(0, 0); }
+.pawn-offset-2 { transform: translate(16px, 16px); }
+.pawn-offset-3 { transform: translate(16px, 0); }
+/* matches your VB figuraXoffset logic exactly */
+
+/* --- WIN95 INTERACTIVE ELEMENTS --- */
+button, .win-btn {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-black);
+    border-bottom: 2px solid var(--win-black);
+    padding: 4px 10px;
+    font-family: "Tahoma", sans-serif;
+    font-size: 12px;
+    outline: none;
+}
+
+button:active, .win-btn:active {
+    border-top: 2px solid var(--win-black);
+    border-left: 2px solid var(--win-black);
+    border-right: 2px solid var(--win-white);
+    border-bottom: 2px solid var(--win-white);
+    padding: 5px 9px 3px 11px; /* Shifts text 1px down-right */
+}
+
+/* Inset Bevel (for the Status Bar and Input boxes) */
+.win-field, .win-inset {
+    background: var(--win-white);
+    border-top: 2px solid var(--win-dark-gray);
+    border-left: 2px solid var(--win-dark-gray);
+    border-right: 2px solid var(--win-white);
+    border-bottom: 2px solid var(--win-white);
+    padding: 2px;
+}
+
+/* --- METROPOLY LAYOUT --- */
+#metropoly-main-layout {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden; /* Prevents whole-page scrolling */
+    background: var(--win-dark-gray); /* Grey padding around the board */
+}
+
+#sidebar {
+    width: 280px;
+    background: var(--win-gray);
+    border-right: 2px solid var(--win-white);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10;
+}
+
+#game-viewport {
+    flex-grow: 1;
+    overflow: auto; /* The board itself can scroll */
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+#game-board {
+    display: grid; /* We use CSS Grid for the 32px tiles */
+    position: relative;
+    background: #ffffff;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+.tile {
+    width: 32px;
+    height: 32px;
+    position: relative;
+}
+
+.tile img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+}
+
+/* Layering Z-Indices */
+.layer-base { z-index: 1; }
+.layer-road { z-index: 2; }
+.layer-building { z-index: 3; }
+.layer-flag { z-index: 4; }
+
+/* The Pawns (Figurice) */
+.pawn {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    z-index: 100;
+    border: 1px solid black;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transition: all 0.3s ease-in-out; /* Smooth movement instead of VB "jumping" */
+}
+
+
+/* Hide Sidebar when in CardGames mode */
+body.cardgames-mode #sidebar { display: none; }
+
+/* Hide Table-Scroll when in Metropoly mode */
+body.metropoly-mode #table-scroll { display: none; }
+
+

@@ -1,4 +1,4 @@
-# game.py 
+# cardgames game.py 
 from flask import session
 import random
 import uuid
@@ -299,13 +299,17 @@ class CardGame:
         success = False
         
         # Import engine tools needed for these actions
+        # from .engine import (
+        #     turn_or_shuffle_column, move_condition, 
+        #     param_count_empty, param_cards_rowed, 
+        #     param_count_weight, minmax, 
+        #     check_ifduringaction_condition
+        # )
         from .engine import (
             turn_or_shuffle_column, move_condition, 
-            param_count_empty, param_cards_rowed, 
-            param_count_weight, minmax, 
+            moveColumn, minmax,
             check_ifduringaction_condition
         )
-
         # ----------------------------
         # movecolumn=X-Y (Move whole column)
         # ----------------------------
@@ -317,8 +321,8 @@ class CardGame:
             s.simulateClickMode = True
 
             if s.kup[csource].weight > 0:
-                # We call the move_column method we ported earlier
-                success = self.move_column(csource, cdest, s.kup[csource].weight)
+                # ✅ FIX: Call as function, passing self (game) as first arg
+                success = moveColumn(self, csource, cdest, s.kup[csource].weight)
 
             s.actionMode = False
             s.simulateClickMode = False
@@ -348,7 +352,8 @@ class CardGame:
 
             actual_n = min(n, s.kup[csource].weight)
             if actual_n > 0:
-                success = self.move_column(csource, cdest, actual_n)
+                # ✅ FIX: Call as function, passing self (game) as first arg
+                success = moveColumn(self, csource, cdest, actual_n)
 
             s.actionMode = False
             s.simulateClickMode = False
@@ -402,19 +407,30 @@ class CardGame:
 
             if expr.isdigit():
                 s.parameter[p_idx] = int(expr)
+            
             elif expr.startswith("countempty"):
-                s.parameter[p_idx] = param_count_empty(s, expr[10:])
+                # ✅ FIX: Call as method, not function
+                s.parameter[p_idx] = self.param_count_empty(expr[10:])
+            
             elif expr.startswith("cardsrowed("):
                 col = s.selectedColumn if "selected" in expr else int(expr[11:-1])
-                s.parameter[p_idx] = param_cards_rowed(s, col)
+                # ✅ FIX: Call as method, not function
+                s.parameter[p_idx] = self.param_cards_rowed(col)
+            
             elif expr.startswith("min(") or expr.startswith("max("):
                 fn = expr[:3]
                 val_a, val_b = expr[4:-1].split(",")
+                # ✅ FIX: minmax is standalone in engine.py - import it
+                from .engine import minmax
                 s.parameter[p_idx] = minmax(s, fn, val_a, val_b)
+            
             elif expr.startswith("source_column"):
                 s.parameter[p_idx] = s.selectedColumn
+            
             elif expr.startswith("weight_of"):
-                s.parameter[p_idx] = param_count_weight(s, expr[9:])
+                # ✅ FIX: Call as method, not function
+                s.parameter[p_idx] = self.param_count_weight(expr[9:])
+            
             else:
                 success = False
 
@@ -523,49 +539,72 @@ class CardGame:
         """
         Action: cardsrowed(col)
         Checks how many cards at the top of a column follow the sequence rules.
+        
+        Returns the count of cards that form a valid descending sequence
+        according to the column's rules (alternate color, same suit, etc.)
         """
         s = self.state
-        if not (0 <= col_idx < len(s.kup)): return 0
+        
+        # Validate column index
+        if not (0 <= col_idx < len(s.kup)):
+            return 0
         
         column = s.kup[col_idx]
-        if column.weight <= 1: return column.weight
-
+        if column.weight <= 1:
+            return column.weight
+        
+        # ✅ FIX: Import match_alternates as a function
+        from .engine import match_alternates
+        
         # Check from top down
         cards = list(column.contents)
-        cards.reverse() # Top is now at index 0
+        cards.reverse()  # Top card is now at index 0
         
-        row_count = 1
+        row_count = 1  # Top card always counts
+        
         for i in range(len(cards) - 1):
             # Check if card i can be placed on card i+1 (the card under it)
-            # using the column's specific suit/alternate rules
-            if self.match_alternates(col_idx, cards[i].code):
+            # ✅ FIX: Call as function, passing state as first argument
+            if match_alternates(s, col_idx, cards[i].code):
                 row_count += 1
             else:
-                break
+                break  # Sequence breaks, stop counting
+        
         return row_count
     
     def try_every_turn_actions(self):
         """
         VB Port: try_every_turn_actions
-        The 'Autoplay' engine. It loops as long as it finds valid automatic moves.
+        The 'Autoplay' engine. Returns True if any moves were made.
         """
         s = self.state
-        # We limit loops to prevent potential infinite script loops
-        max_loops = 50 
+        
+        if not s.autoplay_enabled:
+            self.try_if_actions()  # Still run if() checks
+            return False
+        
+        max_loops = 50
+        any_moves_made = False
         
         while max_loops > 0:
             s.clickModeSuceededSoTryAgain = False
-            lines = s.LIST_GAME_LINES # Our script block
-
+            lines = s.LIST_GAME_LINES
+            
             for line in lines:
                 line = line.strip()
-                if line.startswith("every_turn=") and s.autoplay_enabled:
+                
+                if line.startswith("every_turn="):
                     action_cmd = line[11:]
-
+                    
                     if action_cmd.startswith("["):
-                        self.do_whole_action(action_cmd)
+                        if self.do_whole_action(action_cmd):
+                            any_moves_made = True
+                            s.clickModeSuceededSoTryAgain = True
+                            
                     elif action_cmd.startswith("parameter"):
-                        self.do_action(action_cmd)
+                        if self.do_action(action_cmd):
+                            any_moves_made = True
+                            s.clickModeSuceededSoTryAgain = True
                     else:
                         # Standard x-y move (e.g., 0-1)
                         try:
@@ -575,21 +614,33 @@ class CardGame:
                             if source_col.contents:
                                 top_card = source_col.contents[-1]
                                 
-                                # Simulate clicks to move the card
+                                # Try the move
+                                from .engine import column_click
                                 s.simulateClickMode = True
-                                self.column_click(src_idx, top_card.code)
-                                self.column_click(dst_idx, top_card.code)
+                                
+                                # Select
+                                column_click(self, src_idx, top_card.code)
+                                # Move
+                                column_click(self, dst_idx, top_card.code)
+                                
                                 s.simulateClickMode = False
+                                
+                                if s.cardJustMoved:
+                                    any_moves_made = True
+                                    s.clickModeSuceededSoTryAgain = True
                         except Exception:
                             continue
                 
-                if line == "[FINISH]": break
+                if line == "[FINISH]":
+                    break
             
             if not s.clickModeSuceededSoTryAgain:
                 break
             max_loops -= 1
-
+        
         self.try_if_actions()
+        
+        return any_moves_made  # ✅ NEW: Tell frontend if moves were made
 
     def try_if_actions(self):
         """
@@ -848,7 +899,6 @@ class CardGame:
         # Calculate X/Y grid based on the constants
         calcColumnXY(s)
         
-        print(f"DEBUG: prepare columns")
         # Parse the [COLUMNS] section from the script into s.kup
         self._prepare_columns() 
                 
@@ -973,31 +1023,68 @@ class CardGame:
             col.y = col.custom_y
 
     
+    # def _normalize_column_overlaps(self):
+    #     """
+    #     Improved Normalizer: Prevents 'Leaking Axis' bugs.
+    #     """
+    #     s = self.state
+    #     for col in s.kup:
+    #         print(f"Info of Column overlap before: '{col.column_name}' x: '{col.overlap_x}'   y: '{col.overlap_y}'")
+    #         # Case A: Column specified NOTHING (-1, -1)
+    #         # Use the game-wide defaults.
+    #         if col.overlap_x == -1 and col.overlap_y == -1:
+    #             col.overlap_x = s.default_overlap_x
+    #             col.overlap_y = s.default_overlap_y
+
+    #         # Case B: Column specified horizontal ONLY
+    #         # Assume vertical is 0.
+    #         elif col.overlap_x != -1 and col.overlap_y == -1:
+    #             col.overlap_y = 0
+
+    #         # Case C: Column specified vertical ONLY
+    #         # Assume horizontal is 0.
+    #         elif col.overlap_y != -1 and col.overlap_x == -1:
+    #             col.overlap_x = 0
+            
+    #         # Case D: Both already set (e.g. by behaviour or Stage 2)
+    #         # Do nothing.
+    #         print(f"Info of Column overlap &after: '{col.column_name}' x: '{col.overlap_x}'   y: '{col.overlap_y}'")
+
+    #         # Case type mismatch soup truble
+    #         if col.max_cards == 1:  # Single-card columns
+    #             if col.overlap_x == -1: col.overlap_x = 0
+    #             if col.overlap_y == -1: col.overlap_y = 0
     def _normalize_column_overlaps(self):
         """
-        Improved Normalizer: Prevents 'Leaking Axis' bugs.
+        Normalize column overlaps with strict axis semantics:
+        - X: -1 means "use default"
+        - Y: -1 means "no overlap" (0)
         """
         s = self.state
-        for col in s.kup:
-            # Case A: Column specified NOTHING (-1, -1)
-            # Use the game-wide defaults.
-            if col.overlap_x == -1 and col.overlap_y == -1:
-                col.overlap_x = s.default_overlap_x
-                col.overlap_y = s.default_overlap_y
 
-            # Case B: Column specified horizontal ONLY
-            # Assume vertical is 0.
-            elif col.overlap_x != -1 and col.overlap_y == -1:
+        for col in s.kup:
+            print(
+                f"Info of Column overlap before: "
+                f"'{col.column_name}' x: '{col.overlap_x}' y: '{col.overlap_y}'"
+            )
+
+            # --- Normalize X ---
+            if col.overlap_x == -1:
+                col.overlap_x = s.default_overlap_x
+
+            # --- Normalize Y ---
+            if col.overlap_y == -1:
                 col.overlap_y = 0
 
-            # Case C: Column specified vertical ONLY
-            # Assume horizontal is 0.
-            elif col.overlap_y != -1 and col.overlap_x == -1:
+            # --- Single-card columns: force no overlap ---
+            if col.max_cards == 1:
                 col.overlap_x = 0
-            
-            # Case D: Both already set (e.g. by behaviour or Stage 2)
-            # Do nothing.
+                col.overlap_y = 0
 
+            print(
+                f"Info of Column overlap &after: "
+                f"'{col.column_name}' x: '{col.overlap_x}' y: '{col.overlap_y}'"
+            )
 
 
 
@@ -1278,3 +1365,38 @@ class CardGame:
         self._apply_slot_geometry()
         self._normalize_column_overlaps()
 
+
+    def try_seek_Parameter_actions(self):
+        """
+        VB Port: try_seek_Parameter_actions
+        Searches through game script for "seek_parameter=" actions and executes them.
+        
+        This is used for conditional parameter updates during gameplay.
+        Example: seek_parameter=parameter05=countempty(1,2,3)
+        """
+        s = self.state
+        
+        # In VB, this was ListActions - in our port, we search LIST_GAME_LINES
+        lines = s.LIST_GAME_LINES
+        
+        for line in lines:
+            line = line.strip()
+            
+            # Check if this is a seek_parameter action
+            if line.startswith("seek_parameter="):
+                # Extract the action part after "seek_parameter="
+                action_str = line[15:]  # Skip "seek_parameter="
+                
+                # Check if it's a parameter assignment
+                if action_str.startswith("parameter"):
+                    # Execute the parameter action via do_action
+                    try:
+                        self.do_action(action_str)
+                    except Exception as e:
+                        print(f"Error in seek_parameter action '{action_str}': {e}")
+            
+            # Stop at [FINISH]
+            if line == "[FINISH]":
+                break
+
+            
