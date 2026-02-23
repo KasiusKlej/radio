@@ -1,425 +1,478 @@
-/**
- * PINGPONG.JS
- * Real-time Engine with Negative Scoring
+/* ============================================================================
+ * PINGPONG.JS - Clean Complete Rewrite
+ * ============================================================================
+ * Production-ready ping pong game with:
+ * - Proper factory/state data model integration
+ * - No duplicated logic
+ * - Clear separation of concerns
+ * - Consistent physics
+ * ============================================================================
  */
 
-// 1. FACTORY SETTINGS
-const WIN_SCORE = 52;
+/* ============================================================================
+ * INITIALIZATION & CONSTANTS
+ * ============================================================================ */
+
+const { factory, state } = window.PINGPONG;
+
 const canvas = document.getElementById("pongCanvas");
 const ctx = canvas.getContext("2d");
 
-// 2. GAME STATE (Single declarations only)
-let gameRunning = false;
-let isPaused = false;
-let opponentMode = 'AI'; // 'HUMAN', 'AI', 'NETWORK'
-let aiDifficulty = 0.1;   
+// Set canvas dimensions from factory
+canvas.width = factory.geometry.width;
+canvas.height = factory.geometry.height;
 
-let p1 = { score: 0, y: 200, height: 80, width: 10 };
-let p2 = { score: 0, y: 200, height: 80, width: 10 };
-let ball = { x: 400, y: 250, dx: 5, dy: 5, radius: 8 };
-let keys = {};
+// Game constants from factory
+const WIN_SCORE = factory.rules.max_score;
+const PADDLE_WIDTH = factory.racket.width;
+const PADDLE_HEIGHT = factory.racket.height;
+const PADDLE_SPEED = factory.racket.speed;
+const BALL_RADIUS = factory.ball.radius;
+const BALL_SPEED = factory.ball.speed;
 
-// 3. BALL COSTUMES
-const ballCostumes = [
-    { type: 'circle', color: '#000080' },
-    { type: 'square', color: '#ff0000' },
-    { type: 'diamond', color: '#006400' }
-];
-let currentCostume = 0;
+// Physics tuning constants
+const PHYSICS = {
+    paddleSpinFactor: 0.1,      // How much paddle motion affects ball dy
+    wallBouncePreserve: -1,      // Wall bounce (perfect reflection)
+    maxBallDY: BALL_SPEED * 1.5, // Prevent ball from going too vertical
+    effortPerSecond: 1.0,        // Effort accumulation rate
+    effortSpeedBonus: 0.11       // 11% speed boost per effort point
+};
 
+/* ============================================================================
+ * ASSET LOADING
+ * ============================================================================ */
 
-/**
- * PINGPONG.JS - Animated Dice-Ball Edition
- */
-
-const DICE_RESOURCES = [];
-let diceLoaded = 0;
-
-// Current penalty value shown on the ball (1-6)
-let currentBallValue = 1; 
-
-function loadDiceImages() {
-    const path = window.FACTORY.dice_path; 
-    
-    for (let i = 1; i <= 6; i++) {
-        const img = new Image();
-        // img.src = `${path}dice${i}.png`;
-        img.src = `/metropoly/metro_static/assets/graphics/dice${i}.png`;
-        img.onload = () => {
-            diceLoaded++;
-            if (diceLoaded === 6) console.log("🎲 All Dice Ball costumes loaded.");
-        };
-        DICE_RESOURCES[i] = img;
-    }
+const DICE = [];
+for (let i = 1; i <= 6; i++) {
+    const img = new Image();
+    img.src = `${factory.assets.dice_path}dice${i}.png`;
+    DICE[i] = img;
 }
 
-loadDiceImages();
+/* ============================================================================
+ * GAME STATE
+ * ============================================================================ */
 
-// --- THE VALUE TIMER (VB Timer equivalent) ---
+const game = {
+    running: false,
+    paused: false
+};
+
+const player1 = {
+    y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+    score: 0,
+    velocity: 0,        // Current velocity (for ball spin)
+    effort: 0,          // Accumulated effort
+    lastMoveTime: performance.now()
+};
+
+const player2 = {
+    y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+    score: 0,
+    velocity: 0,
+    effort: 0,
+    lastMoveTime: performance.now()
+};
+
+const ball = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    dx: BALL_SPEED,
+    dy: 0,
+    value: 1  // Dice face (1-6)
+};
+
+const keys = {};
+
+/* ============================================================================
+ * INPUT HANDLING
+ * ============================================================================ */
+
+document.addEventListener("keydown", e => {
+    keys[e.code] = true;
+});
+
+document.addEventListener("keyup", e => {
+    keys[e.code] = false;
+});
+
+/* ============================================================================
+ * WINDOW EVENTS
+ * ============================================================================ */
+
+window.addEventListener('load', () => {
+    resizeCanvas();
+    updateScoreDisplay();
+});
+
+window.addEventListener('resize', () => {
+    resizeCanvas();
+    updateScoreDisplay();
+});
+
+/* ============================================================================
+ * BALL DICE VALUE TIMER
+ * ============================================================================ */
+
 setInterval(() => {
-    if (gameRunning && !isPaused) {
-        // Change the ball's "face" randomly between 1 and 6
-        currentBallValue = Math.floor(Math.random() * 6) + 1;
+    if (game.running && !game.paused) {
+        ball.value = Math.floor(Math.random() * 6) + 1;
     }
-}, 800); // BALL_FLIP_FREQ from factory
+}, 800);
 
-function handleGoal(missingPlayer) {
-    // 🎲 Use the CURRENT value shown on the dice-ball
-    const penalty = currentBallValue;
-    window.game.execSviraj('KOCKA.WAV');
+/* ============================================================================
+ * GAME INITIALIZATION
+ * ============================================================================ */
 
-    if (missingPlayer === 1) {
-        p2.score += penalty;
-        document.getElementById("status-text").innerText = `P1 penalized: -${penalty} pts`;
-    } else {
-        p1.score += penalty;
-        document.getElementById("status-text").innerText = `P2 penalized: -${penalty} pts`;
+function initGame() {
+    resetBall();
+    game.running = true;
+    game.paused = false;
+    requestAnimationFrame(gameLoop);
+}
+
+/* ============================================================================
+ * MAIN GAME LOOP
+ * ============================================================================ */
+
+function gameLoop() {
+    if (game.running && !game.paused) {
+        updatePaddles();
+        updateBall();
+        checkCollisions();
     }
+    
+    render();
+    requestAnimationFrame(gameLoop);
+}
 
-    updateScoreUI();
-    if (p1.score >= WIN_SCORE || p2.score >= WIN_SCORE) {
-        gameRunning = false;
-        alert("Game Over!");
-    } else {
-        resetBall();
+/* ============================================================================
+ * PADDLE PHYSICS
+ * ============================================================================ */
+
+function updatePaddles() {
+    const baseSpeed = PADDLE_SPEED;
+    
+    // ────────────────────────────────────────────────────────────
+    // Player 1 (Left - W/S keys)
+    // ────────────────────────────────────────────────────────────
+    const p1Moving = keys["KeyW"] || keys["KeyS"];
+    updateEffort(player1, p1Moving);
+    
+    const speed1 = baseSpeed * (1 + player1.effort * PHYSICS.effortSpeedBonus);
+    
+    player1.velocity = 0;
+    if (keys["KeyW"]) {
+        player1.velocity = -speed1;
+    }
+    if (keys["KeyS"]) {
+        player1.velocity = speed1;
+    }
+    
+    player1.y += player1.velocity;
+    player1.y = clampPaddle(player1.y);
+    
+    // ────────────────────────────────────────────────────────────
+    // Player 2 (Right - Arrow keys or AI)
+    // ────────────────────────────────────────────────────────────
+    if (state.mode === "HUMAN") {
+        const p2Moving = keys["ArrowUp"] || keys["ArrowDown"];
+        updateEffort(player2, p2Moving);
+        
+        const speed2 = baseSpeed * (1 + player2.effort * PHYSICS.effortSpeedBonus);
+        
+        player2.velocity = 0;
+        if (keys["ArrowUp"]) {
+            player2.velocity = -speed2;
+        }
+        if (keys["ArrowDown"]) {
+            player2.velocity = speed2;
+        }
+        
+        player2.y += player2.velocity;
+        player2.y = clampPaddle(player2.y);
+        
+    } else if (state.mode === "AI") {
+        // Simple AI: follow ball
+        const paddleCenter = player2.y + PADDLE_HEIGHT / 2;
+        const diff = ball.y - paddleCenter;
+        
+        player2.velocity = diff * factory.ai.difficulty;
+        player2.y += player2.velocity;
+        player2.y = clampPaddle(player2.y);
     }
 }
 
-function draw() {
-    // 1. Clear Playground
-    ctx.fillStyle = "#C0C0C0";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 2. Draw Paddles
-    ctx.fillStyle = "#000080";
-    ctx.fillRect(0, p1.y, p1.width, p1.height);
-    ctx.fillRect(canvas.width - p2.width, p2.y, p2.width, p2.height);
-
-    // 3. DRAW THE DICE-BALL
-    const ballImg = DICE_RESOURCES[currentBallValue];
-    const size = window.FACTORY.ball_size; // e.g., 32
+function updateEffort(player, isMoving) {
+    const now = performance.now();
+    const dt = (now - player.lastMoveTime) / 1000;
     
-    if (ballImg) {
-        // Center the image on the ball's coordinates
-        ctx.drawImage(
-            ballImg, 
-            ball.x - size / 2, 
-            ball.y - size / 2, 
-            size, 
-            size
-        );
+    if (isMoving) {
+        player.effort += dt * PHYSICS.effortPerSecond;
+        player.effort = Math.min(player.effort, 1); // Cap at 1
+    } else {
+        player.effort = Math.max(0, player.effort - dt * 2); // Decay faster
     }
+    
+    player.lastMoveTime = now;
+}
 
-    // 4. Center Line
-    ctx.setLineDash([5, 15]);
+function clampPaddle(y) {
+    return Math.max(0, Math.min(canvas.height - PADDLE_HEIGHT, y));
+}
+
+/* ============================================================================
+ * BALL PHYSICS
+ * ============================================================================ */
+
+function updateBall() {
+    // Move ball
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+    
+    // Wall collisions (top/bottom)
+    if (ball.y - BALL_RADIUS <= 0 || ball.y + BALL_RADIUS >= canvas.height) {
+        ball.dy *= PHYSICS.wallBouncePreserve;
+        
+        // Keep ball in bounds
+        if (ball.y - BALL_RADIUS < 0) ball.y = BALL_RADIUS;
+        if (ball.y + BALL_RADIUS > canvas.height) ball.y = canvas.height - BALL_RADIUS;
+    }
+    
+    // Goal detection
+    if (ball.x - BALL_RADIUS < 0) {
+        handleGoal(2); // Player 2 scores
+    }
+    if (ball.x + BALL_RADIUS > canvas.width) {
+        handleGoal(1); // Player 1 scores
+    }
+}
+
+function checkCollisions() {
+    // Check Player 1 paddle collision
+    if (ball.dx < 0) { // Ball moving left
+        if (
+            ball.x - BALL_RADIUS <= PADDLE_WIDTH &&
+            ball.y >= player1.y &&
+            ball.y <= player1.y + PADDLE_HEIGHT
+        ) {
+            handlePaddleHit(player1);
+        }
+    }
+    
+    // Check Player 2 paddle collision
+    if (ball.dx > 0) { // Ball moving right
+        if (
+            ball.x + BALL_RADIUS >= canvas.width - PADDLE_WIDTH &&
+            ball.y >= player2.y &&
+            ball.y <= player2.y + PADDLE_HEIGHT
+        ) {
+            handlePaddleHit(player2);
+        }
+    }
+}
+
+function handlePaddleHit(player) {
+    // Reverse horizontal direction
+    ball.dx = -ball.dx;
+    
+    // Add spin from paddle motion
+    ball.dy += player.velocity * PHYSICS.paddleSpinFactor;
+    
+    // Clamp vertical speed
+    ball.dy = Math.max(-PHYSICS.maxBallDY, Math.min(PHYSICS.maxBallDY, ball.dy));
+    
+    // Play sound (if available)
+    if (window.game?.execSviraj) {
+        window.game.execSviraj("FIGURA.WAV");
+    }
+}
+
+function resetBall(lastScorer) {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    
+    // Serve towards player who didn't score
+    if (lastScorer === 1) {
+        ball.dx = -BALL_SPEED; // Serve to player 1
+    } else if (lastScorer === 2) {
+        ball.dx = BALL_SPEED;  // Serve to player 2
+    } else {
+        // Random serve
+        ball.dx = (Math.random() > 0.5 ? 1 : -1) * BALL_SPEED;
+    }
+    
+    // Random vertical velocity
+    ball.dy = (Math.random() * BALL_SPEED) - (BALL_SPEED / 2);
+}
+
+function handleGoal(scoringPlayer) {
+    const points = ball.value; // Dice value determines points
+    
+    if (scoringPlayer === 1) {
+        player1.score += points;
+    } else {
+        player2.score += points;
+    }
+    
+    updateScoreDisplay();
+    
+    // Check for winner
+    if (player1.score >= WIN_SCORE || player2.score >= WIN_SCORE) {
+        game.running = false;
+        
+        const winner = player1.score >= WIN_SCORE ? "Left Player" : "Right Player";
+        setTimeout(() => {
+            alert(`${winner} Wins!`);
+            newGame();
+        }, 100);
+        return;
+    }
+    
+    // Reset ball (serve towards scorer)
+    resetBall(scoringPlayer);
+}
+
+/* ============================================================================
+ * RENDERING
+ * ============================================================================ */
+
+function render() {
+    drawField();
+    drawPaddles();
+    drawBall();
+}
+
+function drawField() {
+    // Green background
+    ctx.fillStyle = "#006400";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Center line
+    ctx.save();
+    ctx.setLineDash([8, 16]);
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, 0);
     ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = "#808080";
     ctx.stroke();
+    ctx.restore();
 }
 
+function drawPaddles() {
+    ctx.fillStyle = "#ffffff";
+    
+    // Player 1 (left)
+    ctx.fillRect(0, player1.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+    
+    // Player 2 (right)
+    ctx.fillRect(
+        canvas.width - PADDLE_WIDTH,
+        player2.y,
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT
+    );
+}
 
+function drawBall() {
+    const img = DICE[ball.value];
+    
+    if (!img || !img.complete) {
+        // Fallback: draw white circle if dice not loaded
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+        return;
+    }
+    
+    // Draw dice image
+    const size = BALL_RADIUS * 2;
+    ctx.drawImage(
+        img,
+        ball.x - BALL_RADIUS,
+        ball.y - BALL_RADIUS,
+        size,
+        size
+    );
+}
 
+/* ============================================================================
+ * SCORE DISPLAY
+ * ============================================================================ */
 
-// --- BRIDGE FUNCTIONS (For HTML Menu) ---
+function updateScoreDisplay() {
+    const leftDiv = document.getElementById("score-left");
+    const rightDiv = document.getElementById("score-right");
+    
+    if (!leftDiv || !rightDiv) return;
+    
+    // Scale font size with canvas
+    const fontSize = canvas.height * 0.07;
+    leftDiv.style.fontSize = `${fontSize}px`;
+    rightDiv.style.fontSize = `${fontSize}px`;
+    
+    // Update scores
+    leftDiv.textContent = player1.score;
+    rightDiv.textContent = player2.score;
+}
+
+/* ============================================================================
+ * CANVAS RESIZE
+ * ============================================================================ */
+
+function resizeCanvas() {
+    const container = document.getElementById('game-container');
+    if (!container) return;
+    
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    
+    // Maintain aspect ratio from factory geometry
+    const aspect = factory.geometry.width / factory.geometry.height;
+    
+    let width = containerWidth;
+    let height = width / aspect;
+    
+    if (height > containerHeight) {
+        height = containerHeight;
+        width = height * aspect;
+    }
+    
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+}
+
+/* ============================================================================
+ * MENU BRIDGE FUNCTIONS
+ * ============================================================================ */
 
 window.newGame = function() {
-    p1.score = 0;
-    p2.score = 0;
-    window.resetBall();
-    gameRunning = true;
-    isPaused = false;
-    updateScoreUI();
-    document.getElementById("status-text").innerText = "Game Started!";
+    player1.score = 0;
+    player2.score = 0;
+    player1.effort = 0;
+    player2.effort = 0;
+    
+    updateScoreDisplay();
+    resetBall();
+    
+    game.running = true;
+    game.paused = false;
 };
 
 window.togglePause = function() {
-    if (opponentMode === 'NETWORK') return;
-    isPaused = !isPaused;
-    document.getElementById("menu-play").classList.toggle("hidden", !isPaused);
-    document.getElementById("id-pause").classList.toggle("hidden", isPaused);
-    document.getElementById("status-text").innerText = isPaused ? "PAUSED" : "RUNNING";
+    if (state.mode === "NETWORK") return; // Can't pause network games
+    game.paused = !game.paused;
 };
 
 window.exitGame = function() {
-    window.location.href = "/pingpong/exit";
+    location.href = "/pingpong/exit";
 };
 
-window.setDifficulty = function(level) {
-    if (level === 'GOOD') {
-        aiDifficulty = 0.15; // High precision
-        document.getElementById("status-text").innerText = "AI: The Good";
-    } 
-    else if (level === 'BAD') {
-        aiDifficulty = 0.04; // Very slow/clumsy
-        document.getElementById("status-text").innerText = "AI: The Bad";
-    } 
-    else if (level === 'UGLY') {
-        // Unpredictable mode: decent speed but introduces random errors
-        aiDifficulty = 0.08; 
-        document.getElementById("status-text").innerText = "AI: The Ugly";
-    }
-    
-    // Automatically switch to AI mode if a level is picked
-    opponentMode = 'AI';
-    window.newGame(); 
-};
+/* ============================================================================
+ * START GAME
+ * ============================================================================ */
 
-window.setDifficulty = function(level) {
-    opponentMode = 'AI';
-    
-    if (level === 'GOOD') {
-        aiDifficulty = 0.15; 
-        aiJitter = 0; // Perfect tracking
-    } 
-    else if (level === 'BAD') {
-        aiDifficulty = 0.05; 
-        aiJitter = 0; // Just slow
-    } 
-    else if (level === 'UGLY') {
-        aiDifficulty = 0.10; 
-        aiJitter = 25; // 25px random error margin
-    }
-    
-    document.getElementById("status-text").innerText = "Mode: Computer (" + level + ")";
-    window.newGame();
-};
-
-window.showAbout = function() {
-    alert("Metropoly Ping-Pong v1.0\nVB6 Port Project");
-};
-
-// --- CORE LOGIC ---
-
-window.resetBall = function() {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.dx = (Math.random() > 0.5 ? 5 : -5);
-    ball.dy = (Math.random() * 6) - 3;
-};
-
-function handleGoal(missingPlayer) {
-    // VB Logic: Random penalty 1 to 6
-    const penalty = Math.floor(Math.random() * 6) + 1;
-    
-    if (missingPlayer === 1) {
-        p2.score += penalty; // P1 missed, P2 gets points
-    } else {
-        p1.score += penalty;
-    }
-
-    updateScoreUI();
-
-    if (p1.score >= WIN_SCORE || p2.score >= WIN_SCORE) {
-        gameRunning = false;
-        alert("Game Over! Final Score: " + p1.score + " - " + p2.score);
-    } else {
-        window.resetBall();
-    }
-}
-
-function updateScoreUI() {
-    document.getElementById("score-p1").innerText = "P1: " + p1.score;
-    document.getElementById("score-p2").innerText = "P2: " + p2.score;
-}
-
-// --- ENGINE LOOP ---
-
-document.addEventListener("keydown", (e) => keys[e.code] = true);
-document.addEventListener("keyup", (e) => keys[e.code] = false);
-
-function loop() {
-    if (gameRunning && !isPaused) {
-        // Move P1
-        if (keys["KeyW"] && p1.y > 0) p1.y -= 7;
-        if (keys["KeyS"] && p1.y < canvas.height - p1.height) p1.y += 7;
-
-        // Move P2 (AI or Human)
-        if (opponentMode === 'AI') {
-            let targetY = ball.y - p2.height / 2;
-            p2.y += (targetY - p2.y) * aiDifficulty;
-        } else if (opponentMode === 'HUMAN') {
-            if (keys["ArrowUp"] && p2.y > 0) p2.y -= 7;
-            if (keys["ArrowDown"] && p2.y < canvas.height - p2.height) p2.y += 7;
-        }
-
-        // Ball Physics
-        ball.x += ball.dx;
-        ball.y += ball.dy;
-
-        if (ball.y <= 0 || ball.y >= canvas.height) ball.dy *= -1;
-
-        // Paddle Collision
-        if (ball.x <= p1.width && ball.y > p1.y && ball.y < p1.y + p1.height) ball.dx *= -1.1;
-        if (ball.x >= canvas.width - p2.width && ball.y > p2.y && ball.y < p2.y + p2.height) ball.dx *= -1.1;
-
-        // Goals
-        if (ball.x < 0) handleGoal(1);
-        if (ball.x > canvas.width) handleGoal(2);
-    }
-
-    draw();
-    requestAnimationFrame(loop);
-}
-
-function draw() {
-    ctx.fillStyle = "#C0C0C0"; // Grey Playground
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Center Line
-    ctx.setLineDash([5, 10]);
-    ctx.beginPath();
-    ctx.moveTo(canvas.width/2, 0);
-    ctx.lineTo(canvas.width/2, canvas.height);
-    ctx.strokeStyle = "#808080";
-    ctx.stroke();
-
-    // Paddles
-    ctx.fillStyle = "#000080"; // Dark Blue
-    ctx.fillRect(0, p1.y, p1.width, p1.height);
-    ctx.fillRect(canvas.width - p2.width, p2.y, p2.width, p2.height);
-
-    // Ball (Costume Logic)
-    const costume = ballCostumes[currentCostume];
-    ctx.fillStyle = costume.color;
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-// Costume Timer
-setInterval(() => {
-    if (gameRunning && !isPaused) currentCostume = (currentCostume + 1) % ballCostumes.length;
-}, 1000);
-
-loop();
-
-/**
- * PINGPONG.JS - Advanced Physics Edition
- */
-
-// 1. INPUT TRACKING (Effort Accumulator)
-let keyTimers = {
-    "KeyW": 0, "KeyS": 0, "ArrowUp": 0, "ArrowDown": 0
-};
-
-// 2. CONSTANTS FROM FACTORY
-const CONFIG = window.FACTORY || {
-    effortRate: 0.02,
-    maxSpeedMult: 2.5,
-    basePaddleSpeed: 5,
-    spinFactor: 0.6,
-    speedBoost: 1.2
-};
-
-// --- CORE MOVEMENT & EFFORT ---
-
-function getEffort(keyCode) {
-    // Linear growth capped at 1.0 (100%)
-    return Math.min(keyTimers[keyCode] * CONFIG.effortRate, 1.0);
-}
-
-function movePaddles() {
-    // Reset velocities for this frame
-    p1.v = 0;
-    p2.v = 0;
-
-    // Player 1 (W/S)
-    if (keys["KeyW"]) {
-        keyTimers["KeyW"]++;
-        let speed = CONFIG.basePaddleSpeed * (1 + getEffort("KeyW") * CONFIG.maxSpeedMult);
-        p1.y -= speed;
-        p1.v = -speed; // Track velocity for spin
-    } else { keyTimers["KeyW"] = 0; }
-
-    if (keys["KeyS"]) {
-        keyTimers["KeyS"]++;
-        let speed = CONFIG.basePaddleSpeed * (1 + getEffort("KeyS") * CONFIG.maxSpeedMult);
-        p1.y += speed;
-        p1.v = speed;
-    } else { keyTimers["KeyS"] = 0; }
-
-    // Player 2 / AI
-    if (opponentMode === 'HUMAN') {
-        if (keys["ArrowUp"]) {
-            keyTimers["ArrowUp"]++;
-            p2.v = -(CONFIG.basePaddleSpeed * (1 + getEffort("ArrowUp") * CONFIG.maxSpeedMult));
-            p2.y += p2.v;
-        } else { keyTimers["ArrowUp"] = 0; }
-        
-        if (keys["ArrowDown"]) {
-            keyTimers["ArrowDown"]++;
-            p2.v = (CONFIG.basePaddleSpeed * (1 + getEffort("ArrowDown") * CONFIG.maxSpeedMult));
-            p2.y += p2.v;
-        } else { keyTimers["ArrowDown"] = 0; }
-    } else {
-        // AI Tracking (simplified for example)
-        let targetY = ball.y - p2.height / 2;
-        let diff = targetY - p2.y;
-        p2.v = diff * aiDifficulty;
-        p2.y += p2.v;
-    }
-}
-
-// --- ADVANCED PHYSICS (The Spin Logic) ---
-
-function handleCollision(paddle) {
-    window.game.execSviraj('FIGURA.WAV');
-
-    // 1. Direction reversal
-    ball.dx *= -1;
-
-    // 2. CALCULATE SPIN (Effort Influence)
-    // In classic physics: angle_out = angle_in.
-    // In our logic: angle_out = angle_in + (paddle_velocity * spin_strength)
-    
-    // Impact point relative to paddle center (-1 to 1)
-    let impact = (ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
-    
-    // Add the "Effort" effect from the racket's movement
-    // If you are moving UP while hitting, the ball flys UP sharper.
-    ball.dy = (impact * 5) + (paddle.v * CONFIG.spinFactor);
-
-    // 3. BOOST SPEED
-    // A fast-moving racket makes the ball return faster
-    let speedBonus = Math.abs(paddle.v) * CONFIG.speedBoost;
-    ball.dx = (ball.dx > 0) ? (ball.dx + speedBonus) : (ball.dx - speedBonus);
-    
-    // Clamp speed to prevent ball escaping world
-    const MAX_BALL_SPEED = 20;
-    if (Math.abs(ball.dx) > MAX_BALL_SPEED) ball.dx = Math.sign(ball.dx) * MAX_BALL_SPEED;
-}
-function draw() {
-    // 1. Clear Playground
-    ctx.fillStyle = "#C0C0C0";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 2. Draw Paddles
-    ctx.fillStyle = "#000080";
-    ctx.fillRect(0, p1.y, p1.width, p1.height);
-    ctx.fillRect(canvas.width - p2.width, p2.y, p2.width, p2.height);
-
-    // 3. DRAW THE DICE-BALL
-    const ballImg = DICE_RESOURCES[currentBallValue];
-    const size = window.FACTORY.ball_size; // e.g., 32
-    
-    if (ballImg) {
-        // Center the image on the ball's coordinates
-        ctx.drawImage(
-            ballImg, 
-            ball.x - size / 2, 
-            ball.y - size / 2, 
-            size, 
-            size
-        );
-    }
-
-    // 4. Center Line
-    ctx.setLineDash([5, 15]);
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = "#808080";
-    ctx.stroke();
-}
+initGame();

@@ -179,7 +179,6 @@ class CardGame:
             self.state.GAME_NAME = lines[1].strip()
             self.state.name = self.state.GAME_NAME
 
-
     def _vb_init_globals(self):
         """
         Sets all engine flags inside self.state.
@@ -198,8 +197,7 @@ class CardGame:
         # ✅ FIX: Read autoplay from session (persistent preference)
         from flask import session
         s.autoplay_enabled = session.get("autoplay_enabled", False)
-
-    
+            
     def prepareRequisites(self):
         """
         VB: prepareRequisites. 
@@ -247,13 +245,6 @@ class CardGame:
                 s.imageFaceDown.append(fd)
                 s.nextAvailableFaceDown += 1
 
-                
-
-
-    # ------------------------------------------------------
-    # Animation Ticks (Server-side simulation)
-    # ------------------------------------------------------
-    
     def gather_cards(self):
         """Initializes the gather sequence."""
         if not self.state.animate_enabled:
@@ -309,7 +300,6 @@ class CardGame:
                 card.x = target_x + (card.x - target_x) * factor
                 card.y = target_y + (card.y - target_y) * factor
 
-
     def _snap_cards_to_deck(self):
         """Finalizes the animation by snapping everything to (0,0)."""
         s = self.state
@@ -327,7 +317,7 @@ class CardGame:
             s.imageFaceDown[0].top = target_y
             s.imageFaceDown[0].visible = True
 
-
+    # Engine Actions
     def do_action(self, act: str) -> bool:
         """
         VB Port: do_action
@@ -391,7 +381,6 @@ class CardGame:
 
             actual_n = min(n, s.kup[csource].weight)
             if actual_n > 0:
-                # ✅ FIX: Call as function, passing self (game) as first arg
                 success = moveColumn(self, csource, cdest, actual_n)
 
             s.actionMode = False
@@ -434,15 +423,18 @@ class CardGame:
                         card_above = cards[-i]         # Current card
                         
                         # Can card_above go on card_below? (sequence check)
-                        if move_condition(s, card_above.code, csource, csource) and card_below.face_up:
+                        #if move_condition(s, card_above.code, csource, csource) and card_below.face_up:
+                        if move_condition(s, card_above.code, csource, cdest) and card_below.face_up:
                             how_many = i + 1
                         else:
                             break
                 
                 if how_many > 0:
                     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
+                    ##success = self._handle_trymovepile_action(act)
 
 
+                # this bug and do_action aree messing with moving piles of cards at once
 
                 # # Look for a sequence of cards that can move together bug
                 # for i in range(min(len(cards), max_cards)):
@@ -454,9 +446,10 @@ class CardGame:
                 #         # In many card games, if the 3rd card can't move, 
                 #         # the 4th card behind it certainly can't.
                 #         break
-
                 # if how_many > 0:
                 #     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
+
+
 
         # ----------------------------
         # parameter management (The Game's Variables)
@@ -532,7 +525,6 @@ class CardGame:
             check_allways_facedown_columns(s)
 
         return success
-
 
     def do_whole_action(self, action_name: str) -> bool:
         """
@@ -635,175 +627,6 @@ class CardGame:
                 break  # Sequence breaks, stop counting
         
         return row_count
-    
-    def try_every_turn_actions(self):
-        """
-        VB Port: try_every_turn_actions
-        The 'Autoplay' engine. Returns True if any moves were made.
-        """
-        s = self.state
-        
-        if not s.autoplay_enabled:
-            self.try_if_actions()  # Still run if() checks
-            return False
-        
-        max_loops = 50
-        any_moves_made = False
-        
-        while max_loops > 0:
-            s.clickModeSuceededSoTryAgain = False
-            lines = s.LIST_GAME_LINES
-            
-            for line in lines:
-                line = line.strip()
-                
-                if line.startswith("every_turn="):
-                    action_cmd = line[11:]
-                    
-                    if action_cmd.startswith("["):
-                        if self.do_whole_action(action_cmd):
-                            any_moves_made = True
-                            s.clickModeSuceededSoTryAgain = True
-                            
-                    elif action_cmd.startswith("parameter"):
-                        if self.do_action(action_cmd):
-                            any_moves_made = True
-                            s.clickModeSuceededSoTryAgain = True
-                    else:
-                        # Standard x-y move (e.g., 0-1)
-                        try:
-                            src_idx, dst_idx = map(int, action_cmd.split("-"))
-                            source_col = s.kup[src_idx]
-                            
-                            if source_col.contents:
-                                top_card = source_col.contents[-1]
-                                
-                                # Try the move
-                                from .engine import column_click
-                                s.simulateClickMode = True
-                                
-                                # Select
-                                column_click(self, src_idx, top_card.code)
-                                # Move
-                                column_click(self, dst_idx, top_card.code)
-                                
-                                s.simulateClickMode = False
-                                
-                                if s.cardJustMoved:
-                                    any_moves_made = True
-                                    s.clickModeSuceededSoTryAgain = True
-                        except Exception:
-                            continue
-                
-                if line == "[FINISH]":
-                    break
-            
-            if not s.clickModeSuceededSoTryAgain:
-                break
-            max_loops -= 1
-        
-        self.try_if_actions()
-        
-        return any_moves_made  # ✅ NEW: Tell frontend if moves were made
-
-
-    # def try_every_turn_actions(self):
-    #     """
-    #     VB Port: try_every_turn_actions
-    #     The 'Autoplay' engine. Returns True if any moves were made.
-    #     """
-    #     s = self.state
-        
-    #     # Check if autoplay is enabled
-    #     if not s.autoplay_enabled:
-    #         self.try_if_actions()
-    #         return False
-        
-    #     print(f"🤖 Autoplay starting...")
-        
-    #     max_loops = 50
-    #     any_moves_made = False
-        
-    #     while max_loops > 0:
-    #         s.clickModeSuceededSoTryAgain = False
-    #         lines = s.LIST_GAME_LINES
-    #         moves_this_round = 0
-            
-    #         for line in lines:
-    #             line = line.strip()
-                
-    #             if line.startswith("every_turn="):
-    #                 action_cmd = line[11:]
-                    
-    #                 if action_cmd.startswith("["):
-    #                     # Action block
-    #                     if self.do_whole_action(action_cmd):
-    #                         any_moves_made = True
-    #                         s.clickModeSuceededSoTryAgain = True
-    #                         moves_this_round += 1
-                            
-    #                 elif action_cmd.startswith("parameter"):
-    #                     # Parameter setting
-    #                     if self.do_action(action_cmd):
-    #                         any_moves_made = True
-    #                         s.clickModeSuceededSoTryAgain = True
-    #                 else:
-    #                     # Standard move: "src-dst"
-    #                     try:
-    #                         src_idx, dst_idx = map(int, action_cmd.split("-"))
-                            
-    #                         if not (0 <= src_idx < len(s.kup) and 0 <= dst_idx < len(s.kup)):
-    #                             continue
-                            
-    #                         source_col = s.kup[src_idx]
-                            
-    #                         if not source_col.contents:
-    #                             continue
-                            
-    #                         top_card = source_col.contents[-1]
-    #                         original_weight = source_col.weight
-                            
-    #                         # Import column_click function
-    #                         from .engine import column_click
-                            
-    #                         # Set up simulation mode
-    #                         s.simulateClickMode = True
-    #                         s.actionMode = False
-    #                         s.usermode = 0
-                            
-    #                         # Try the move
-    #                         column_click(self, src_idx, top_card.code)
-    #                         column_click(self, dst_idx, top_card.code)
-                            
-    #                         s.simulateClickMode = False
-                            
-    #                         # Check if move succeeded
-    #                         if source_col.weight < original_weight:
-    #                             any_moves_made = True
-    #                             s.clickModeSuceededSoTryAgain = True
-    #                             moves_this_round += 1
-                                
-    #                     except Exception as e:
-    #                         print(f"⚠️  Autoplay error: {e}")
-    #                         continue
-                
-    #             if line == "[FINISH]":
-    #                 break
-            
-    #         print(f"🤖 Round complete: {moves_this_round} moves")
-            
-    #         # Exit if no moves this round
-    #         if not s.clickModeSuceededSoTryAgain:
-    #             break
-    #         max_loops -= 1
-        
-    #     print(f"🤖 Autoplay finished: {any_moves_made}")
-        
-    #     # Always run if() checks
-    #     self.try_if_actions()
-        
-    #     return any_moves_made
-
 
     def try_if_actions(self):
         """
@@ -874,92 +697,8 @@ class CardGame:
         elif check_block("[DEFEAT]"):
             s.youWon = True # Mark as game over
             s.game_message = "You lost!"
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # -------------------------------------------------
-    # State Serialization (to/from Frontend)
-    # -------------------------------------------------
-
-    def to_dict(self):
-        """Calls the GameState's to_dict to package data for JS."""
-        # Ensure cards are synced with strings before sending
-        for col in self.state.kup:
-            sync_column_contents(self.state, col)
-        return self.state.to_dict()
-   
-
-    @staticmethod
-    def from_dict(data, session_id):
-        """
-        RECONSTRUCTION: Rebuilds the engine from a JSON snapshot.
-        """
-        # 1. Create a skeleton game
-        g = CardGame(data["game_id"], session_id=session_id)
-        s = g.state
-        
-        s.GAME_NAME = data.get("name", "")
-        s.autoplay_enabled = data.get("autoplay_enabled", False)
-        s.selectedCard = data.get("selected_card_code", -1)
-        s.usermode = data.get("usermode", 0)
-        s.actionMode = data.get("actionMode", False)
-        s.rules_of_currently_played_game = data.get("rules", "")
-
-        # 2. Rebuild Columns and Cards
-        s.kup = []
-        for col_data in data.get("kup", []):
-            col = Column(index=col_data["index"])
-            col.column_name = col_data["name"]
-            col.x, col.y = col_data["x"], col_data["y"]
-            col.overlap_x = col_data["overlap_x"]
-            col.overlap_y = col_data["overlap_y"]
-            col.allways_facedown = col_data.get("allways_facedown", "-1")
-            
-            for c_data in col_data.get("cards", []):
-                card = Card(c_data["code"], face_up=c_data["face_up"])
-                col.contents.append(card)
-            
-            col.weight = len(col.contents)
-            s.kup.append(col)
-            
-        return g
-
-
-    # -------------------------------------------------
-    # Engine Actions
-    # -------------------------------------------------
-
-    def move_card(self, from_col_idx, to_col_idx, card_code):
-        """
-        The main entry point for a player's 'wish'.
-        Checks conditions and executes movement.
-        """
-        # Example of calling an engine function with the state
-        # if move_condition(self.state, card_code, from_col_idx, to_col_idx):
-        #     execute_move(self.state, ...)
-        #     return True
-        return False
-
-
-
-
-
-
-    # -------------------------------------------------
+    
     # Load & semantics
-    # -------------------------------------------------
-
     def load_game(self):
         """
         Extracts the specific game definition from the master list.
@@ -1005,9 +744,7 @@ class CardGame:
 
         # Replace player's LIST_GAME_LINES with only their game's definition
         self.state.LIST_GAME_LINES = game_lines
-
-
-    # load game rules
+    
     def _load_rules_to_state(self):
         """
         Reads the rules from the language file and stores them 
@@ -1033,7 +770,6 @@ class CardGame:
         )
         
         self.state.rules_of_currently_played_game = rules_text
-        
 
     def _start_new_game(self, game_id):
         """
@@ -1091,47 +827,6 @@ class CardGame:
         # Optional: Run start-of-game automation
         # self.do_whole_action("[autostart]")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    # # -------------------------------------------------
-    # # Moves (under reconstruction)
-    # # -------------------------------------------------
-    # def move_card(self, from_col, to_col, card_code):
-    #     if from_col not in self.columns or to_col not in self.columns:
-    #         return False
-
-    #     src = self.columns[from_col]["cards"]
-    #     for i, card in enumerate(src):
-    #         if card["code"] == card_code:
-    #             self.columns[to_col]["cards"].append(src.pop(i))
-    #             return True
-    #     return False
-
-
-    
-
-
-
-   
-
     def _init_geometry_constants(self):
         """
         Single source of truth for all geometry.
@@ -1152,10 +847,7 @@ class CardGame:
         self.SLOT_W = self.CARD_W + self.SLOT_GAP_X
         self.SLOT_H = self.CARD_H + self.SLOT_GAP_Y
 
-    # -------------------------------------------------
     # Slot geometry
-    # -------------------------------------------------
-    
     def _apply_slot_geometry(self):
         """
         VB-style slot geometry.
@@ -1183,8 +875,6 @@ class CardGame:
             # col.x/y are the final resolved coordinates for the renderer
             col.x = col.custom_x
             col.y = col.custom_y
-
-    
     
     def _normalize_column_overlaps(self):
         """
@@ -1208,11 +898,7 @@ class CardGame:
                 col.overlap_x = 0
                 col.overlap_y = 0
 
-
-    # -------------------------------------------------
     # Deck & dealing
-    # -------------------------------------------------
-
     def _create_deck(self):
         suits = ['c', 'd', 'h', 's']
         self.state.LIST_DECK = []
@@ -1222,45 +908,7 @@ class CardGame:
                 code = f"{s}{v:02d}" 
                 self.state.LIST_DECK.append(code)
 
-    # -------------------------------------------------
-    # Moves (Web Context)
-    # -------------------------------------------------
-    
-    def move_card(self, from_col_idx, to_col_idx, card_code):
-        """
-        Web entry point for moving a card. 
-        Works on self.state.kup indexed by current player.
-        """
-        s = self.state
-        try:
-            from_idx = int(from_col_idx)
-            to_idx = int(to_col_idx)
-            src_col = s.kup[from_idx]
-            dst_col = s.kup[to_idx]
-        except (ValueError, IndexError):
-            return False
-
-        # Find the card in the source column
-        for i, card in enumerate(src_col.contents):
-            if card.code == card_code:
-                # Move the card object
-                moving_card = src_col.contents.pop(i)
-                dst_col.contents.append(moving_card)
-                
-                # Update weights and strings (Duality check)
-                from .engine import sync_column_contents
-                sync_column_contents(src_col)
-                sync_column_contents(dst_col)
-                return True
-        return False
-
-    # -------------------------------------------------
     # Column Preparation (The Script Parser)
-    # -------------------------------------------------
-
-    
-
-
     def _prepare_columns(self):
         """
         VB: prepareColumns
@@ -1269,6 +917,8 @@ class CardGame:
         Now fully synchronized with Column.__init__ to handle all attributes.
         """
         s = self.state
+        #s.default_overlap_x = int(l.split("=")[1])  # No to_px()
+        #s.default_overlap_y = int(l.split("=")[1])  # No to_px()
         lines = s.LIST_GAME_LINES
         i = 0
 
@@ -1485,7 +1135,6 @@ class CardGame:
         self._apply_slot_geometry()
         self._normalize_column_overlaps()
 
-
     def try_seek_Parameter_actions(self):
         """
         VB Port: try_seek_Parameter_actions
@@ -1520,4 +1169,555 @@ class CardGame:
             if line == "[FINISH]":
                 break
 
+    def try_every_turn_actions(self):
+        """
+        VB Port: try_every_turn_actions
+        The 'Autoplay' engine. Returns True if any moves were made.
+        """
+        s = self.state
+        
+        if not s.autoplay_enabled:
+            self.try_if_actions()  # Still run if() checks
+            return False
+        
+        max_loops = 50
+        any_moves_made = False
+        
+        while max_loops > 0:
+            s.clickModeSuceededSoTryAgain = False
+            lines = s.LIST_GAME_LINES
             
+            for line in lines:
+                line = line.strip()
+                
+                if line.startswith("every_turn="):
+                    action_cmd = line[11:]
+                    
+                    if action_cmd.startswith("["):
+                        if self.do_whole_action(action_cmd):
+                            any_moves_made = True
+                            s.clickModeSuceededSoTryAgain = True
+                            
+                    elif action_cmd.startswith("parameter"):
+                        if self.do_action(action_cmd):
+                            any_moves_made = True
+                            s.clickModeSuceededSoTryAgain = True
+                    else:
+                        # Standard x-y move (e.g., 0-1)
+                        try:
+                            src_idx, dst_idx = map(int, action_cmd.split("-"))
+                            source_col = s.kup[src_idx]
+                            
+                            if source_col.contents:
+                                top_card = source_col.contents[-1]
+                                
+                                # Try the move
+                                from .engine import column_click
+                                s.simulateClickMode = True
+                                
+                                # Select
+                                column_click(self, src_idx, top_card.code)
+                                # Move
+                                column_click(self, dst_idx, top_card.code)
+                                
+                                s.simulateClickMode = False
+                                
+                                if s.cardJustMoved:
+                                    any_moves_made = True
+                                    s.clickModeSuceededSoTryAgain = True
+                        except Exception:
+                            continue
+                
+                if line == "[FINISH]":
+                    break
+            
+            if not s.clickModeSuceededSoTryAgain:
+                break
+            max_loops -= 1
+        
+        self.try_if_actions()
+        
+        return any_moves_made  # ✅ NEW: Tell frontend if moves were made
+
+
+    # Moves (Web Context)
+    def move_card(self, from_col_idx, to_col_idx, card_code):
+        """
+        Web entry point for moving a card. 
+        Works on self.state.kup indexed by current player.
+        """
+        s = self.state
+        try:
+            from_idx = int(from_col_idx)
+            to_idx = int(to_col_idx)
+            src_col = s.kup[from_idx]
+            dst_col = s.kup[to_idx]
+        except (ValueError, IndexError):
+            return False
+
+        # Find the card in the source column
+        for i, card in enumerate(src_col.contents):
+            if card.code == card_code:
+                # Move the card object
+                moving_card = src_col.contents.pop(i)
+                dst_col.contents.append(moving_card)
+                
+                # Update weights and strings (Duality check)
+                from .engine import sync_column_contents
+                sync_column_contents(src_col)
+                sync_column_contents(dst_col)
+                return True
+        return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+    # -------------------------------------------------
+    # State Serialization (to/from Frontend)
+    # -------------------------------------------------
+    def to_dict(self):
+        """Calls the GameState's to_dict to package data for JS."""
+        # Ensure cards are synced with strings before sending
+        for col in self.state.kup:
+            sync_column_contents(self.state, col)
+        return self.state.to_dict()
+
+    @staticmethod
+    def from_dict(data, session_id):
+        """
+        RECONSTRUCTION: Rebuilds the engine from a JSON snapshot.
+        """
+        # 1. Create a skeleton game
+        g = CardGame(data["game_id"], session_id=session_id)
+        s = g.state
+        
+        s.GAME_NAME = data.get("name", "")
+        s.autoplay_enabled = data.get("autoplay_enabled", False)
+        s.selectedCard = data.get("selected_card_code", -1)
+        s.usermode = data.get("usermode", 0)
+        s.actionMode = data.get("actionMode", False)
+        s.rules_of_currently_played_game = data.get("rules", "")
+
+        # 2. Rebuild Columns and Cards
+        s.kup = []
+        for col_data in data.get("kup", []):
+            col = Column(index=col_data["index"])
+            col.column_name = col_data["name"]
+            col.x, col.y = col_data["x"], col_data["y"]
+            col.overlap_x = col_data["overlap_x"]
+            col.overlap_y = col_data["overlap_y"]
+            col.allways_facedown = col_data.get("allways_facedown", "-1")
+            
+            for c_data in col_data.get("cards", []):
+                card = Card(c_data["code"], face_up=c_data["face_up"])
+                col.contents.append(card)
+            
+            col.weight = len(col.contents)
+            s.kup.append(col)
+            
+        return g
+
+
+
+
+
+
+
+
+
+
+
+# ============================================================================
+# CLEAN REWRITE: try_every_turn_actions
+# ============================================================================
+# This is a complete, production-ready rewrite with:
+# - Proper error handling
+# - Clear logging
+# - Correct signatures
+# - Clean architecture
+# ============================================================================
+
+def _try_every_turn_actions(self):
+    """
+    VB Port: try_every_turn_actions
+    
+    The autoplay engine that executes "every_turn=" actions from game script.
+    Loops until no more automatic moves are possible.
+    
+    Returns:
+        bool: True if any moves were made, False otherwise
+    """
+    s = self.state
+    
+    # ────────────────────────────────────────────────────────────────
+    # Early exit if autoplay disabled
+    # ────────────────────────────────────────────────────────────────
+    if not s.autoplay_enabled:
+        self.try_if_actions()
+        return False
+    
+    print(f"🤖 Autoplay: Starting...")
+    
+    # ────────────────────────────────────────────────────────────────
+    # Main loop: Keep trying moves until none succeed
+    # ────────────────────────────────────────────────────────────────
+    MAX_LOOPS = 50  # Safety limit to prevent infinite loops
+    any_moves_made = False
+    
+    for loop_iteration in range(MAX_LOOPS):
+        s.clickModeSuceededSoTryAgain = False
+        moves_this_round = 0
+        
+        # ────────────────────────────────────────────────────────────
+        # Parse all lines in game script
+        # ────────────────────────────────────────────────────────────
+        for line in s.LIST_GAME_LINES:
+            line = line.strip()
+            
+            # Stop at [FINISH] marker
+            if line == "[FINISH]":
+                break
+            
+            # Skip non-autoplay lines
+            if not line.startswith("every_turn="):
+                continue
+            
+            # Extract action command after "every_turn="
+            action_cmd = line[11:]
+            
+            # ────────────────────────────────────────────────────────
+            # Execute the action based on type
+            # ────────────────────────────────────────────────────────
+            success = self._execute_autoplay_action(action_cmd)
+            
+            if success:
+                any_moves_made = True
+                s.clickModeSuceededSoTryAgain = True
+                moves_this_round += 1
+        
+        # ────────────────────────────────────────────────────────────
+        # Exit loop if no moves this round
+        # ────────────────────────────────────────────────────────────
+        print(f"🤖 Round {loop_iteration + 1}: {moves_this_round} moves")
+        
+        if not s.clickModeSuceededSoTryAgain:
+            print(f"🤖 Autoplay: Complete (total moves: {any_moves_made})")
+            break
+    
+    # ────────────────────────────────────────────────────────────────
+    # Always run if() checks after autoplay
+    # ────────────────────────────────────────────────────────────────
+    self.try_if_actions()
+    
+    return any_moves_made
+
+
+def _execute_autoplay_action(self, action_cmd):
+    """
+    Execute a single every_turn action.
+    
+    Args:
+        action_cmd (str): The action string (e.g., "0-4", "[action1]", "parameter01=5")
+    
+    Returns:
+        bool: True if action succeeded, False otherwise
+    """
+    s = self.state
+    
+    # ────────────────────────────────────────────────────────────────
+    # TYPE 1: Action block [name]
+    # ────────────────────────────────────────────────────────────────
+    if action_cmd.startswith("["):
+        try:
+            return self.do_whole_action(action_cmd)
+        except Exception as e:
+            print(f"⚠️  Autoplay action block '{action_cmd}' failed: {e}")
+            return False
+    
+    # ────────────────────────────────────────────────────────────────
+    # TYPE 2: Parameter setting
+    # ────────────────────────────────────────────────────────────────
+    if action_cmd.startswith("parameter"):
+        try:
+            return self.do_action(action_cmd)
+        except Exception as e:
+            print(f"⚠️  Autoplay parameter '{action_cmd}' failed: {e}")
+            return False
+    
+    # ────────────────────────────────────────────────────────────────
+    # TYPE 3: Card move (e.g., "0-4" means column 0 → column 4)
+    # ────────────────────────────────────────────────────────────────
+    return self._try_autoplay_card_move(action_cmd)
+
+
+def _try_autoplay_card_move(self, action_cmd):
+    """
+    Try to move a card as part of autoplay.
+    
+    Args:
+        action_cmd (str): Source-destination format (e.g., "0-4")
+    
+    Returns:
+        bool: True if card was moved, False otherwise
+    """
+    s = self.state
+    
+    try:
+        # ────────────────────────────────────────────────────────
+        # Parse source and destination
+        # ────────────────────────────────────────────────────────
+        src_idx, dst_idx = map(int, action_cmd.split("-"))
+        
+        # Validate indices
+        if not (0 <= src_idx < len(s.kup) and 0 <= dst_idx < len(s.kup)):
+            return False
+        
+        source_col = s.kup[src_idx]
+        
+        # Nothing to move if column is empty
+        if not source_col.contents:
+            return False
+        
+        # ────────────────────────────────────────────────────────
+        # Get top card and save state
+        # ────────────────────────────────────────────────────────
+        top_card = source_col.contents[-1]
+        original_weight = source_col.weight
+        
+        # ────────────────────────────────────────────────────────
+        # Import column_click function (standalone in engine.py)
+        # ────────────────────────────────────────────────────────
+        from .engine import column_click
+        
+        # ────────────────────────────────────────────────────────
+        # Set simulation mode flags
+        # ────────────────────────────────────────────────────────
+        s.simulateClickMode = True
+        s.actionMode = False  # Let move rules check validity
+        s.usermode = 0
+        
+        # ────────────────────────────────────────────────────────
+        # Simulate two clicks: select, then place
+        # ────────────────────────────────────────────────────────
+        column_click(self, src_idx, top_card.code)  # Select
+        column_click(self, dst_idx, top_card.code)  # Place
+        
+        s.simulateClickMode = False
+        
+        # ────────────────────────────────────────────────────────
+        # Check if move succeeded by comparing weights
+        # ────────────────────────────────────────────────────────
+        if source_col.weight < original_weight:
+            print(f"  ✅ {top_card.code}: {src_idx}→{dst_idx}")
+            return True
+        
+        return False
+        
+    except Exception as e:
+        print(f"⚠️  Autoplay move '{action_cmd}' error: {e}")
+        return False
+
+
+# ============================================================================
+# CLEAN REWRITE: trymovepile in do_action
+# ============================================================================
+
+def _handle_trymovepile_action(self, act):
+    """
+    Handle trymovepile= action.
+    
+    Finds the deepest card sequence that can be moved together
+    and moves the pile.
+    
+    Args:
+        act (str): Full action string (e.g., "trymovepile=parameter03,selected-8")
+    
+    Returns:
+        bool: True if pile was moved, False otherwise
+    """
+    s = self.state
+    
+    try:
+        # ────────────────────────────────────────────────────────
+        # Parse: trymovepile=MAX,SOURCE-DEST
+        # ────────────────────────────────────────────────────────
+        ac_body = act[len("trymovepile="):]
+        max_part, col_range = ac_body.split(",", 1)
+        
+        # Resolve maximum cards allowed
+        if max_part.startswith("parameter"):
+            p_idx = int(max_part[9:11])
+            max_cards = s.parameter[p_idx]
+        else:
+            max_cards = int(max_part)
+        
+        # Parse source and destination
+        src_str, dest_str = col_range.split("-")
+        csource = s.selectedColumn if src_str == "selected" else int(src_str)
+        cdest = int(dest_str)
+        
+        # ────────────────────────────────────────────────────────
+        # Validate column indices
+        # ────────────────────────────────────────────────────────
+        if not (0 <= csource < len(s.kup) and 0 <= cdest < len(s.kup)):
+            return False
+        
+        if s.kup[csource].weight == 0:
+            return False
+        
+        # ────────────────────────────────────────────────────────
+        # Calculate how many cards can move together
+        # ────────────────────────────────────────────────────────
+        how_many = self._calculate_movable_pile(csource, cdest, max_cards)
+        
+        if how_many > 0:
+            # Execute the pile move
+            success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
+            return success
+        
+        return False
+        
+    except Exception as e:
+        print(f"⚠️  trymovepile error: {e}")
+        return False
+
+
+def _calculate_movable_pile(self, csource, cdest, max_cards):
+    """
+    Calculate how many cards from top of source column can move together.
+    
+    Cards must:
+    1. Form a valid descending sequence
+    2. Top card must be able to land on destination
+    3. All cards must be face up
+    
+    Args:
+        csource (int): Source column index
+        cdest (int): Destination column index
+        max_cards (int): Maximum cards allowed to move
+    
+    Returns:
+        int: Number of cards that can move (0 if none)
+    """
+    s = self.state
+    from .engine import move_condition
+    
+    cards = s.kup[csource].contents
+    if not cards:
+        return 0
+    
+    # ────────────────────────────────────────────────────────────
+    # Check if top card can go on destination
+    # ────────────────────────────────────────────────────────────
+    top_card = cards[-1]
+    
+    if not top_card.face_up:
+        return 0
+    
+    if not move_condition(s, top_card.code, csource, cdest):
+        return 0
+    
+    # Top card can move
+    pile_size = 1
+    
+    # ────────────────────────────────────────────────────────────
+    # Check how many cards below top card form valid sequence
+    # ────────────────────────────────────────────────────────────
+    for i in range(1, min(len(cards), max_cards)):
+        card_above = cards[-(i)]      # Card we just checked
+        card_below = cards[-(i + 1)]  # Card below it
+        
+        # Both cards must be face up
+        if not card_below.face_up:
+            break
+        
+        # Check if card_above can go on card_below (sequence check)
+        # We use same column for both to check if they form valid sequence
+        if move_condition(s, card_above.code, csource, csource):
+            pile_size = i + 1
+        else:
+            break
+    
+    return pile_size
+
+
+# ============================================================================
+# INTEGRATION NOTES
+# ============================================================================
+
+"""
+TO INTEGRATE THESE FUNCTIONS INTO game.py:
+
+1. REPLACE the existing try_every_turn_actions() method completely
+
+2. ADD the three helper methods:
+   - _execute_autoplay_action()
+   - _try_autoplay_card_move()
+   - _calculate_movable_pile()
+   - _handle_trymovepile_action()
+
+3. IN do_action(), REPLACE the trymovepile section with:
+   
+   elif act.startswith("trymovepile="):
+       success = self._handle_trymovepile_action(act)
+
+5. IN routes.py set_autoplay(), ADD session storage:
+   
+   session["autoplay_enabled"] = enabled
+
+6. IN model.py Column.__init__(), FIX backstyle/backcolor:
+   
+   self.backstyle = -1  # Integer, not "-1"
+   self.backcolor = -1  # Integer, not "-1"
+
+7. IN _prepare_columns Stage 1, FIX default overlap parsing:
+   
+   s.default_overlap_x = int(l.split("=")[1])  # No to_px()
+   s.default_overlap_y = int(l.split("=")[1])  # No to_px()
+
+"""
+
+# ============================================================================
+# TESTING CHECKLIST
+# ============================================================================
+
+"""
+After integration, test:
+
+✅ FreeCell: Home columns (4-7) appear GREY, not green
+✅ FreeCell: Empty cells (0-3) appear GREEN
+✅ Beleaguered Castle: Cards spread correctly with overlap_x=default
+✅ FreeCell: Can drag pile of 3 cards at once (if they form valid sequence)
+✅ Spider: Can drag pile of descending same-suit cards
+✅ Autoplay: Move a card → Ace revealed → Ace flies home automatically
+✅ Autoplay: Turn on → Start new game → Autoplay still ON
+✅ Autoplay: Multiple moves cascade (ace flies, reveals 2, 2 flies, reveals 3, etc.)
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

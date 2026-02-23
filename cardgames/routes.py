@@ -209,7 +209,9 @@ def exit_game():
 def toggle_autoplay():
     enabled = request.json.get("enabled", False)
 
-    session["autoplay"] = enabled
+    # bug preprecuje autoplay
+    #session["autoplay"] = enabled
+    #session["autoplay_enabled"] = enabled
 
     return jsonify({
         "ok": True,

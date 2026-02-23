@@ -15,6 +15,7 @@ html, body {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; font-family: "Tahoma", sans-serif;
     display: flex; flex-direction: column;
+    background: linear-gradient(to right, var(--win-blue), var(--win-blue-light));
 }
 
 /* --- TITLE BAR --- */
@@ -344,6 +345,11 @@ body.cardgames-mode #sidebar { display: none; }
 body.metropoly-mode #table-scroll { display: none; }
 
 
+
+
+/* PINGPONG */
+
+
 /* Make top-level items that are buttons have feedback */
 .menu-item:active {
     background: var(--win-white);
@@ -353,12 +359,6 @@ body.metropoly-mode #table-scroll { display: none; }
 /* Ensure the hidden class is respected in the menu */
 .menu-item.hidden {
     display: none !important;
-}
-
-#pongCanvas {
-    background-color: #C0C0C0; /* Light Grey Playground */
-    display: block;
-    cursor: none;
 }
 
 .score-display {
@@ -451,18 +451,103 @@ body.metropoly-mode #table-scroll { display: none; }
     background: #404040; /* Darker grey surround */
 }
 
-#pongCanvas {
-    background-color: #C0C0C0; /* Light Grey Playground */
-    border: 4px solid var(--win-gray);
-    box-shadow: 10px 10px 30px rgba(0,0,0,0.8);
-    /* Scale to screen but keep aspect ratio */
-    max-width: 95%;
-    max-height: 95%;
-}
+
 
 /* Effort Meter Visual (Optional) */
 .effort-bar {
     height: 4px;
     background: #00ff00;
     transition: width 0.1s;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--table-green); /* optional: surround color */
+    overflow: hidden;
+}
+
+
+
+
+#pongCanvas {
+    background-color: #39630d; 
+    display: block;
+    cursor: none;
+}
+
+#pongCanvas {
+    /* background-color: var(--win-gray);  */
+    border: 24px solid #006400;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.8);
+}
+#pongCanvas {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    /* background-color: var(--win-gray); */
+    /* border: 24px solid 10px 10px 30px rgba(0,0,0,0.8); */
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.8);
+}
+
+.score-display {
+    position: absolute;
+    font-family: "Tahoma", sans-serif;
+    font-weight: bold;
+    color: #000080; /* Dark blue */
+    text-shadow: 1px 1px #1e7f00;
+    z-index: 10;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Upper left & right positions */
+#score-left {
+    top: 7%;
+    left: 2%;
+}
+
+#score-right {
+    top: 7%;
+    right: 2%;
+}
+
+.menu-item-nested {
+    position: relative;
+    white-space: nowrap;
+}
+
+
+
+
+
+/* Tier-2 dropdown */
+.menu-item > .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 4000;
+}
+
+.menu-item:hover > .dropdown {
+    display: block;
+}
+
+/* IMPORTANT: tier-3 must NOT open unless THIS item is hovered */
+.menu-item-nested > .tier-3 {
+    display: block;
+    position: absolute;
+    top: -2px;
+    left: 100%;
+    min-width: 110px;
+    z-index: 5000;
+}
+
+.menu-item-nested:hover > .tier-3 {
+    display: block;
 }

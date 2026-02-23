@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <title>Ping Pong</title>
@@ -12,23 +12,29 @@
     {% include "pong_menu.html" %}
 </div>
 
-<main id="game-viewport" style="display:flex;justify-content:center;align-items:center;">
-    <canvas id="pongCanvas"
-        width="{{ FACTORY.geometry.width }}"
-        height="{{ FACTORY.geometry.height }}"
-        class="win-inset">
+<div id="game-container">
+    <canvas
+        id="pongCanvas"
+        width="{{ PINGPONG.factory.geometry.width }}"
+        height="{{ PINGPONG.factory.geometry.height }}">
     </canvas>
-</main>
+    <!-- Score display -->
+    <div id="score-left" class="score-display">0</div>
+    <div id="score-right" class="score-display">0</div>
+</div>
 
 <script>
-    window.FACTORY = {{ FACTORY | tojson }};
-    window.PONG_STATE = {{ PONG_STATE | tojson }};
+    window.PINGPONG = {{ PINGPONG | tojson }};
 </script>
-
 
 <script src="{{ url_for('static', filename='pingpong/pingpong.js') }}"></script>
 </body>
 </html>
+
+
+
+
+
 
 
 

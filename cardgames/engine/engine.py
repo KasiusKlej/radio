@@ -319,9 +319,7 @@ def column_click(game, col_idx, card_code):
                     s.selectedCard = ""
                     s.selectedColumn = -1
 
-    # Argonauts don't need to call sync_visual_actors here anymore
-    # because the Route calls it once at the end of the voyage.
-
+    
 
 def Form_MouseDown(game, col_idx):
     """
@@ -338,7 +336,6 @@ def Form_MouseDown(game, col_idx):
     
     # Pass 'game' not 'state' ✅
     column_click(game, col_idx, s.selectedCard)
-
 
 def imageFaceDown_Click(game, fd_index):
     """
@@ -359,7 +356,6 @@ def imageFaceDown_Click(game, fd_index):
     else:
         # Cannot play this yet
         pass
-
 
 def imageFaceDown_DblClick(game, fd_index):
     """
@@ -606,7 +602,6 @@ def card_faces_up(state, rule_str, card_index):
 # ================================================================
 # GEOMETRY & MATH
 # ================================================================
-
 def calcColumnXY(state):
     """
     VB-compatible column position calculator.
@@ -627,7 +622,6 @@ def calcColumnXY(state):
             state.columnX[idx] = int((i * dx + gap_x) * 1)
             state.columnY[idx] = int((j * dy + gap_y) * 1)
 
-
 def _resolve_value(state, val_input):
     """
     Resolves VB-style values.
@@ -646,7 +640,6 @@ def _resolve_value(state, val_input):
     except (ValueError, TypeError):
         return 0
 
-
 def minmax(state, mode, val1, val2):
     """
     VB-style min/max with parameter resolution.
@@ -659,11 +652,9 @@ def minmax(state, mode, val1, val2):
     else:
         return a if a > b else b
 
-
 # ================================================================
 # INITIAL ENGINE ROUTINES (STATE-AWARE PORT)
 # ================================================================
-
 def getGameInfo(zap_st_igre, filepath):
     """
     Pure data loader. Extracts game definition lines from the master file.
@@ -721,7 +712,6 @@ def getGameInfo(zap_st_igre, filepath):
     
     return list_game_lines, list_actions
 
-
 def move_condition(state, selectedCard, selectedColumn_idx, target_col_idx):
     """
     VB Port: Function move_condition
@@ -769,7 +759,6 @@ def move_condition(state, selectedCard, selectedColumn_idx, target_col_idx):
         cond = cond or cond1 or cond2 or cond3
 
     return cond
-
 
 def hide_previous_requisites(state):
     """
@@ -920,7 +909,6 @@ def match_specificCol(state, specifCol, col_idx):
         print(f"Logic Error in specificCol check: {specifCol} for player {state.session_id}")
         return False
 
-
 def turn_or_shuffle_column(state, col_index, mode="turn"):
     """
     VB Port: turncolumn / shufflecolumn
@@ -958,7 +946,6 @@ def turn_or_shuffle_column(state, col_index, mode="turn"):
     sync_column_contents(state, column)
 
     return True
-
 
 def check_ifduringaction_condition(state, condit_str):
     """
@@ -1092,7 +1079,6 @@ def card_faces_up(rule_str, pos_idx):
     if 1 <= pos_idx <= len(parts):
         return parts[pos_idx - 1].strip() == "1"
     return False
-
 
 def cardId(card_code):
     """
@@ -1276,7 +1262,6 @@ def apply_facedown_masks(state):
                     mask.top  = col.y + (i * col.overlap_y)
                     s.nextAvailableFaceDown += 1
 
-
 def sync_visual_actors(state):
     """
     The Master Wire. Call this once at the end of ANY engine action.
@@ -1303,4 +1288,13 @@ def sync_visual_actors(state):
                     mask.top = col.y + (i * col.overlap_y)
                     
                     s.nextAvailableFaceDown += 1
+
+
+
+
+
+
+
+
+
 
