@@ -1,0 +1,1824 @@
+********************************************************
+UNKNOWN PYTHON: functions with no found equivalent in VB
+_new_land_tile
+default_land
+get_grid_lines
+new_random_cell
+build_road_at
+
+pc_emergency_funds
+metropoly_language_parser
+parse_map_file
+
+load_metropoly_players
+load_metropoly_shortcuts
+get_player_stats
+
+run_landing_logic
+
+expand_map
+get_turn_message
+find_jail_and_start
+
+play_sound
+get_status_panel
+step_player_movement
+
+
+
+
+***************************************************************************
+*    metropoly.vbp
+***************************************************************************
+
+
+***************************************************************************
+*    metropoly.vbw
+***************************************************************************
+
+
+***************************************************************************
+*    game.frm
+***************************************************************************
+Dim figuraXoffset(7)
+Dim figuraYoffset(7)
+Dim figuraZaRefreshat
+Dim whereOnFormClickedX As Single
+Dim whereOnFormClickedY As Single
+
+Private Sub Form_Load()
+init_game
+
+Private Sub ImageLandInfo_Click()
+image_land_info_click
+
+Private Sub ImageSelectedTool_Click(Index As Integer)
+image_selected_tool_click
+
+Private Sub mnuAbout_Click()
+mnu_about_click
+
+Private Sub mnuAutoEndTurn_Click()
+mnu_auto_end_turn_click
+
+Private Sub mnuContents_Click()
+mnu_contents_click
+
+Private Sub mnuCreateSemafors_Click()
+mnu_create_semafors_click
+
+Private Sub mnuFast_Click()
+mnu_fast_click
+
+Sub draw_players()
+draw_players
+
+Sub draw_player(x, y, p)
+draw_player
+
+Function kje_so_sosednje_ceste(x, y)
+kje_so_sosednje_ceste
+
+Sub risipolje(x, y, kaj)
+risipolje
+
+Sub draw_map()
+draw_map
+
+Private Sub mnuRegister_Click()
+mnu_register_click
+
+Private Sub mnuRemoveSemaphor_Click()
+mnu_remove_semaphor_click
+
+Private Sub mnuShowGrid_Click()
+mnu_show_grid_click
+
+Private Sub mnuSound_Click()
+mnu_sound_click
+
+Private Sub OptionSelectedTool_Click(Index As Integer)
+option_selected_tool_click
+
+Private Sub PictureStatus_Click()
+picture_status_click
+
+Private Sub TimerMetKocke_Timer()
+roll_dice
+
+Private Sub TimerRefreshFigure_Timer()
+timer_refresh_figure_tick
+
+Sub display_status()
+display_status
+
+Private Sub TimerSkokFigure_Timer()
+process_move_sequence
+
+Sub find_alternative_road(sosed, smer, x, y, ByRef kamx, ByRef kamy, ByRef newsmer)
+find_alternative_road_logic
+
+Sub next_player()
+next_player
+
+Private Sub mnuEndTurn_Click()
+end_turn
+
+Sub pristanek()
+pristanek
+
+Sub pay_money(sx, sy, ByRef multiPay)
+pay_money
+
+Sub buy_land(sx, sy)
+buy_land
+
+Sub build_houses(sx, sy)
+build_houses
+
+Sub earn_learn(sx, sy)
+earn_learn
+
+Private Sub Form_Click()
+handle_map_click
+
+Sub eliminate_player()
+eliminate_player
+
+Sub shift_map_owners(i, o)
+shift_map_owners
+
+Sub pay_wages()
+pay_wages
+
+Private Sub mnuRoad_Click()
+mnu_road_click
+
+Sub popravi_sosednje_ceste(x, y)
+popravi_sosednje_cesteEnd Sub
+
+Sub risi_cesto(x, y)
+risi_cesto
+
+Sub expand_terit(x, y)
+expand_terit
+
+Sub display_land_info(i, j)
+display_land_info
+
+Sub display_grid()
+display_grid
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+set_clk_mode
+
+Private Sub mnuNew_Click()
+finalize_new_game_setup
+
+Sub buy_dialog(sx, sy, p, LandOrHouse)
+prepare_buy_dialog
+
+Sub turn_semaphores()
+turn_semaphores
+
+Sub turn_semaphore(x, y)
+turn_semaphore
+
+Private Sub mnuRotateSemaphors_Click()
+rotate_semaphores_if_possible
+
+Function nekdo_ze_stoji_tle(x, y, p)
+someone_already_stands_here
+
+
+Sub create_semaphor(x, y)
+create_semafor
+
+Function semafor_je_mozen(x, y)
+is_semafor_possible
+
+Sub dodaj_kak_semafor(x, y)
+add_random_semafor
+
+Sub load_keyboard_shortcuts()
+load_keyboard_shortcuts
+
+Sub edit_map(x, y)
+edit_map_tile
+
+Sub begin_map_editor()
+begin_map_editor
+
+Sub end_map_editor()
+end_map_editor
+
+Sub load_language()
+load_language
+
+Sub switch_language()
+switch_language
+
+Sub pc_intelig_moves()
+pc_intelig_moves
+
+Private Sub mnuSell_Click()
+execute_sell_logic
+
+
+
+
+Private Sub mnuGraphics_Click()
+    frmGraphics.Show vbModal
+End Sub
+
+Sub load_resources()
+    Dim i
+    figura(1).Picture = LoadPicture(App.Path & "\icons\p1.ico")
+    figura(2).Picture = LoadPicture(App.Path & "\icons\p2.ico")
+    figura(3).Picture = LoadPicture(App.Path & "\icons\p3.ico")
+    figura(4).Picture = LoadPicture(App.Path & "\icons\p4.ico")
+    figura(5).Picture = LoadPicture(App.Path & "\icons\p5.ico")
+    figura(6).Picture = LoadPicture(App.Path & "\icons\p6.ico")
+    figura(7).Picture = LoadPicture(App.Path & "\icons\p7.ico")
+    
+    ImageResource(0).Picture = LoadPicture(App.Path & "\icons\roaddl.ico")
+    ImageResource(1).Picture = LoadPicture(App.Path & "\icons\roaddr.ico")
+    ImageResource(2).Picture = LoadPicture(App.Path & "\icons\roadlr.ico")
+    ImageResource(3).Picture = LoadPicture(App.Path & "\icons\roadud.ico")
+    ImageResource(4).Picture = LoadPicture(App.Path & "\icons\roadul.ico")
+    ImageResource(5).Picture = LoadPicture(App.Path & "\icons\roadur.ico")
+    ImageResource(6).Picture = LoadPicture(App.Path & "\icons\road3n.ico")
+    ImageResource(7).Picture = LoadPicture(App.Path & "\icons\road3e.ico")
+    ImageResource(8).Picture = LoadPicture(App.Path & "\icons\road3w.ico")
+    ImageResource(9).Picture = LoadPicture(App.Path & "\icons\road3s.ico")
+    ImageResource(10).Picture = LoadPicture(App.Path & "\icons\road4.ico")
+    
+    ImageResource(11).Picture = LoadPicture(App.Path & "\icons\h0.ico")
+    ImageResource(12).Picture = LoadPicture(App.Path & "\icons\h1.ico")
+    ImageResource(13).Picture = LoadPicture(App.Path & "\icons\h2.ico")
+    ImageResource(14).Picture = LoadPicture(App.Path & "\icons\h3.ico")
+    ImageResource(15).Picture = LoadPicture(App.Path & "\icons\h4.ico")
+    ImageResource(16).Picture = LoadPicture(App.Path & "\icons\h5.ico")
+    ImageResource(17).Picture = LoadPicture(App.Path & "\icons\school.ico")
+    ImageResource(18).Picture = LoadPicture(App.Path & "\icons\job.ico")
+    ImageResource(19).Picture = LoadPicture(App.Path & "\icons\jail.ico")
+    
+    ImageResource(20).Picture = LoadPicture(App.Path & "\icons\flag1.ico")
+    ImageResource(21).Picture = LoadPicture(App.Path & "\icons\flag2.ico")
+    ImageResource(22).Picture = LoadPicture(App.Path & "\icons\flag3.ico")
+    ImageResource(23).Picture = LoadPicture(App.Path & "\icons\flag4.ico")
+    ImageResource(24).Picture = LoadPicture(App.Path & "\icons\flag5.ico")
+    ImageResource(25).Picture = LoadPicture(App.Path & "\icons\flag6.ico")
+    ImageResource(26).Picture = LoadPicture(App.Path & "\icons\flag7.ico")
+    
+    ImageResource(27).Picture = LoadPicture(App.Path & "\icons\dice1.ico")
+    ImageResource(28).Picture = LoadPicture(App.Path & "\icons\dice2.ico")
+    ImageResource(29).Picture = LoadPicture(App.Path & "\icons\dice3.ico")
+    ImageResource(30).Picture = LoadPicture(App.Path & "\icons\dice4.ico")
+    ImageResource(31).Picture = LoadPicture(App.Path & "\icons\dice5.ico")
+    ImageResource(32).Picture = LoadPicture(App.Path & "\icons\dice6.ico")
+    
+    ImageResource(33).Picture = LoadPicture(App.Path & "\icons\n2.ico")
+    ImageResource(34).Picture = LoadPicture(App.Path & "\icons\n3.ico")
+    ImageResource(35).Picture = LoadPicture(App.Path & "\icons\n4.ico")
+    ImageResource(36).Picture = LoadPicture(App.Path & "\icons\s1.ico")
+    ImageResource(37).Picture = LoadPicture(App.Path & "\icons\s3.ico")
+    ImageResource(38).Picture = LoadPicture(App.Path & "\icons\s4.ico")
+    ImageResource(39).Picture = LoadPicture(App.Path & "\icons\w1.ico")
+    ImageResource(40).Picture = LoadPicture(App.Path & "\icons\w2.ico")
+    ImageResource(41).Picture = LoadPicture(App.Path & "\icons\w4.ico")
+    ImageResource(42).Picture = LoadPicture(App.Path & "\icons\e1.ico")
+    ImageResource(43).Picture = LoadPicture(App.Path & "\icons\e2.ico")
+    ImageResource(44).Picture = LoadPicture(App.Path & "\icons\e3.ico")
+    
+    ImageResource(45).Picture = LoadPicture(App.Path & "\icons\gaug0.ico")
+    ImageResource(46).Picture = LoadPicture(App.Path & "\icons\gaug1.ico")
+    ImageResource(47).Picture = LoadPicture(App.Path & "\icons\gaug2.ico")
+    ImageResource(48).Picture = LoadPicture(App.Path & "\icons\gaug3.ico")
+    ImageResource(49).Picture = LoadPicture(App.Path & "\icons\gaug4.ico")
+    ImageResource(50).Picture = LoadPicture(App.Path & "\icons\gaug5.ico")
+    ImageResource(51).Picture = LoadPicture(App.Path & "\icons\gaug6.ico")
+    ImageResource(52).Picture = LoadPicture(App.Path & "\icons\gaug7.ico")
+    ImageResource(53).Picture = LoadPicture(App.Path & "\icons\gaug8.ico")
+    ImageResource(54).Picture = LoadPicture(App.Path & "\icons\gaug9.ico")
+    
+    'map editor resources
+    ImageSelectedTool(0).Picture = ImageResource(2)
+    ImageSelectedTool(1).Picture = ImageResource(11)
+    ImageSelectedTool(2).Picture = ImageResource(17)
+    ImageSelectedTool(3).Picture = ImageResource(18)
+    ImageSelectedTool(4).Picture = ImageResource(33)
+    
+End Sub
+
+
+Private Sub mnuSave_Click()
+    'save game
+    openSaveMode = 2: openSaveFileName = ""
+    ''GameOpenSave.Caption = "Save": GameOpenSave.TextFN.Text = "game.sav"
+    GameOpenSave.Caption = lngg(57): GameOpenSave.TextFN.Text = "game.sav"
+    GameOpenSave.File1.Refresh
+    NewGame.fill_combo
+    GameOpenSave.Show vbModal
+End Sub
+
+Private Sub mnuOpen_Click()
+    'open game
+    openSaveMode = 1: openSaveFileName = ""
+    ''GameOpenSave.Caption = "Open": GameOpenSave.TextFN.Text = ""
+    GameOpenSave.Caption = lngg(56): GameOpenSave.TextFN.Text = ""
+    GameOpenSave.File1.Refresh
+    GameOpenSave.Show vbModal
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+***************************************************************************
+*    GameOpenSave.frm
+***************************************************************************
+
+Private Sub CommandCancel_Click()
+    openSaveFileName = ""
+    Me.Hide
+End Sub
+
+Private Sub CommandOK_Click()
+    If TextFN.Text <> "" Then
+        openSaveFileName = TextFN.Text
+        If (Right(openSaveFileName, 4) <> ".sav") And (Right(openSaveFileName, 4) <> ".map") Then
+            If openSaveMode = 3 Then
+                openSaveFileName = openSaveFileName & ".map"
+            Else
+                openSaveFileName = openSaveFileName & ".sav"
+            End If
+        End If
+        'open/save
+        If openSaveMode = 1 Then
+            open_game openSaveFileName
+        Else
+            If openSaveMode = 2 Then
+                save_game openSaveFileName, False
+            Else    'seve map
+                save_game openSaveFileName, True
+            End If
+        End If
+    End If
+    Me.Hide
+End Sub
+
+Private Sub File1_Click()
+    On Error Resume Next
+    TextFN.Text = File1.List(File1.ListIndex)
+End Sub
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 27 Then CommandCancel_Click
+End Sub
+
+Private Sub Form_Load()
+    Me.Left = (Screen.Width - Me.Width) / 2
+    Me.Top = (Screen.Height - Me.Height) / 2
+    File1.Path = App.Path
+    File1.Pattern = "*.sav"
+End Sub
+
+Sub save_game(fn, saveJustMap As Boolean)
+    'encode map,params,players
+    Dim i, j, x, y, c, s
+    Open App.Path & "\" & fn For Output As #1
+    
+    'save map
+    Print #1, Trim(Str(dimx))
+    Print #1, Trim(Str(dimy))
+    
+    'roads
+    For j = 1 To dimy
+        s = "": c = ""
+        For i = 1 To dimx
+            Select Case map(i, j).tip
+            Case 0
+                c = "0"
+            Case 1
+                c = "1"
+            Case 2
+                c = "2"
+            Case 3
+                c = "3"
+            Case 4
+                c = "4"
+            Case 5
+                c = Chr(map(i, j).semafor + 52)
+            End Select
+            s = s & c
+        Next i
+        Print #1, s
+    Next j
+    'price
+    For j = 1 To dimy
+        s = "": c = ""
+        For i = 1 To dimx
+            c = Mid("ABCDEFGHIJKLMNOPQRSTUVWXYZ", map(i, j).price - 19, 1)
+            s = s & c
+        Next i
+        Print #1, s
+    Next j
+    'stage
+    For j = 1 To dimy
+        s = "": c = ""
+        For i = 1 To dimx
+            c = Trim(Str(map(i, j).stage))
+            s = s & c
+        Next i
+        Print #1, s
+    Next j
+    'owner
+    For j = 1 To dimy
+        s = "": c = ""
+        For i = 1 To dimx
+            c = Trim(Str(map(i, j).owner))
+            s = s & c
+        Next i
+        Print #1, s
+    Next j
+    
+    If saveJustMap Then     'useful for map editor
+        Close 1
+        Exit Sub
+    End If
+    
+    'params  startx,starty,startsmer,jailx,jaily, faza, curpl,
+    '        kocka,cakajKocko, dayOfWeek,clkMode, TimerMet, TimerSkok
+    Print #1, "[Parameters]"
+    Print #1, Trim(Str(startx))
+    Print #1, Trim(Str(starty))
+    Print #1, Trim(Str(startsmer))
+    Print #1, Trim(Str(jailx))
+    Print #1, Trim(Str(jaily))
+    Print #1, Trim(Str(faza))
+    Print #1, Trim(Str(curpl))
+    Print #1, Trim(Str(kocka))
+    Print #1, Trim(Str(cakajKocko))
+    Print #1, Trim(Str(dayOfWeek))
+    Print #1, Trim(Str(clkMode))
+    If Game.TimerMetKocke.Enabled Then
+        Print #1, "y"
+    Else
+        Print #1, "n"
+    End If
+    If Game.TimerSkokFigure.Enabled Then
+        Print #1, "y"
+    Else
+        Print #1, "n"
+    End If
+    
+    'players
+    Print #1, "[Players]"
+    Print #1, Trim(Str(numpl))
+    For i = 1 To numpl
+        Print #1, Trim(Str(player(i).id))
+        Print #1, Trim(Str(player(i).tip))
+        Print #1, player(i).ime
+        Print #1, Trim(Str(player(i).barva))
+        Print #1, Trim(Str(player(i).money))
+        Print #1, Trim(Str(player(i).smer))
+        Print #1, Trim(Str(player(i).izobrazba))
+        Print #1, Trim(Str(player(i).x))
+        Print #1, Trim(Str(player(i).y))
+        Print #1, Trim(Str(player(i).jobpayment))
+        Print #1, Trim(Str(player(i).statland))
+        Print #1, Trim(Str(player(i).stathouse))
+    Next i
+        
+    Close 1
+End Sub
+
+Sub open_game(fn)
+    On Error Resume Next
+    Dim s, aktivMet, aktivSkok
+    aktivMet = False: aktivSkok = False
+    'load_params
+    Open App.Path & "\" & fn For Input As 1
+    Do
+        Line Input #1, s
+    Loop Until EOF(1) Or s = "[Parameters]"
+    If s = "[Parameters]" Then
+        Line Input #1, s: startx = Val(s)
+        Line Input #1, s: starty = Val(s)
+        Line Input #1, s: startsmer = Val(s)
+        Line Input #1, s: jailx = Val(s)
+        Line Input #1, s: jaily = Val(s)
+        Line Input #1, s: faza = Val(s)
+        Line Input #1, s: curpl = Val(s)
+        Line Input #1, s: kocka = Val(s)
+        Line Input #1, s: cakajKocko = Val(s)
+        Line Input #1, s: dayOfWeek = Val(s)
+        Line Input #1, s: clkMode = Val(s)
+        Line Input #1, s
+        If s = "y" Then
+            aktivMet = True
+        Else
+             aktivMet = False
+        End If
+        Line Input #1, s
+        If s = "y" Then
+            aktivSkok = True
+        Else
+             aktivSkok = False
+        End If
+        
+    End If
+    Close 1
+    
+    'load_players
+    Open App.Path & "\" & fn For Input As 1
+    Do
+        Line Input #1, s
+    Loop Until EOF(1) Or s = "[Players]"
+    If s = "[Players]" Then
+        Line Input #1, s: numpl = Val(s)
+        For i = 1 To numpl
+            Line Input #1, s: player(i).id = Val(s)
+            Line Input #1, s: player(i).tip = Val(s)
+            Line Input #1, s: player(i).ime = s
+            Line Input #1, s: player(i).barva = Val(s)
+            Line Input #1, s: player(i).money = Val(s)
+            Line Input #1, s: player(i).smer = Val(s)
+            Line Input #1, s: player(i).izobrazba = Val(s)
+            Line Input #1, s: player(i).x = Val(s)
+            Line Input #1, s: player(i).y = Val(s)
+            Line Input #1, s: player(i).jobpayment = Val(s)
+            Line Input #1, s: player(i).statland = Val(s)
+            Line Input #1, s: player(i).stathouse = Val(s)
+        Next i
+    End If
+    
+    Close 1
+    
+    'load map
+    NewGame.load_map fn
+    
+    'run
+    Game.display_status
+    'Game.LabelStatus.Caption = "It is " & player(curpl).ime & "'s turn."
+    Game.LabelStatus.Caption = lngg(141) & " " & player(curpl).ime & lngg(142)
+    Game.draw_map
+    Game.draw_players
+    If aktivMet Then
+        Game.TimerMetKocke.Enabled = True
+    Else
+        Game.TimerMetKocke.Enabled = False
+    End If
+    If aktivSkok Then
+        Game.TimerSkokFigure.Enabled = True
+    Else
+        Game.TimerSkokFigure.Enabled = False
+    End If
+    
+End Sub
+
+
+
+
+
+
+
+
+
+***************************************************************************
+*    Module1.bas
+***************************************************************************
+Type playertip
+ id As Integer
+ tip As Integer
+ ime As Variant
+ barva As Long
+ money As Integer
+ smer As Integer
+ izobrazba As Integer
+ x As Integer
+ y As Integer
+ jobpayment As Integer
+ statland As Integer
+ stathouse As Integer
+End Type
+Type maptip
+ tip As Integer
+ semafor As Integer
+ price As Integer
+ stage As Integer
+ owner As Integer
+End Type
+Global numpl
+Global player(7) As playertip
+Global map(100, 100) As maptip
+Global dimx As Integer, dimy As Integer
+Global startx As Integer, starty As Integer, startsmer As Integer, jailx As Integer, jaily As Integer
+Global faza, curpl
+Global kocka, cakajKocko
+Global zoomfaktor As Double
+Global dayOfWeek
+Global dayOfWeekName(7)
+Global clkMode              'click on form 0=info, 1=sell, 2=build road, ...
+Global izobrazbaNaziv(6)
+Global semaforData(81)
+Global openSaveFileName
+Global openSaveMode         '0-open, 1-save, 2-save map
+Global buyDialogAnswer
+Global gameTurnSmer, gameTurnVpadnica   'doloca kako obrniti semaforje
+Global keyboardShortcut(5)              'orders
+Global mapEditorMode                    '0=game 123=map editor
+Global mapCurrentTool
+Global pauseGame1, pauseGame2           'used to remember timers
+Global serialNumber     'register
+Global selectedLanguage, lngg(150)      'txt filename
+
+Sub set_data()
+set_data
+
+Sub sviraj(fn)
+sviraj
+
+
+***************************************************************************
+*    MoneyParameters.bas
+***************************************************************************
+
+Function pay_money_price(stage, price)
+calculate_rent
+
+Function buy_land_price(price)
+buy_land_price
+
+Function build_houses_price(stage, price)
+build_houses_price
+
+Function earn_price(izobrazba)
+earn_price
+
+Function learn_price(izobrazba)
+learn_price
+
+Function sell_price(stage, price)
+sell_price
+
+Function road_price(x, y)
+road_price
+
+Function rotateSemafor_price()
+rotateSemafor_price
+
+Function create_semaphor_price(x, y)
+create_semaphor_price
+
+Function delete_semaphor_price(x, y)
+delete_semaphor_price
+
+
+***************************************************************************
+*    newgame.frm
+***************************************************************************
+
+Private Sub CommandOK_Click()
+start_new_game_logic
+
+Private Sub CommandCancel_Click()
+    Me.Hide
+End Sub
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 27 Then CommandCancel_Click
+End Sub
+
+Private Sub Form_Load()
+_initialize_game
+
+Sub init_players()
+init_players_logic
+
+Sub load_map(fn)
+load_metropoly_map
+
+Sub set_startxy(jailx, jaily, startx, starty, startsmer)
+set_start_coords
+
+Sub save_frm_defaults()
+save_metropoly_defaults
+
+Sub generate_default_map(x, y)
+generate_default_map_content
+
+Function put_road(s, x, c)
+put_road
+
+Sub fill_combo()
+fill_combo_logic
+
+
+
+***************************************************************************
+*    frmAbout.frm
+***************************************************************************
+
+
+
+***************************************************************************
+*    frmBuyDialog.frm
+***************************************************************************
+
+
+
+***************************************************************************
+*    frmGraphics.frm
+***************************************************************************
+
+Dim nb(6)   'stevilo bank
+Dim ni(6)   'stevilo ikon v banki
+Dim ub(6)       'used bank
+Dim ubPlayer(7), uiPlayer(7) '(detailed use: player,flag, house,school,job,jail)
+Dim ubFlag(7), uiFlag(7)
+Dim ubHouse(9), uiHouse(9)
+Dim shiftsmer   '1=naprej, -1=nazaj
+Dim shiftbank   'katero banko
+Dim shiftDetaljnaIzbira  '0=shift cela banka, 1=detajlno
+
+Private Sub CommandCancel_Click()
+    Me.Hide
+End Sub
+
+Private Sub CommandOK_Click()
+    apply_icons
+    write_graphics_to_ini
+    
+    'refresh
+    Game.draw_map
+    Game.display_status
+    
+    Me.Hide
+End Sub
+
+Private Sub Form_Load()
+    Dim i
+    Me.Left = (Screen.Width - Me.Width) / 2
+    Me.Top = (Screen.Height - Me.Height) / 2
+    
+    display_icons       'displays currently used icons
+
+    'set deafults to bank1
+    For i = 0 To 6
+        uiPlayer(i) = i: ubPlayer(i) = 1
+        uiFlag(i) = i: ubFlag(i) = 1
+        uiHouse(i) = i: ubHouse(i) = 1
+    Next i
+    ub(1) = 1
+    ub(2) = 1
+    ub(3) = 1
+    ub(4) = 1
+    ub(5) = 1
+    ub(6) = 1
+   
+    'form konstante
+    nb(1) = 2 'ceste
+    nb(2) = 3 'hise, school,job,jail
+    nb(3) = 2 'kocka
+    nb(4) = 2 'gauge
+    nb(5) = 4 'figure
+    nb(6) = 5 'flags
+    ni(1) = 11
+    ni(2) = 9
+    ni(3) = 6
+    ni(4) = 10
+    ni(5) = 7
+    ni(6) = 7
+    
+    shiftsmer = 1   'naprej
+    shiftDetaljnaIzbira = 0
+    
+End Sub
+
+
+Private Sub ImageRoad_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 1
+    shiftDetaljnaIzbira = 0
+End Sub
+
+Private Sub ImageHouse_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 2
+    If Shift > 0 Then 'ctrl, alt or shift
+        shiftDetaljnaIzbira = 1
+    Else
+        shiftDetaljnaIzbira = 0
+    End If
+End Sub
+
+Private Sub ImageKocka_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 3
+    shiftDetaljnaIzbira = 0
+End Sub
+
+Private Sub ImageGauge_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 4
+    shiftDetaljnaIzbira = 0
+End Sub
+Private Sub ImagePlayer_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 5
+    If Shift > 0 Then 'ctrl, alt or shift
+        shiftDetaljnaIzbira = 1
+    Else
+        shiftDetaljnaIzbira = 0
+    End If
+End Sub
+
+Private Sub ImageFlag_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = 1 Then 'left
+        shiftsmer = 1
+    End If
+    If Button = 2 Then 'right
+        shiftsmer = -1
+    End If
+    shiftbank = 6
+        If Shift > 0 Then 'ctrl, alt or shift
+        shiftDetaljnaIzbira = 1
+    Else
+        shiftDetaljnaIzbira = 0
+    End If
+End Sub
+
+Private Sub ImageRoad_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error Resume Next
+    Dim i
+    '1 rotate road
+    ub(1) = ub(1) + shiftsmer
+    If ub(1) < 1 Then ub(1) = 1
+    If ub(1) > nb(1) Then ub(1) = nb(1)
+    For i = 0 To 10
+        ImageRoad(i).Picture = ImageRoad(i + ub(1) * ni(1)).Picture
+    Next i
+    
+End Sub
+
+Private Sub ImageHouse_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    '2
+    On Error Resume Next
+    Dim i
+    If shiftDetaljnaIzbira = 0 Then 'cela banka
+        ub(2) = ub(2) + shiftsmer
+        If ub(2) < 1 Then ub(2) = 1
+        If ub(2) > nb(2) Then ub(2) = nb(2)
+        If Index < 5 Then
+            For i = 0 To 4
+                ImageHouse(i).Picture = ImageHouse(i + ub(2) * ni(2)).Picture
+                uiHouse(i) = i
+                ubHouse(i) = ub(2)
+            Next i
+        Else
+            For i = 5 To 8
+                ImageHouse(i).Picture = ImageHouse(i + ub(2) * ni(2)).Picture
+                uiHouse(i) = i
+                ubHouse(i) = ub(2)
+            Next i
+        End If
+    Else
+        If Index < 5 Then   '01234 hise detajlno
+            uiHouse(Index) = uiHouse(Index) + 1
+            If uiHouse(Index) > 4 Then
+                uiHouse(Index) = 0
+                ubHouse(Index) = ubHouse(Index) + 1
+                If ubHouse(Index) > nb(2) Then ubHouse(Index) = 1
+            End If
+            ImageHouse(Index).Picture = ImageHouse(ubHouse(Index) * ni(2) + uiHouse(Index)).Picture
+        Else                '5678 h0,school,job,jail
+            ubHouse(Index) = ubHouse(Index) + shiftsmer
+            If ubHouse(Index) > nb(2) Then ubHouse(Index) = 1
+            If ubHouse(Index) < 1 Then ubHouse(Index) = nb(2)
+            ImageHouse(Index).Picture = ImageHouse(ubHouse(Index) * ni(2) + Index).Picture
+        End If
+    
+    End If
+
+End Sub
+
+Private Sub ImageKocka_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    '3
+    On Error Resume Next
+    Dim i
+    ub(3) = ub(3) + shiftsmer
+    If ub(3) < 1 Then ub(3) = 1
+    If ub(3) > nb(3) Then ub(3) = nb(3)
+    For i = 0 To 5
+        ImageKocka(i).Picture = ImageKocka(i + ub(3) * ni(3)).Picture
+    Next i
+
+End Sub
+Private Sub ImageGauge_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    '4
+    On Error Resume Next
+    Dim i
+    ub(4) = ub(4) + shiftsmer
+    If ub(4) < 1 Then ub(4) = 1
+    If ub(4) > nb(4) Then ub(4) = nb(4)
+    For i = 0 To 9
+        ImageGauge(i).Picture = ImageGauge(i + ub(4) * ni(4)).Picture
+    Next i
+
+End Sub
+
+Private Sub ImagePlayer_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    '5
+    On Error Resume Next
+    Dim i
+    If shiftDetaljnaIzbira = 0 Then 'cela banka
+        ub(5) = ub(5) + shiftsmer
+        If ub(5) < 1 Then ub(5) = 1
+        If ub(5) > nb(5) Then ub(5) = nb(5)
+        For i = 0 To 6
+            ImagePlayer(i).Picture = ImagePlayer(i + ub(5) * ni(5)).Picture
+            uiPlayer(i) = i
+            ubPlayer(i) = ub(5)
+        Next i
+    Else    'detajlno
+        'display next icon
+        uiPlayer(Index) = uiPlayer(Index) + shiftsmer
+        If uiPlayer(Index) >= ni(5) Then
+            uiPlayer(Index) = 0
+            ubPlayer(Index) = ubPlayer(Index) + 1
+            If ubPlayer(Index) > nb(5) Then ubPlayer(Index) = 1
+        End If
+        If uiPlayer(Index) < 0 Then
+            uiPlayer(Index) = ni(5) - 1
+            ubPlayer(Index) = ubPlayer(Index) - 1
+            If ubPlayer(Index) < 1 Then ubPlayer(Index) = nb(5)
+        End If
+        
+        ImagePlayer(Index).Picture = ImagePlayer(ubPlayer(Index) * ni(5) + uiPlayer(Index)).Picture
+    End If
+
+End Sub
+Private Sub ImageFlag_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    '6
+    On Error Resume Next
+    Dim i
+    If shiftDetaljnaIzbira = 0 Then 'cela banka
+        ub(6) = ub(6) + shiftsmer
+        If ub(6) < 1 Then ub(6) = 1
+        If ub(6) > nb(6) Then ub(6) = nb(6)
+        For i = 0 To 6
+            ImageFlag(i).Picture = ImageFlag(i + ub(6) * ni(6)).Picture
+            uiFlag(i) = i
+            ubFlag(i) = ub(6)
+        Next i
+    Else    'detajlno
+        uiFlag(Index) = uiFlag(Index) + shiftsmer
+        If uiFlag(Index) >= ni(6) Then
+            uiFlag(Index) = 0
+            ubFlag(Index) = ubFlag(Index) + 1
+            If ubFlag(Index) > nb(6) Then ubFlag(Index) = 1
+        End If
+        If uiFlag(Index) < 0 Then
+            uiFlag(Index) = ni(6) - 1
+            ubFlag(Index) = ubFlag(Index) - 1
+            If ubFlag(Index) < 1 Then ubFlag(Index) = nb(6)
+        End If
+        
+        ImageFlag(Index).Picture = ImageFlag(ubFlag(Index) * ni(6) + uiFlag(Index)).Picture
+    End If
+
+End Sub
+
+Sub display_icons()
+    'displays current
+    Dim i
+    'bank1
+    For i = 0 To 10
+        ImageRoad(i).Picture = Game.ImageResource(i)
+    Next i
+    'bank2
+    ImageHouse(5).Picture = Game.ImageResource(11)
+    ImageHouse(6).Picture = Game.ImageResource(17)
+    ImageHouse(7).Picture = Game.ImageResource(18)
+    ImageHouse(8).Picture = Game.ImageResource(19)
+    For i = 0 To 4
+        ImageHouse(i).Picture = Game.ImageResource(i + 12)
+    Next i
+    'bank3
+    For i = 0 To 5
+        ImageKocka(i).Picture = Game.ImageResource(i + 27)
+    Next i
+    'bank4
+    For i = 0 To 9
+        ImageGauge(i).Picture = Game.ImageResource(i + 45)
+    Next i
+    'bank5,6
+    For i = 0 To 6
+        ImagePlayer(i).Picture = Game.figura(i + 1).Picture
+        ImageFlag(i).Picture = Game.ImageResource(i + 20)
+    Next i
+
+End Sub
+
+Sub apply_icons()
+    Dim i
+    'bank1
+    For i = 0 To 10
+        Game.ImageResource(i) = ImageRoad(i).Picture
+    Next i
+    'bank2
+    Game.ImageResource(11) = ImageHouse(5).Picture
+    Game.ImageResource(17) = ImageHouse(6).Picture
+    Game.ImageResource(18) = ImageHouse(7).Picture
+    Game.ImageResource(19) = ImageHouse(8).Picture
+    For i = 0 To 4
+         Game.ImageResource(i + 12) = ImageHouse(i).Picture
+    Next i
+    'bank3
+    For i = 0 To 5
+        Game.ImageResource(i + 27) = ImageKocka(i).Picture
+    Next i
+    'bank4
+    For i = 0 To 9
+        Game.ImageResource(i + 45) = ImageGauge(i).Picture
+    Next i
+    'bank5,6
+    For i = 0 To 6
+        Game.figura(i + 1).Picture = ImagePlayer(i).Picture
+        Game.ImageResource(i + 20) = ImageFlag(i).Picture
+        NewGame.figura(i + 1).Picture = ImagePlayer(i).Picture
+    Next i
+    
+    'map editor tools
+    Game.ImageSelectedTool(0).Picture = Game.ImageResource(2)
+    Game.ImageSelectedTool(1).Picture = Game.ImageResource(11)
+    Game.ImageSelectedTool(2).Picture = Game.ImageResource(17)
+    Game.ImageSelectedTool(3).Picture = Game.ImageResource(18)
+    Game.ImageSelectedTool(4).Picture = Game.ImageResource(33)
+    
+End Sub
+
+Sub write_graphics_to_ini()
+    ''[Graphics] must be last section in ini
+    Dim s, i, idp, n, a(200)
+    Open App.Path & "\metropoly.ini" For Input As 1
+    i = 1
+    Do
+        Line Input #1, a(i)
+        If a(i) = "[Graphics]" Then idp = i
+        i = i + 1
+    Loop Until EOF(1)
+    n = i
+    Close 1
+        
+    Open App.Path & "\metropoly.ini" For Output As 1
+    For i = 1 To idp
+        Print #1, a(i)
+    Next i
+    
+    If Rnd < 0.9 Then   'every now and then omit this from ini to restart game with default icons
+        For i = 0 To 5
+            If ub(i) = 0 Then   'this is bug but avoids 0 being print to file (bank 0 cant be applyed, but bank 0 is default icons\*.ico)
+                Print #1, "1"
+            Else
+                Print #1, Trim(Str(ub(i)))
+            End If
+        Next i
+        For i = 0 To 6
+            If ubPlayer(i) = 0 Then
+                Print #1, "1"
+            Else
+                Print #1, Trim(Str(ubPlayer(i)))
+            End If
+            Print #1, Trim(Str(uiPlayer(i)))
+        Next i
+        For i = 0 To 6
+            If ubFlag(i) = 0 Then
+                Print #1, "1"
+            Else
+                Print #1, Trim(Str(ubFlag(i)))
+            End If
+            Print #1, Trim(Str(uiFlag(i)))
+        Next i
+        For i = 0 To 8
+            If ubHouse(i) = 0 Then
+                Print #1, "1"
+            Else
+                Print #1, Trim(Str(ubHouse(i)))
+            End If
+            Print #1, Trim(Str(uiHouse(i)))
+        Next i
+        
+    End If
+    
+    Close 1
+End Sub
+
+Sub load_graphics_from_ini()
+    'used only at start
+    On Error Resume Next
+    Me.Show         ''to avoid form_load at this point
+    
+    Dim s, i
+    Open App.Path & "\metropoly.ini" For Input As 1
+    Do
+        Line Input #1, s
+    Loop Until EOF(1) Or s = "[Graphics]"
+    If s = "[Graphics]" Then
+        For i = 0 To 5
+            Line Input #1, s
+            ub(i) = Val(s)
+            ''If ub(i) = 0 Then ub(i) = 1     'bank 0 je current in ne more veljati zato 1 (zal je v ini filu lahko 0 - bug)
+        Next i
+        For i = 0 To 6
+            Line Input #1, s
+            ubPlayer(i) = Val(s)
+            ''If ubPlayer(i) = 0 Then ubPlayer(i) = 1
+            Line Input #1, s
+            uiPlayer(i) = Val(s)
+            ''If uiPlayer(i) = 0 Then uiPlayer(i) = 1
+        Next i
+        For i = 0 To 6
+            Line Input #1, s
+            ubFlag(i) = Val(s)
+            ''If ubFlag(i) = 0 Then ubFlag(i) = 1
+            Line Input #1, s
+            uiFlag(i) = Val(s)
+            ''If uiFlag(i) = 0 Then uiFlag(i) = 1
+        Next i
+        For i = 0 To 8
+            Line Input #1, s
+            ubHouse(i) = Val(s)
+            ''If ubHouse(i) = 0 Then ubHouse(i) = 1
+            Line Input #1, s
+            uiHouse(i) = Val(s)
+            ''If uiHouse(i) = 0 Then uiHouse(i) = 1
+        Next i
+    End If
+    Close 1
+    
+    'load default, cez pa custom details
+    '1
+    For i = 0 To 10
+        ImageRoad(i).Picture = ImageRoad(i + ub(1) * ni(1)).Picture
+    Next i
+    '2
+    For i = 1 To 8
+        ImageHouse(i).Picture = ImageHouse(i + ub(2) * ni(2)).Picture
+    Next i
+    For i = 0 To 8
+        ImageHouse(i).Picture = ImageHouse(uiHouse(i) + ubHouse(i) * ni(2)).Picture
+    Next i
+    '3
+    For i = 0 To 5
+        ImageKocka(i).Picture = ImageKocka(i + ub(3) * ni(3)).Picture
+    Next i
+    '4
+    For i = 0 To 9
+        ImageGauge(i).Picture = ImageGauge(i + ub(4) * ni(4)).Picture
+    Next i
+    '5
+    For i = 0 To 6
+        ImagePlayer(i).Picture = ImagePlayer(i + ub(5) * ni(5)).Picture
+    Next i
+    For i = 0 To 6
+        ImagePlayer(i).Picture = ImagePlayer(uiPlayer(i) + ubPlayer(i) * ni(5)).Picture
+    Next i
+    '6
+    For i = 0 To 6
+        ImageFlag(i).Picture = ImageFlag(i + ub(5) * ni(6)).Picture
+    Next i
+    For i = 0 To 6
+        ImageFlag(i).Picture = ImageFlag(uiFlag(i) + ubFlag(i) * ni(6)).Picture
+    Next i
+    
+    apply_icons
+    
+    Me.Hide
+End Sub
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 27 Then CommandCancel_Click
+End Sub
+
+
+
+
+
+***************************************************************************
+*    frmMapEditor.frm
+***************************************************************************
+
+Dim fn  '.map file to open
+
+Private Sub CommandCancel_Click()
+    Me.Hide
+End Sub
+
+Private Sub CommandOK_Click()
+    Dim x, y, i, j, c
+    'prepare map, mapeditorMode:  1-new/2-current/3-open map
+    mapEditorMode = 0   ''mode not found yet
+    'current
+    If (Text1(0).Text = "") And (Text1(1).Text = "") And (Combo1.Text = "") Then
+        mapEditorMode = 2
+        'current map is used
+    End If
+    'new
+    If (Text1(0).Text <> "") And (Text1(1).Text <> "") Then
+        x = Val(Text1(0))
+        y = Val(Text1(1))
+        If x < 7 Then x = 7
+        If y < 7 Then y = 7
+        mapEditorMode = 1
+        'create empty map
+        dimx = x: dimy = y
+        For i = 1 To dimx
+            For j = 1 To dimy
+                map(i, j).tip = 1
+                map(i, j).owner = 0
+                map(i, j).stage = 0
+                c = Mid("ABCDEFGHIJKLMNOPQRSTUVWXWZ", Int((25 - 1 + 1) * Rnd + 1), 1)
+                map(i, j).price = Asc(c) - 45
+                map(i, j).semafor = 33 '''naj bo nek default za vsak slucaj
+            Next j
+        Next i
+        map(Int(dimx / 4), Int(dimy / 4)).tip = 2       'school
+        map(Int(3 * dimx / 4), Int(dimy / 4)).tip = 3   'job
+        map(Int(dimx / 2), Int(dimy / 2)).tip = 4       'jail
+        map(Int(dimx / 2), Int(dimy / 2) + 1).tip = 0   'road
+        map(Int(dimx / 2) + 1, Int(dimy / 2) + 1).tip = 0 'road
+        map(Int(dimx / 2) - 1, Int(dimy / 2) + 1).tip = 0 'road
+        
+        jailx = Int(dimx / 2): jaily = Int(dimy / 2)
+        startx = jailx: starty = jaily + 1: startsmer = 4   'desno
+        Game.draw_map
+        
+    End If
+    'open
+    If Combo1.Text <> "" Then
+        mapEditorMode = 3
+        'open map
+        NewGame.load_map App.Path & "\" & Combo1.Text
+        Game.draw_map
+    End If
+    
+    'prepare interface
+    Game.begin_map_editor
+    
+    Me.Hide
+    
+End Sub
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 27 Then CommandCancel_Click
+End Sub
+
+Private Sub Form_Load()
+    Me.Left = (Screen.Width - Me.Width) / 2
+    Me.Top = (Screen.Height - Me.Height) / 2
+    Image1.Picture = Game.ImageResource(17)     'school
+    Image2.Picture = Game.ImageResource(18)     'job
+    
+    Dim i
+    If File1.ListCount > 0 Then
+        For i = 0 To File1.ListCount - 1
+            Combo1.AddItem File1.List(i)
+        Next i
+    End If
+End Sub
+
+Private Sub Text1_Change(Index As Integer)
+    'new excludes open
+    Combo1.Text = ""
+End Sub
+
+
+
+
+
+***************************************************************************
+*    frmRegister.frm
+***************************************************************************
+
+Dim t1, sendbymailprompt, tprice(3), tTo, tSubject, tEnterSN
+Dim y1     'orig top position for frame
+Dim y2     'hidden position
+Dim y      'during scroll
+Dim yreq   'required position
+Dim amount As Integer
+
+Private Sub Check1_Click()
+    If Check1.Value = 1 Then
+        'hide frame1
+        yreq = y2
+        y = Frame1.Top
+        cmdPrint.Enabled = False
+        Timer1.Enabled = True
+    Else
+    End If
+    calcprice   'mora biti tu zaradi updatea
+End Sub
+
+
+Private Sub checkGame_Click(Index As Integer)
+    calcprice
+End Sub
+
+Private Sub cmdClose_Click()
+    Unload Me
+End Sub
+
+Private Sub cmdEnterSN_Click()
+    Beep
+End Sub
+
+Private Sub cmdPrint_Click()
+    'data validation
+    If Option1(7).Value Then    'mail
+        If (txtmail(0).Text = "") Or (txtmail(1).Text = "") Or (txtmail(2).Text = "") Or (txtmail(3).Text = "") Then
+            Beep
+            Exit Sub
+        End If
+    Else    'email
+        If (txtemail.Text = "") Or (InStr(1, txtemail.Text, "@") = 0) Then
+            Beep
+            Exit Sub
+        End If
+    End If
+    Screen.MousePointer = vbHourglass
+    On Error Resume Next
+    
+    'prepare info o delni registraciji
+    Dim i, orig1, orig2, orig3, orig4, c
+    c = QBColor(15)
+    orig4 = Me.BackColor
+    For i = 0 To checkGame.Count - 1: checkGame(i).Enabled = False: Next i
+    orig1 = Frame1.Left   '=x1
+    If Check1.Value = 1 Then
+        For i = 0 To checkGame.Count - 1: checkGame(i).BackColor = c: Next i
+        Frame1.Left = Frame1.Left + Check1.Height
+    End If
+    cmdPrint.Visible = False
+    orig2 = cmdSendmail.Visible: cmdSendmail.Visible = False
+    orig3 = cmdSendemail.Visible: cmdSendemail.Visible = False
+    cmdEnterSN.Visible = False
+    For i = 0 To 2: labelprice(i).Visible = False: Next i
+    cmdClose.Visible = False
+    'white
+    Me.BackColor = c
+    Image4.Visible = False: Image5.Visible = True
+    For i = 0 To 8: Option1(i).BackColor = c: Next i
+    Frame1.BackColor = c: Frame2.BackColor = c: Frame3.BackColor = c: Frame4.BackColor = c
+    Frame5(0).BackColor = c: Frame5(1).BackColor = c
+    txtemail.BackColor = c
+    For i = 0 To 3: txtmail(i).BackColor = c: Next i
+    Check1.BackColor = c
+    
+    '--------------
+    Me.PrintForm
+    '--------------
+
+    'unprepare
+    For i = 1 To checkGame.Count - 1: checkGame(i).Enabled = True: Next i
+    If Check1.Value = 1 Then
+        If Frame1.Left <> orig1 Then Frame1.Left = orig1
+        For i = 0 To checkGame.Count - 1: checkGame(i).BackColor = c: Next i
+    End If
+    cmdPrint.Visible = True
+    cmdSendmail.Visible = orig2
+    cmdSendemail.Visible = orig3
+    cmdEnterSN.Visible = True
+    For i = 0 To 2: labelprice(i).Visible = True: Next i
+    cmdClose.Visible = True
+    'gray
+    c = orig4
+    Me.BackColor = c
+    Image4.Visible = True: Image5.Visible = False
+    For i = 0 To 8: Option1(i).BackColor = c: Next i
+    Frame1.BackColor = c: Frame2.BackColor = c: Frame3.BackColor = c: Frame4.BackColor = c
+    Frame5(0).BackColor = c: Frame5(1).BackColor = c
+    txtemail.BackColor = c
+    For i = 0 To 3: txtmail(i).BackColor = c: Next i
+    Check1.BackColor = c
+    Screen.MousePointer = vbDefault
+End Sub
+
+Private Sub cmdSendemail_Click()
+    Beep
+'    'set To, Subject
+'    'required serialnumber
+'    'amount
+'    'e-mail, addr
+'    'options (cd,floppy)
+'
+'    'data validation
+'    If Option1(7).Value Then    'mail
+'        If (txtmail(0).Text = "") Or (txtmail(1).Text = "") Or (txtmail(2).Text = "") Or (txtmail(3).Text = "") Then
+'            Beep
+'            Exit Sub
+'        End If
+'    Else    'email
+'        If (txtemail.Text = "") Or (InStr(1, txtemail.Text, "@") = 0) Then
+'            Beep
+'            Exit Sub
+'        End If
+'    End If
+'
+'    Dim sn, a, addr, o, s
+'    sn = "AFULLREGISTRATIONPLE"                 'full reg. - POTEM NAROCNIKU VRNEM "RFULLREGISTRATIONPLE" (prva crka bistvena)
+'    If Check1.Value = 1 Then sn = calcreqSN     'part reg. - potem vrnem "P..."
+'
+'    s = "CardGames registration request from "
+'    s = s & txtemail
+''    s = s & " , " & txtmail(0) & " , "
+''    s = s & " , " & txtmail(1)
+''    s = s & " , " & txtmail(2)
+'    s = s & " . His temp. s.n.=" & sn
+'    s = s & ". He will pay " & amount & " $."
+'    If Option1(0).Value Then s = s & " Method of payment: cash."
+'    If Option1(1).Value Then s = s & " Method of payment: money order."
+'    'If Option1(2).Value Then s = s & " Method of payment: cheque."
+'    'If Option1(3).Value Then s = s & " Method of payment: credit card."
+'    ''If Option1(5).Value Then s = s & " He requests floppy disc version."
+'    ''If Option1(6).Value Then s = s & " He requests CD-ROM version."
+'
+'    On Error GoTo mapierr
+'    MAPISession1.SignOn
+'    MAPImsg.Compose
+'    MAPImsg.RecipAddress = "miha11@yahoo.com"
+'    MAPImsg.MsgSubject = s
+'    'mapimsg.show
+'    MAPImsg.Send (1)        'MAPImsg.Send (vdialog)
+'    MAPISession1.SignOff
+'
+'
+'    Exit Sub
+'mapierr:
+'    Dim erd
+'    erd = Err.Description & Chr(13) & Chr(10) & Chr(13) & Chr(10)
+'    erd = erd & tTo & " miha11@yahoo.com" & Chr(13) & Chr(10)
+'    erd = erd & tSubject & " " & s
+'    MsgBox erd
+End Sub
+Function calcreqSN()
+    Dim s, i
+    s = "P" 'part registration (only to certain games)
+    For i = 0 To checkGame.Count - 1
+        If checkGame(i).Value = 1 Then
+            s = s & Mid("JKLMN", Int(Rnd * 5) + 1, 1)
+        Else
+            s = s & Mid("AEIOU", Int(Rnd * 5) + 1, 1)
+        End If
+    Next i
+    s = s & "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    s = Left(s, 20)
+    calcreqSN = s
+End Function
+Private Sub cmdSendmail_Click()
+    MsgBox sendbymailprompt, , lngg(15)
+End Sub
+
+Private Sub Command1_Click()
+    'hide game list (show frame1)
+    yreq = y1
+    y = Frame1.Top
+    Timer1.Enabled = True
+    calcprice
+    cmdPrint.Enabled = True
+End Sub
+
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+    Select Case KeyCode
+    Case 27
+        Unload Me
+    Case 112    'F1
+        MsgBox t1   'a zazene se tudi help file
+    End Select
+End Sub
+
+Private Sub Form_Load()
+    Me.Top = (Screen.Height - Me.Height) / 2
+    Me.Left = (Screen.Width - Me.Width) / 2
+    preparehiddengamelist
+    formcaptions
+    y1 = Frame1.Top
+    y2 = y1 + Frame1.Height + Check1.Height
+End Sub
+
+Sub formcaptions()
+    'captions
+    On Error GoTo failregister
+    Dim i, s
+    For i = 0 To 8
+        If Option1(i).Tag = "default" Then
+            Option1(i).Value = True
+        End If
+    Next i
+    
+    Open App.Path & "\" & selectedLanguage & ".txt" For Input As 1
+    Do
+        Line Input #1, s
+    Loop Until EOF(1) Or s = "[Registration form]"
+    If s = "[Registration form]" Then
+        Line Input #1, s: Me.Caption = s
+        
+        Line Input #1, s    '---
+        t1 = ""
+        Do
+            Line Input #1, s
+            If s <> "---" Then t1 = t1 & Chr(13) & Chr(10) & s
+        Loop Until s = "---" Or EOF(1)
+        If EOF(1) Then GoTo failregister
+        'Image1(0).ToolTipText = t1
+        
+        Line Input #1, s    'I want to buy Card Games
+        Frame1.Caption = s
+        Line Input #1, s    'empty line (n/a)
+        
+        Line Input #1, s    'I will pay with
+        Frame2.Caption = s
+        
+        Line Input #1, s
+        Option1(0).Caption = s
+        Line Input #1, s
+        Option1(1).Caption = s
+        Line Input #1, s
+        Option1(2).Caption = s
+        Line Input #1, s
+        Option1(3).Caption = s
+        Line Input #1, s    'visa
+        Line Input #1, s    'mastercard
+        Line Input #1, s    'other...
+        Line Input #1, s    '
+        
+        Line Input #1, s    'I want to receive
+        Frame3.Caption = s
+        Line Input #1, s
+        Option1(4).Caption = s
+        Line Input #1, s
+        Option1(5).Caption = s
+        Line Input #1, s
+        Option1(6).Caption = s
+        Line Input #1, s
+        
+        Line Input #1, s    'I want to receive the product
+        Line Input #1, s    'by mail
+        Option1(7).Caption = s
+        Line Input #1, s    'by e-mail
+        Option1(8).Caption = s
+        For i = 0 To 8
+            If Option1(i).Tag = "disabled" Then Option1(i).Enabled = False
+        Next i
+        
+        Line Input #1, s    'my address
+        Frame5(1).Caption = s
+        Line Input #1, s    'my e-mail
+        Frame5(0).Caption = s
+        Line Input #1, s    'name
+        labelmail(0).Caption = s
+        Line Input #1, s    'street
+        labelmail(1).Caption = s
+        Line Input #1, s    'city
+        labelmail(2).Caption = s
+        Line Input #1, s    'ZIP code
+        Line Input #1, s    'state
+        Line Input #1, s    'country
+        labelmail(3).Caption = s
+        Line Input #1, s    '
+        
+        Line Input #1, s    'I don't want all of the games
+        Check1.Caption = s
+        Line Input #1, s    '(this will reduce the cost)
+        Check1.ToolTipText = s
+        Line Input #1, s    '
+        
+        Line Input #1, s    'Amount
+        tprice(0) = s
+        Line Input #1, s    'Shipment cost
+        tprice(1) = s
+        Line Input #1, s    'Total amount
+        tprice(2) = s
+        Line Input #1, s    '---
+        
+        Line Input #1, s    'Print registration; Form
+        cmdPrint.ToolTipText = s & " "
+        Line Input #1, s    'Send order by mail
+        cmdSendmail.ToolTipText = s & " "
+        Line Input #1, s    'To send order by mail, print registration form and send it to ...
+        sendbymailprompt = s
+        Line Input #1, s    'Send order by e-mail
+        cmdSendemail.ToolTipText = s & " "
+        If Option1(7).Value Then
+            cmdSendmail.Visible = True
+            cmdSendemail.Visible = False
+        Else
+            cmdSendmail.Visible = False
+            cmdSendemail.Visible = True
+        End If
+        Line Input #1, s    'Enter serial number
+        cmdEnterSN.ToolTipText = s & " "
+        tEnterSN = s
+        Line Input #1, s    'OK
+        Command1.Caption = s
+        Line Input #1, s    'Close
+        cmdClose.Caption = s
+        
+        Line Input #1, s    '---
+        Line Input #1, s    'To:
+        tTo = s
+        Line Input #1, s    'Subject:
+        tSubject = s
+        
+        calcprice
+        
+        
+    Else
+        GoTo failregister
+    End If
+    
+    Close 1
+    Exit Sub
+
+
+failregister:   'error in language file (missing text)
+    On Error Resume Next
+    Close 1     'bug??
+    'Unload Me  'zablokira
+    Me.Hide
+End Sub
+
+
+
+Private Sub Option1_Click(Index As Integer)
+    Select Case Index
+    Case 4      'serial number
+        'can be sent by e-mail
+        Option1(8).Enabled = True
+        If Not Option1(8).Value Then Option1_Click (8)
+        calcprice
+    Case 5, 6   'floppy, cd-rom
+        'cant be sent by e-mail
+        If Option1(8).Value Then Option1_Click (7)
+        Option1(8).Enabled = False
+        calcprice
+    Case 7  'mail
+        Option1(7).Value = True
+        Frame5(0).Visible = False
+        Frame5(1).Visible = True
+        calcprice
+    Case 8  'e-mail
+        Option1(8).Value = True
+        Frame5(0).Visible = True
+        Frame5(1).Visible = False
+        calcprice
+    End Select
+    
+    If (Index = 7) Or (Index = 8) Then
+        If Option1(7).Value Then
+            cmdSendmail.Visible = True
+            cmdSendemail.Visible = False
+        Else
+            cmdSendmail.Visible = False
+            cmdSendemail.Visible = True
+        End If
+    End If
+End Sub
+
+Private Sub Timer1_Timer()
+    'animate show/hide frame
+    Dim d
+    If y = yreq Then
+        Timer1.Enabled = False
+    
+    Else
+        d = Abs(y - yreq) / 10
+    
+        If y > yreq Then y = y - d
+        If y < yreq Then y = y + d
+        If d < 10 Then y = yreq
+        Frame1.Top = y
+    End If
+    
+End Sub
+Sub preparehiddengamelist()
+    Dim i, j, h, s, g(50)
+    checkGame(0).Top = y1
+    checkGame(0).Left = Frame1.Left
+    h = Check1.Height * 1.3 'line height
+    
+    i = 0
+    Open App.Path & "\" & selectedLanguage & ".txt" For Input As 1
+    Do
+        Line Input #1, s
+        If s = "[GAMENAME]" Then    'add
+            Line Input #1, g(i)
+            i = i + 1
+        End If
+    Loop Until EOF(1) Or i > 50
+    Close 1
+    
+    checkGame(0).Caption = g(0)
+    checkGame(0).Value = 1
+    For j = 1 To i - 1
+        Load checkGame(j)
+        checkGame(j).Caption = g(j)
+        checkGame(j).Top = y1 + j * h
+        checkGame(j).Left = Frame1.Left
+        'checkGame(j).ZOrder 1
+        checkGame(j).Visible = True
+        checkGame(j).Value = 1
+    Next j
+    checkGame(0).Enabled = False    'Free Cell is obligatory
+
+End Sub
+
+Sub calcprice()
+    Dim s, i, a
+    Dim enaigra, shipment, shipmente, floppy, cd   'price in $
+    enaigra = 3:    shipment = 5:    shipmente = 2
+    floppy = 3: cd = 6
+    
+    'Amount
+    a = 0
+    If Check1.Value = 1 Then 'some games
+        For i = 0 To checkGame.Count - 1
+            If checkGame(i).Value = 1 Then a = a + enaigra
+        Next i
+        If Option1(5).Value Then a = a + floppy
+        If Option1(6).Value Then a = a + cd
+        's = tprice(0) & "....." & Trim(a) & " $"
+        s = tprice(0) & "....." & Trim(a) & " " & lngg(85)
+    Else
+        a = checkGame.Count
+        If a <= 0 Then a = 1
+        If Option1(5).Value Then a = a + floppy
+        If Option1(6).Value Then a = a + cd
+        'if left(serialnumber,1)="P" then 'dokup iger (discount)
+        '...
+        s = tprice(0) & "....." & Trim(a) & " " & lngg(85)
+    End If
+        
+    
+    If s <> labelprice(0) Then labelprice(0) = s
+    
+    'Shipment
+    If Option1(7).Value Then
+        s = tprice(1) & "....." & shipment & " " & lngg(85)
+        a = a + shipment
+    Else    '0
+        s = tprice(1) & "....." & shipmente & " " & lngg(85)
+        a = a + shipmente
+    End If
+    If s <> labelprice(1) Then labelprice(1) = s
+    
+    'Total
+    s = tprice(2) & "..." & Trim$(a) & " " & lngg(85)
+    If s <> labelprice(2) Then labelprice(2) = s
+    amount = Trim(a)
+End Sub
+
+
+
+
+***************************************************************************
+*    help.frm
+***************************************************************************
+
+
+
+

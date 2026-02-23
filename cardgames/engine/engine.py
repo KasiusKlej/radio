@@ -281,6 +281,10 @@ def column_click(game, col_idx, card_code):
                     sync_column_contents(s, source_col)
                     sync_column_contents(s, target_col)
 
+                    # ✅ FIX: Set autoplay flag
+                    if s.simulateClickMode:
+                        s.clickModeSuceededSoTryAgain = True
+
                 # --- POST-MOVE PROCESSING (Call class methods) ---
                 game.try_seek_Parameter_actions()
                 

@@ -191,7 +191,7 @@ class GameState:
         
         # VB GLOBALS moved to INSTANCE variables
         self.zap_st_igre = 1
-        self.CURRENT_LANGUAGE = "eng"
+        self.CURRENT_LANGUAGE = "slo"
         self.zoom = 1.0
         self.animate_enabled = True
         self.autoplay_enabled = False

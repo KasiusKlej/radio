@@ -18,16 +18,16 @@ from .card_dealer import dealCards
 # movable part
 def load_default_language():
     try:
-        return language_parser(LANG_DIR, "eng")
+        return language_parser(LANG_DIR, "slo")
     except Exception as e:
         # LAST LINE OF DEFENSE — app must not crash because of language
-        print("Language load failed:", e)
+        #print("Language load failed:", e)
         return {
             "lang": {
-                "app": "Card Games for One",
-                "msg": " malfunction.",
-                "youwon": "You won!",
-                "youlost": "You lost!",
+                "app": "Igre s Kartami",
+                "msg": " napaka.",
+                "youwon": "Zmagali ste!",
+                "youlost": "Izgubili ste!",
             },
             "menu": {},
             "dialog": {"ok": "OK", "cancel": "Cancel"},
@@ -84,23 +84,57 @@ def to_px(value):
 
     except (ValueError, TypeError):
         return 0
+
+def to_px_y(value):
+    """
+    The 'Smart Bridge' helper - Revised for negative numbers and special cases.
+    - Handles 'Fortress' (negative spreads)
+    - Handles 'FreeCell' (small pixel spreads)
+    - Handles 'Four Seasons' (large twip spreads)
+    - Handles 'Quadrille' (overlap_y=10 → 1 pixel)
+    """
+    try:
+        v_str = str(value).strip()
+        if not v_str or v_str == "-1":
+            return -1
         
+        val = int(v_str)
+        
+        # ✅ SPECIAL CASE: overlap_y=10 in VB (150 twips) → 1 pixel
+        # Used by Quadrille and Fortress for tiny card stacking
+        if val == 10:
+            return 1
+        
+        if val == 0:
+            return 0
+            
+        # We check the ABSOLUTE value for the threshold
+        # If the magnitude is > 24, it's a Twip (positive or negative)
+        if abs(val) > 19:
+            # We use float division then cast to int to match VB 'Fix' behavior
+            # e.g., -300 / 15 = -20
+            return int(val / 15)
+            
+        # Otherwise, it's a small Pixel value
+        return val
+    except (ValueError, TypeError):
+        return 0
+       
 
 # -------------------------------------------------
 # PHASE 0: Language Handling (Session-Safe)
 # -------------------------------------------------
 
-def get_language_dict(lang_code="eng"):
+def get_language_dict(lang_code="slo"):
     """
     Retrieves language strings. No longer uses a global variable.
     """
     try:
         return language_parser(LANG_DIR, lang_code)
     except Exception as e:
-        print(f"Language load failed for {lang_code}, falling back to English: {e}")
         return {
-            "lang": {"app": "Card Games", "youwon": "You Won!", "youlost": "You Lost!"},
-            "menu": {}, "dialog": {"ok": "OK", "cancel": "Cancel"}
+            "lang": {"app": "Igre s Kartami", "youwon": "Zmagali ste!", "youlost": "Izgubili ste!"},
+            "menu": {}, "dialog": {"ok": "V redu", "cancel": "Prekliči"}
         }
 
 # -------------------------------------------------
@@ -117,8 +151,9 @@ class CardGame:
         # We ensure the session ID is linked immediately.
         sid = session_id or session.get('user_sid')
         self.state = GameState(game_id, sid)
-        
-        print(f"DEBUG: Initializing game controller for ID: {game_id}")
+        ##self.state.game_id = game_id
+
+        #print(f"DEBUG: Initializing game controller for ID: {game_id}")
 
         if from_snapshot:
             # Reconstruct from browser save
@@ -144,6 +179,7 @@ class CardGame:
             self.state.GAME_NAME = lines[1].strip()
             self.state.name = self.state.GAME_NAME
 
+
     def _vb_init_globals(self):
         """
         Sets all engine flags inside self.state.
@@ -155,10 +191,13 @@ class CardGame:
         s.selectedColumn = -1
         s.destinationColumn = -1
         s.usermode = 0
-        s.actionMode = False          #patched
+        s.actionMode = False
         s.nextAvailableFaceDown = 0
         s.parameter = [0] * 21
-        s.autoplay_enabled = False
+        
+        # ✅ FIX: Read autoplay from session (persistent preference)
+        from flask import session
+        s.autoplay_enabled = session.get("autoplay_enabled", False)
 
     
     def prepareRequisites(self):
@@ -380,19 +419,44 @@ class CardGame:
                 how_many = 0
                 cards = list(s.kup[csource].contents)
 
-                # Look for a sequence of cards that can move together
-                for i in range(min(len(cards), max_cards)):
-                    card = cards[-(i + 1)]
-                    # Logic: Is the i-th card allowed to land on cdest?
-                    if move_condition(s, card.code, csource, cdest) and card.face_up:
-                        how_many = i + 1
-                    else:
-                        # In many card games, if the 3rd card can't move, 
-                        # the 4th card behind it certainly can't.
-                        break
-
+                # ✅ FIX: Check how many cards form valid sequence
+                # Start with top card
+                how_many = 1
+                
+                # Check if top card can go on destination
+                top_card = cards[-1]
+                if not (move_condition(s, top_card.code, csource, cdest) and top_card.face_up):
+                    how_many = 0
+                else:
+                    # Now check how many cards below form valid sequence
+                    for i in range(1, min(len(cards), max_cards)):
+                        card_below = cards[-(i + 1)]  # Card below current
+                        card_above = cards[-i]         # Current card
+                        
+                        # Can card_above go on card_below? (sequence check)
+                        if move_condition(s, card_above.code, csource, csource) and card_below.face_up:
+                            how_many = i + 1
+                        else:
+                            break
+                
                 if how_many > 0:
                     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
+
+
+
+                # # Look for a sequence of cards that can move together bug
+                # for i in range(min(len(cards), max_cards)):
+                #     card = cards[-(i + 1)]
+                #     # Logic: Is the i-th card allowed to land on cdest?
+                #     if move_condition(s, card.code, csource, cdest) and card.face_up:
+                #         how_many = i + 1
+                #     else:
+                #         # In many card games, if the 3rd card can't move, 
+                #         # the 4th card behind it certainly can't.
+                #         break
+
+                # if how_many > 0:
+                #     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
 
         # ----------------------------
         # parameter management (The Game's Variables)
@@ -642,6 +706,105 @@ class CardGame:
         
         return any_moves_made  # ✅ NEW: Tell frontend if moves were made
 
+
+    # def try_every_turn_actions(self):
+    #     """
+    #     VB Port: try_every_turn_actions
+    #     The 'Autoplay' engine. Returns True if any moves were made.
+    #     """
+    #     s = self.state
+        
+    #     # Check if autoplay is enabled
+    #     if not s.autoplay_enabled:
+    #         self.try_if_actions()
+    #         return False
+        
+    #     print(f"🤖 Autoplay starting...")
+        
+    #     max_loops = 50
+    #     any_moves_made = False
+        
+    #     while max_loops > 0:
+    #         s.clickModeSuceededSoTryAgain = False
+    #         lines = s.LIST_GAME_LINES
+    #         moves_this_round = 0
+            
+    #         for line in lines:
+    #             line = line.strip()
+                
+    #             if line.startswith("every_turn="):
+    #                 action_cmd = line[11:]
+                    
+    #                 if action_cmd.startswith("["):
+    #                     # Action block
+    #                     if self.do_whole_action(action_cmd):
+    #                         any_moves_made = True
+    #                         s.clickModeSuceededSoTryAgain = True
+    #                         moves_this_round += 1
+                            
+    #                 elif action_cmd.startswith("parameter"):
+    #                     # Parameter setting
+    #                     if self.do_action(action_cmd):
+    #                         any_moves_made = True
+    #                         s.clickModeSuceededSoTryAgain = True
+    #                 else:
+    #                     # Standard move: "src-dst"
+    #                     try:
+    #                         src_idx, dst_idx = map(int, action_cmd.split("-"))
+                            
+    #                         if not (0 <= src_idx < len(s.kup) and 0 <= dst_idx < len(s.kup)):
+    #                             continue
+                            
+    #                         source_col = s.kup[src_idx]
+                            
+    #                         if not source_col.contents:
+    #                             continue
+                            
+    #                         top_card = source_col.contents[-1]
+    #                         original_weight = source_col.weight
+                            
+    #                         # Import column_click function
+    #                         from .engine import column_click
+                            
+    #                         # Set up simulation mode
+    #                         s.simulateClickMode = True
+    #                         s.actionMode = False
+    #                         s.usermode = 0
+                            
+    #                         # Try the move
+    #                         column_click(self, src_idx, top_card.code)
+    #                         column_click(self, dst_idx, top_card.code)
+                            
+    #                         s.simulateClickMode = False
+                            
+    #                         # Check if move succeeded
+    #                         if source_col.weight < original_weight:
+    #                             any_moves_made = True
+    #                             s.clickModeSuceededSoTryAgain = True
+    #                             moves_this_round += 1
+                                
+    #                     except Exception as e:
+    #                         print(f"⚠️  Autoplay error: {e}")
+    #                         continue
+                
+    #             if line == "[FINISH]":
+    #                 break
+            
+    #         print(f"🤖 Round complete: {moves_this_round} moves")
+            
+    #         # Exit if no moves this round
+    #         if not s.clickModeSuceededSoTryAgain:
+    #             break
+    #         max_loops -= 1
+        
+    #     print(f"🤖 Autoplay finished: {any_moves_made}")
+        
+    #     # Always run if() checks
+    #     self.try_if_actions()
+        
+    #     return any_moves_made
+
+
     def try_if_actions(self):
         """
         VB Port: try_if_actions
@@ -705,15 +868,13 @@ class CardGame:
         if check_block("[VICTORY]"):
             s.youWon = True
             s.game_message = s.lang_youwon
-            print(f"Victory detected for player {s.session_id}")
             # statistics(s.name, "win") logic here
 
         # Check Defeat
         elif check_block("[DEFEAT]"):
             s.youWon = True # Mark as game over
             s.game_message = "You lost!"
-            print(f"Defeat detected for player {s.session_id}")
-
+            
 
 
 
@@ -862,8 +1023,9 @@ class CardGame:
         lang_data = get_language_dict(lang)
         lang_vars = lang_data.get('lang', {})
 
+        game_id = getattr(self.state, 'game_id', 1) 
         rules_text = load_game_rules(
-            gamename=self.state.GAME_NAME,
+            game_id=int(game_id),
             language=lang,
             lang_dir=LANG_DIR,
             list_game=self.state.LIST_GAME_LINES,
@@ -1023,37 +1185,7 @@ class CardGame:
             col.y = col.custom_y
 
     
-    # def _normalize_column_overlaps(self):
-    #     """
-    #     Improved Normalizer: Prevents 'Leaking Axis' bugs.
-    #     """
-    #     s = self.state
-    #     for col in s.kup:
-    #         print(f"Info of Column overlap before: '{col.column_name}' x: '{col.overlap_x}'   y: '{col.overlap_y}'")
-    #         # Case A: Column specified NOTHING (-1, -1)
-    #         # Use the game-wide defaults.
-    #         if col.overlap_x == -1 and col.overlap_y == -1:
-    #             col.overlap_x = s.default_overlap_x
-    #             col.overlap_y = s.default_overlap_y
-
-    #         # Case B: Column specified horizontal ONLY
-    #         # Assume vertical is 0.
-    #         elif col.overlap_x != -1 and col.overlap_y == -1:
-    #             col.overlap_y = 0
-
-    #         # Case C: Column specified vertical ONLY
-    #         # Assume horizontal is 0.
-    #         elif col.overlap_y != -1 and col.overlap_x == -1:
-    #             col.overlap_x = 0
-            
-    #         # Case D: Both already set (e.g. by behaviour or Stage 2)
-    #         # Do nothing.
-    #         print(f"Info of Column overlap &after: '{col.column_name}' x: '{col.overlap_x}'   y: '{col.overlap_y}'")
-
-    #         # Case type mismatch soup truble
-    #         if col.max_cards == 1:  # Single-card columns
-    #             if col.overlap_x == -1: col.overlap_x = 0
-    #             if col.overlap_y == -1: col.overlap_y = 0
+    
     def _normalize_column_overlaps(self):
         """
         Normalize column overlaps with strict axis semantics:
@@ -1063,11 +1195,6 @@ class CardGame:
         s = self.state
 
         for col in s.kup:
-            print(
-                f"Info of Column overlap before: "
-                f"'{col.column_name}' x: '{col.overlap_x}' y: '{col.overlap_y}'"
-            )
-
             # --- Normalize X ---
             if col.overlap_x == -1:
                 col.overlap_x = s.default_overlap_x
@@ -1080,13 +1207,6 @@ class CardGame:
             if col.max_cards == 1:
                 col.overlap_x = 0
                 col.overlap_y = 0
-
-            print(
-                f"Info of Column overlap &after: "
-                f"'{col.column_name}' x: '{col.overlap_x}' y: '{col.overlap_y}'"
-            )
-
-
 
 
     # -------------------------------------------------
@@ -1166,7 +1286,7 @@ class CardGame:
                     if l.startswith("overlap_x="):
                         s.default_overlap_x = to_px(l.split("=")[1])
                     elif l.startswith("overlap_y="):
-                        s.default_overlap_y = to_px(l.split("=")[1])
+                        s.default_overlap_y = to_px_y(l.split("=")[1])
                     elif l.startswith("zoom="):
                         try:
                             s.zoom = float(l.split("=")[1])
@@ -1234,7 +1354,8 @@ class CardGame:
                         col_name = line[1:-1]
                         current_col = next((c for c in s.kup if c.column_name == col_name), None)
                         if not current_col:
-                            print(f"Warning: Column '{col_name}' not found in kup")
+                            pass
+                            #print(f"Warning: Column '{col_name}' not found in kup")
                     
                     # Key=Value pairs
                     elif current_col and "=" in line:
@@ -1253,13 +1374,13 @@ class CardGame:
                             if val == "default":
                                 current_col.overlap_y = s.default_overlap_y
                             else:
-                                current_col.overlap_y = to_px(val)
+                                current_col.overlap_y = to_px_y(val)
                         
                         elif key == "custom_x":
                             current_col.custom_x = to_px(val)
                         
                         elif key == "custom_y":
-                            current_col.custom_y = to_px(val)
+                            current_col.custom_y = to_px_y(val)
                         
                         # ───────────────────────────────────────────────────────
                         # PLAYER INTERACTION PERMISSIONS
@@ -1352,7 +1473,6 @@ class CardGame:
                         
                         else:
                             # Future-proofing: store any unknown keys
-                            # print(f"Info: Unknown column attribute '{key}' for column '{current_col.column_name}'")
                             setattr(current_col, key, val)
                     
                     i += 1
@@ -1393,7 +1513,8 @@ class CardGame:
                     try:
                         self.do_action(action_str)
                     except Exception as e:
-                        print(f"Error in seek_parameter action '{action_str}': {e}")
+                        pass
+                        #print(f"Error in seek_parameter action '{action_str}': {e}")
             
             # Stop at [FINISH]
             if line == "[FINISH]":

@@ -1,0 +1,14 @@
+<div id="buy-modal" class="modal hidden">
+    <!-- No Title Bar per VB Spec: BorderStyle = 0 -->
+    <div class="win95-dialog win95-bevel-out" style="width: 180px; padding: 10px; background: var(--win-gray);">
+        <div id="buy-question-container" style="margin-bottom: 15px; text-align: center; font-size: 13px;">
+            <p id="buy-question-text">Label1</p>
+        </div>
+        
+        <div style="display: flex; justify-content: space-around;">
+            <!-- VB used & symbol for keyboard shortcuts (Alt+Y, Alt+N) -->
+            <button id="buy-yes-btn" class="win-btn" style="width: 65px;">Yes</button>
+            <button id="buy-no-btn" class="win-btn" style="width: 65px;" onclick="closeBuyModal()">No</button>
+        </div>
+    </div>
+</div>

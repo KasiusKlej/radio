@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Ping Pong</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pingpong.css') }}">
+</head>
+
+<body class="win95-theme">
+
+<div class="win95-dialog win95-bevel-out" style="width: 420px; margin: 40px auto;">
+    
+    <!-- TITLE BAR -->
+    <div class="win-title-bar">
+        <span>About Ping Pong</span>
+        <a href="{{ url_for('pingpong.index') }}" class="win-close">✕</a>
+    </div>
+
+    <!-- BODY -->
+    <div class="win95-dialog-body">
+
+        <div style="text-align: center; margin-bottom: 12px;">
+            <img src="{{ url_for('static', filename='favicon.ico') }}" width="32" height="32">
+        </div>
+
+        <h3 style="margin: 0; text-align: center;">Ping Pong</h3>
+
+        <p style="text-align: center; font-size: 11px; margin-top: 4px;">
+            Classic Pong-style game<br>
+            Ported from original VB6 code
+        </p>
+
+        <hr>
+
+        <h4>How to Play</h4>
+        <ul style="font-size: 12px;">
+            <li>The goal is to reach <b>52 points</b>.</li>
+            <li>The ball speeds up over time.</li>
+            <li>First player to reach the target score wins.</li>
+        </ul>
+
+        <h4>Controls</h4>
+        <table style="font-size: 12px; width: 100%;">
+            <tr>
+                <td><b>Player 1</b></td>
+                <td>W / S</td>
+            </tr>
+            <tr>
+                <td><b>Player 2</b></td>
+                <td>↑ / ↓</td>
+            </tr>
+        </table>
+
+        <h4>Game Modes</h4>
+        <ul style="font-size: 12px;">
+            <li><b>Human</b> – Two players on one keyboard (hotseat)</li>
+            <li><b>Computer</b> – Play against AI</li>
+            <li><b>Network</b> – Reserved for future multiplayer</li>
+        </ul>
+
+        <p style="font-size: 11px; text-align: center; margin-top: 10px;">
+            © 1998–2026 All Rights Reserved<br>
+            Author: Miha
+        </p>
+
+        <div style="text-align: right; margin-top: 12px;">
+            <a href="{{ url_for('pingpong.index') }}" class="win-btn">OK</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

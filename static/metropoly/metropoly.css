@@ -1,3 +1,360 @@
+/* ============================================================
+   WINDOWS 95 SYSTEM STYLE (CLEAN REWRITE)
+   ============================================================ */
+:root {
+    --win-gray: #c0c0c0;
+    --win-white: #ffffff;
+    --win-dark-gray: #808080;
+    --win-black: #000000;
+    --win-blue: #000080;
+    --win-blue-light: #1084d0;
+    --table-green: #0b6b2e;
+}
+
+html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; font-family: "Tahoma", sans-serif;
+    display: flex; flex-direction: column;
+}
+
+/* --- TITLE BAR --- */
+#title-bar {
+    height: 28px; flex-shrink: 0; z-index: 1000;
+    background: linear-gradient(to right, var(--win-blue), var(--win-blue-light));
+    color: white; font-size: 14px; font-weight: bold;
+    display: flex; align-items: center; padding: 0 10px;
+}
+
+/* --- MENU BAR --- */
+#menu-bar {
+    height: 30px; flex-shrink: 0; z-index: 2000;
+    background: var(--win-gray);
+    border-bottom: 1px solid var(--win-dark-gray);
+    box-shadow: inset 1px 1px var(--win-white);
+}
+
+.menu-root {
+    list-style: none; margin: 0; padding: 0 5px;
+    display: flex; flex-direction: row; font-size: 12px;
+}
+
+.menu-item {
+    position: relative; padding: 6px 10px;
+    cursor: default; color: black;
+}
+
+.menu-item:hover { background: var(--win-blue); color: white; }
+
+.dropdown {
+    display: none; position: absolute; top: 100%; left: 0;
+    background: var(--win-gray); list-style: none; padding: 2px;
+    min-width: 160px; z-index: 5000;
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-dark-gray);
+    border-bottom: 2px solid var(--win-dark-gray);
+}
+
+.menu-item:hover .dropdown { display: block; }
+
+.dropdown li { padding: 5px 20px; color: black; white-space: nowrap; }
+.dropdown li:hover { background: var(--win-blue); color: white !important; }
+
+.separator {
+    height: 1px;
+    margin: 4px 3px;
+    background: #808080;
+    border-bottom: 1px solid #ffffff;
+    pointer-events: none;
+}
+
+.separator:hover,
+.separator:active,
+.separator:focus {
+    background: none !important;
+}
+
+.dropdown .separator {
+    padding: 0;
+    margin: 2px 2px;
+    height: 2px;
+    line-height: 0;
+    min-height: 0;
+
+    background: none;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #ffffff;
+
+    pointer-events: none;
+}
+
+
+/* --- GAME AREA --- */
+#table-scroll {
+    flex-grow: 1; position: relative;
+    overflow: auto; background-color: var(--table-green);
+}
+
+#game-table { position: relative; padding: 20px; min-width: 100%; min-height: 100%; }
+
+.card { position: absolute; width: 89px; z-index: 50; }
+
+.checkable::before { content: "✓"; display: inline-block; width: 15px; visibility: hidden; }
+.checkable.checked::before { visibility: visible; }
+
+/* --- DIALOG / MSG BOX --- */
+#win95-modal-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.win95-dialog .win-title-bar {
+    background: var(--win-blue);
+    color: white;
+    padding: 3px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.win-close {
+    width: 16px;
+    height: 14px;
+    padding: 0;
+    line-height: 10px;
+    font-weight: bold;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
+
+.win95-dialog-body { padding: 20px; font-size: 13px; color: black; }
+
+.win95-bevel-out {
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-dark-gray);
+    border-bottom: 2px solid var(--win-dark-gray);
+}
+
+.card {
+    position: absolute;
+    width: 89px;   /* Matches your orig_card_x_size */
+    height: 132px; /* Matches your orig_card_y_size */
+    background-color: white; /* Fallback if image fails */
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.column {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    /* Optional: add a border to see where columns are during debug */
+    /* border: 1px dashed rgba(255,255,255,0.2); */
+}
+
+/* The Default Suit: Green Placeholder */
+.column-requisite {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Thin black border */
+    background-color: rgba(0, 0, 0, 0.15); /* Dark green tint on green table */
+    z-index: 1;
+}
+
+/* The Grey Suit (Backcolor 8) */
+.column-requisite.style-grey {
+    background-color: #395f37; /* Classic Win95 Silver/Grey */   
+    border: 1px solid #000000;
+}
+
+/* ShapeSelektor costume (Black see-through net) */
+
+.selection-box {
+    position: absolute;
+    width: 89px;
+    height: 132px;
+    pointer-events: none;  /* Don't block clicks on the card beneath */
+    z-index: 1000;
+    
+    /* Yellow glowing border */
+    border: 3px solid #FFD700;  /* Gold/yellow solid border */
+    border-radius: 6px;
+    
+    /* Animated pulsing glow effect */
+    box-shadow: 
+        0 0 10px #FFD700,
+        0 0 20px #FFD700,
+        0 0 30px #FFA500,
+        inset 0 0 10px rgba(255, 215, 0, 0.3);
+    
+    /* Subtle pulsing animation */
+    animation: selection-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes selection-pulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px #FFD700,
+            0 0 20px #FFD700,
+            0 0 30px #FFA500,
+            inset 0 0 10px rgba(255, 215, 0, 0.3);
+        border-color: #FFD700;
+    }
+    50% {
+        box-shadow: 
+            0 0 15px #FFD700,
+            0 0 30px #FFD700,
+            0 0 45px #FFA500,
+            inset 0 0 15px rgba(255, 215, 0, 0.5);
+        border-color: #FFA500;
+    }
+}
+
+/* --- WIN95 DIALOG BACKGROUND FIX --- */
+
+.win95-dialog {
+    background-color: var(--win-gray); /* #c0c0c0 */
+}
+
+.win95-dialog-body {
+    background-color: var(--win-gray);
+}
+
+
+
+/* METROPOLY */
+
+.pawn-offset-1 { transform: translate(0, 0); }
+.pawn-offset-2 { transform: translate(16px, 16px); }
+.pawn-offset-3 { transform: translate(16px, 0); }
+/* matches your VB figuraXoffset logic exactly */
+
+/* --- WIN95 INTERACTIVE ELEMENTS --- */
+button, .win-btn {
+    background: var(--win-gray);
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-black);
+    border-bottom: 2px solid var(--win-black);
+    padding: 4px 10px;
+    font-family: "Tahoma", sans-serif;
+    font-size: 12px;
+    outline: none;
+}
+
+button:active, .win-btn:active {
+    border-top: 2px solid var(--win-black);
+    border-left: 2px solid var(--win-black);
+    border-right: 2px solid var(--win-white);
+    border-bottom: 2px solid var(--win-white);
+    padding: 5px 9px 3px 11px; /* Shifts text 1px down-right */
+}
+
+/* Inset Bevel (for the Status Bar and Input boxes) */
+.win-field, .win-inset {
+    background: var(--win-white);
+    border-top: 2px solid var(--win-dark-gray);
+    border-left: 2px solid var(--win-dark-gray);
+    border-right: 2px solid var(--win-white);
+    border-bottom: 2px solid var(--win-white);
+    padding: 2px;
+}
+
+/* --- METROPOLY LAYOUT --- */
+#metropoly-main-layout {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden; /* Prevents whole-page scrolling */
+    background: var(--win-dark-gray); /* Grey padding around the board */
+}
+
+#sidebar {
+    width: 280px;
+    background: var(--win-gray);
+    border-right: 2px solid var(--win-white);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10;
+}
+
+#game-viewport {
+    flex-grow: 1;
+    overflow: auto; /* The board itself can scroll */
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+#game-board {
+    display: grid; /* We use CSS Grid for the 32px tiles */
+    position: relative;
+    background: #ffffff;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+.tile {
+    width: 32px;
+    height: 32px;
+    position: relative;
+}
+
+.tile img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+}
+
+/* Layering Z-Indices */
+.layer-base { z-index: 1; }
+.layer-road { z-index: 2; }
+.layer-building { z-index: 3; }
+.layer-flag { z-index: 4; }
+
+/* The Pawns (Figurice) */
+.pawn {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    z-index: 100;
+    border: 1px solid black;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transition: all 0.3s ease-in-out; /* Smooth movement instead of VB "jumping" */
+}
+
+
+/* Hide Sidebar when in CardGames mode */
+body.cardgames-mode #sidebar { display: none; }
+
+/* Hide Table-Scroll when in Metropoly mode */
+body.metropoly-mode #table-scroll { display: none; }
+
+
+/* Make top-level items that are buttons have feedback */
+.menu-item:active {
+    background: var(--win-white);
+    box-shadow: inset 1px 1px var(--win-black);
+}
+
+/* Ensure the hidden class is respected in the menu */
+.menu-item.hidden {
+    display: none !important;
+}
+
 .pawn-offset-1 { transform: translate(0, 0); }
 .pawn-offset-2 { transform: translate(16px, 16px); }
 .pawn-offset-3 { transform: translate(16px, 0); }
@@ -22,4 +379,260 @@
 .mode-editor #game-board {
     opacity: 0.8;
     cursor: crosshair;
+}
+
+/* --- Win95 Layout --- */
+#metropoly-main-layout {
+    display: flex;
+    height: calc(100vh - 58px); /* Height minus Title and Menu bars */
+    background: #808080;
+    overflow: hidden;
+}
+
+#sidebar {
+    width: 260px;
+    background: var(--win-gray);
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+#game-viewport {
+    flex-grow: 1;
+    overflow: auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* --- VB Controls Emulation --- */
+.win-inset {
+    background: #ffffff;
+    border-top: 2px solid var(--win-dark-gray);
+    border-left: 2px solid var(--win-dark-gray);
+    border-right: 2px solid var(--win-white);
+    border-bottom: 2px solid var(--win-white);
+}
+
+.sidebar-section {
+    padding: 8px;
+    min-height: 50px;
+}
+
+.vb-label {
+    font-size: 12px;
+    font-family: 'Tahoma', sans-serif;
+    color: black;
+    white-space: pre-wrap;
+}
+
+.vb-label-center {
+    text-align: center;
+    padding: 10px;
+}
+
+/* --- The Board --- */
+#game-board {
+    display: grid;
+    /* Dimensions handled by inline styles in JS */
+}
+
+/* --- Buy Dialog Specifics --- */
+.buy-dialog-style {
+    background: var(--win-gray);
+    padding: 15px;
+    min-width: 200px;
+}
+
+.win-buttons-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.about-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 10px;
+}
+
+/* --- Help Dialog Styles --- */
+.help-content {
+    padding: 15px;
+    background: var(--win-gray);
+    line-height: 1.6;
+}
+
+.help-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: black;
+}
+
+.help-icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated; /* Keeps the Win95 icons sharp */
+    border: 1px solid rgba(0,0,0,0.1);
+    background: #fff;
+    padding: 2px;
+}
+
+.win-btn.default-btn {
+    font-weight: bold;
+    outline: 1px solid black;
+    outline-offset: -4px;
+}
+
+/* --- Graphics Selection UI --- */
+.graphics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.graphics-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.graphics-row label {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.preview-box {
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.preview-box:hover {
+    background: #e0e0e0;
+}
+
+.preview-box img {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+}
+
+/* --- Registration Dialog Layout --- */
+.register-layout {
+    display: flex;
+    gap: 10px;
+    background: var(--win-gray);
+    padding: 10px;
+}
+
+.reg-column-left { width: 60%; }
+.reg-column-right { 
+    width: 40%; 
+    border-left: 1px solid var(--win-dark-gray); 
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.address-form .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+.address-form input { width: 120px; }
+
+.game-list {
+    height: 80px;
+    overflow-y: scroll;
+    background: #fff;
+    margin: 10px 0;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+}
+
+.price-display {
+    margin-top: auto;
+    font-size: 12px;
+    text-align: right;
+}
+.price-row.total { font-weight: bold; border-top: 1px solid black; margin-top: 5px; }
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.graphical-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    padding: 2px;
+}
+.graphical-btn img { width: 16px; height: 16px; margin-bottom: 2px; }
+
+.win-inset {
+    background: #fff;
+    border: 2px solid;
+    border-color: var(--win-dark-gray) var(--win-white) var(--win-white) var(--win-dark-gray);
+}
+
+#menu-bar {
+    z-index: 10000; /* Higher than any modal */
+}
+
+.modal {
+    z-index: 9000; /* Modals sit below the menu */
+    top: 30px; /* Start below the menu bar */
+    height: calc(100% - 30px);
+}
+
+.editor-tool-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tool-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    border: 1px solid transparent;
+}
+
+.tool-item img { width: 24px; height: 24px; }
+
+.tool-item.active {
+    background: var(--win-white);
+    border: 1px solid var(--win-dark-gray);
+    box-shadow: inset 1px 1px var(--win-black);
+}
+
+.win95-hr {
+    border: none;
+    border-top: 1px solid var(--win-dark-gray);
+    border-bottom: 1px solid var(--win-white);
+    margin: 10px 0;
 }

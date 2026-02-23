@@ -1,0 +1,78 @@
+<!-- METROPOLY REGISTRATION DIALOG (frmRegister) -->
+<div id="register-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 520px;">
+        <!-- Title Bar -->
+        <div class="win-title-bar">
+            <span>{{ m.register or 'Registration' }}</span>
+            <button class="win-close" onclick="closeRegister()">✕</button>
+        </div>
+
+        <div class="win95-dialog-body register-layout">
+            
+            <!-- LEFT COLUMN: Details (Frame1) -->
+            <div class="reg-column-left">
+                <!-- Frame 2: Payment Method -->
+                <fieldset class="win-fieldset">
+                    <legend>{{ m.reg_payment or 'Payment Method' }}</legend>
+                    <div class="option-grid">
+                        <label><input type="radio" name="pay" checked> {{ m.reg_cash or 'Cash' }}</label>
+                        <label><input type="radio" name="pay"> {{ m.reg_cheque or 'Cheque' }}</label>
+                        <label><input type="radio" name="pay"> {{ m.reg_cc or 'Credit Card' }}</label>
+                    </div>
+                </fieldset>
+
+                <!-- Frame 3: Media Type -->
+                <fieldset class="win-fieldset">
+                    <legend>{{ m.reg_media or 'Receive' }}</legend>
+                    <label><input type="radio" name="media" checked> {{ m.reg_sn or 'Serial Number' }}</label><br>
+                    <label><input type="radio" name="media"> {{ m.reg_floppy or '3.5" Floppy' }}</label><br>
+                    <label><input type="radio" name="media"> {{ m.reg_cd or 'CD-ROM' }}</label>
+                </fieldset>
+
+                <!-- Frame 5: Address Information (Port of txtmail/labelmail) -->
+                <fieldset class="win-fieldset">
+                    <legend>{{ m.reg_address or 'My Address' }}</legend>
+                    <div class="address-form">
+                        <div class="row"><span>Name:</span><input type="text" class="win-inset"></div>
+                        <div class="row"><span>Street:</span><input type="text" class="win-inset"></div>
+                        <div class="row"><span>City:</span><input type="text" class="win-inset"></div>
+                        <div class="row"><span>Email:</span><input type="text" class="win-inset"></div>
+                    </div>
+                </fieldset>
+
+                <label style="font-size: 11px; margin-top: 5px; display: block;">
+                    <input type="checkbox"> {{ m.reg_notall or "I don't want all games" }}
+                </label>
+            </div>
+
+            <!-- RIGHT COLUMN: Pricing & Actions -->
+            <div class="reg-column-right">
+                <div class="reg-logo win-inset">
+                    <img src="/assets/graphics/h5.png" alt="Metropoly">
+                </div>
+
+                <div class="game-list win-inset">
+                    <p style="margin: 2px; font-weight: bold; font-size: 10px;">Select Games:</p>
+                    <label><input type="checkbox" checked> Metropoly</label>
+                    <label><input type="checkbox"> Card Games</label>
+                    <label><input type="checkbox"> Clovek</label>
+                </div>
+
+                <div class="price-display">
+                    <div class="price-row"><span>Amount:</span> <span>18 $</span></div>
+                    <div class="price-row"><span>Shipping:</span> <span>0 $</span></div>
+                    <div class="price-row total"><span>Total:</span> <span>18 $</span></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="win-btn graphical-btn" onclick="printReg()"><img src="/assets/graphics/roadud.png"> Print</button>
+                    <button class="win-btn graphical-btn" onclick="sendReg()"><img src="/assets/graphics/e1.png"> Order</button>
+                    <button class="win-btn graphical-btn" onclick="enterSN()"><img src="/assets/graphics/jail.png"> SN</button>
+                </div>
+                
+                <button class="win-btn" onclick="closeRegister()" style="width: 100%; margin-top: 10px;">{{ m.close or 'Close' }}</button>
+            </div>
+
+        </div>
+    </div>
+</div>

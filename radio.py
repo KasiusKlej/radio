@@ -2,6 +2,7 @@
 from flask import Flask, render_template , url_for 
 from cardgames.routes import cardgames_bp
 from metropoly.engine.routes import metropoly_bp 
+from pingpong.routes import pingpong_bp
 import os
 
 # correct way for server
@@ -14,6 +15,7 @@ app = Flask(
 app.secret_key = "428ef008c81fd2d317876eb94ffeb68039d6a0d304b7a9e4cc5a7f47ec5fea00"
 app.register_blueprint(cardgames_bp, url_prefix="/cardgames")
 app.register_blueprint(metropoly_bp, url_prefix="/metropoly")
+app.register_blueprint(pingpong_bp, url_prefix="/pingpong")
 
 
 @app.route("/")

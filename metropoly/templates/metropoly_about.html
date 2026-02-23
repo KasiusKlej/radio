@@ -1,0 +1,22 @@
+<div id="about-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 300px;">
+        <div class="win-title-bar">
+            <span>Metropoly</span>
+            <button class="win-close" onclick="closeAbout()">✕</button>
+        </div>
+        <div class="win95-dialog-body" style="text-align: center;">
+            <div class="win95-picture-placeholder" style="margin-bottom: 15px;">
+                <!-- This replaces the frmAbout.frx picture -->
+                <img src="{{ url_for('metropoly.static', filename='assets/graphics/jail.png') }}">
+            </div>
+            <h3 style="margin: 0;">Metropoly</h3>
+            <p>Version 1.0<br>(p) 2001 by Miha </p>
+            <p>Version 1.0<br>            Ported from original VB6 code in 2026</p>
+            <p style="font-size: 11px;">© 2021 All Rights Reserved</p>
+            
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="win-btn" onclick="closeAbout()" style="width: 80px;">OK</button>
+            </div>
+        </div>
+    </div>
+</div>

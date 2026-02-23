@@ -1,0 +1,54 @@
+<!-- METROPOLY HELP DIALOG (frmHelp) -->
+<div id="help-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 420px;">
+        <!-- Title Bar -->
+        <div class="win-title-bar">
+            <span>{{ m.help_title or 'Metropoly Help' }}</span>
+            <button class="win-close" onclick="closeHelp()">✕</button>
+        </div>
+
+        <div class="win95-dialog-body help-content">
+            
+            <!-- Sentence 1: Start -->
+            <div class="help-row">
+                <span>{{ m.help_l0 or 'You begin in' }}</span>
+                <img src="{{ url_for('metropoly.static', filename='assets/graphics/jail.png') }}" class="help-icon">
+                <span>{{ m.help_l1 or 'jail.' }}</span>
+            </div>
+
+            <!-- Sentence 2: Movement -->
+            <div class="help-row">
+                <span>{{ m.help_l2 or 'You throw' }}</span>
+                <img src="{{ url_for('metropoly.static', filename='assets/graphics/dice5.png') }}" class="help-icon">
+                <span>{{ m.help_l3 or 'dice and walk on the' }}</span>
+                <img src="/assets/graphics/roadud.png" class="help-icon" alt="Road">
+                <span>{{ m.help_l4 or 'road.' }}</span>
+            </div>
+
+            <!-- Sentence 3: Objectives -->
+            <div class="help-row">
+                <span>{{ m.help_l5 or 'Go to' }}</span>
+                <img src="/assets/graphics/school.png" class="help-icon" alt="School">
+                <span>{{ m.help_l6 or 'school to learn and go to' }}</span>
+                <img src="/assets/graphics/job.png" class="help-icon" alt="Job">
+                <span>{{ m.help_l7 or 'money to earn.' }}</span>
+            </div>
+
+            <!-- Sentence 4: Real Estate -->
+            <div class="help-row">
+                <span>{{ m.help_l8 or 'Buy' }}</span>
+                <img src="/assets/graphics/h0.png" class="help-icon" alt="Land">
+                <span>{{ m.help_l9 or 'land. Buy' }}</span>
+                <img src="/assets/graphics/h3.png" class="help-icon" alt="Houses">
+                <span>{{ m.help_l10 or 'houses on your land.' }}</span>
+            </div>
+
+            <!-- OK Button -->
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="win-btn default-btn" onclick="closeHelp()" style="width: 90px;">
+                    {{ m.ok or 'OK' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

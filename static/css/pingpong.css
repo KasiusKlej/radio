@@ -354,3 +354,115 @@ body.metropoly-mode #table-scroll { display: none; }
 .menu-item.hidden {
     display: none !important;
 }
+
+#pongCanvas {
+    background-color: #C0C0C0; /* Light Grey Playground */
+    display: block;
+    cursor: none;
+}
+
+.score-display {
+    position: absolute;
+    color: #000080; /* Dark Blue */
+    font-family: "Tahoma", sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 10;
+    text-shadow: 1px 1px #fff;
+}
+
+/* Hide play/pause if needed via class */
+.network-mode .pause-controls {
+    display: none !important;
+}
+
+/* Ensure the parent <li> is the reference point */
+.menu-item-nested {
+    position: relative;
+}
+
+/* Base style for all dropdowns */
+.dropdown {
+    display: none;
+    position: absolute;
+    background: var(--win-gray);
+    z-index: 5000;
+}
+
+/* Tier 2: Directly under the main menu bar */
+.menu-item > .dropdown {
+    top: 100%;
+    left: 0;
+}
+
+/* Tier 3: To the RIGHT of the parent menu item */
+.menu-item-nested:hover > .tier-3 {
+    display: block !important;
+    left: 100%; /* Move to the right of the parent */
+    top: -2px;   /* Align with the top border of the Computer item */
+    min-width: 120px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+}
+
+/* Visual arrow fix */
+.menu-item-nested::after {
+    content: "";
+}
+
+/* Container for the 'Computer' item */
+.menu-item-nested {
+    position: relative;
+}
+
+/* Position Tier 3 to the RIGHT of the Tier 2 menu */
+.tier-3 {
+    display: none;
+    position: absolute;
+    left: 100%;  /* Pushes it completely out of the way of the parent list */
+    top: -2px;    /* Aligns perfectly with the top of the 'Computer' row */
+    min-width: 100px;
+    border-top: 2px solid var(--win-white);
+    border-left: 2px solid var(--win-white);
+    border-right: 2px solid var(--win-dark-gray);
+    border-bottom: 2px solid var(--win-dark-gray);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Show the tier-3 menu only when hovering over the 'Computer' item */
+.menu-item-nested:hover > .tier-3 {
+    display: block !important;
+}
+
+/* Standard menu item hover */
+.dropdown li:hover {
+    background-color: #000080; /* Win95 selection blue */
+    color: white !important;
+}
+
+#metropoly-main-layout {
+    height: calc(100vh - 30px); /* Fill screen minus menu */
+    background: #000; /* Black out the padding */
+}
+
+#game-viewport {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    background: #404040; /* Darker grey surround */
+}
+
+#pongCanvas {
+    background-color: #C0C0C0; /* Light Grey Playground */
+    border: 4px solid var(--win-gray);
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.8);
+    /* Scale to screen but keep aspect ratio */
+    max-width: 95%;
+    max-height: 95%;
+}
+
+/* Effort Meter Visual (Optional) */
+.effort-bar {
+    height: 4px;
+    background: #00ff00;
+    transition: width 0.1s;
+}

@@ -3,131 +3,110 @@
 <head>
     <meta charset="utf-8">
     <title>{{ m.app_title or 'Metropoly' }}</title>
-
-    <!-- Global Win95 Theme (assuming shared with cardgames) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/cardgames.css') }}">
-    <!-- Metropoly Specific Layout -->
     <link rel="stylesheet" href="{{ url_for('metropoly.static', filename='metropoly.css') }}">
 </head>
 
-<body class="win95-theme">
+<body class="win95-theme metropoly-mode">
 
 <div id="menu-bar">
     {% include "metropoly_menu.html" %}
 </div>
 
+<!-- 4. MAP EDITOR (frmMapEditor) -->
+<div id="map-editor-modal" class="modal hidden">
+    <!-- Sidebar or floating window for Editor tools -->
+    {% include "metropoly_editor_tools.html" %}
+
+    <!-- 5. OPEN / SAVE DIALOG -->
+    {% include "game_open_save.html" %}
+
+    <!-- 3. NEW GAME (newgame.frm) -->
+    {% include "metropoly_newgame.html" %}
+
+</div>
+
 <div id="metropoly-main-layout">
-    <!-- Sidebar: PictureStatus equivalent -->
-    <aside id="sidebar" class="win-panel">
-        <div id="player-list" class="status-box">
-            <!-- JS will populate this with GAUG icons and money -->
-        </div>
+    
+    <!-- LEFT SIDEBAR: Equivalent to VB FrameStatus / PictureStatus -->
+    <aside id="sidebar" class="win95-bevel-out">
         
-        <div id="dice-display" class="dice-area">
-            <div id="dice-container"></div>
-            <div id="status-text">{{ m.msg_turn or 'Ready' }}</div>
+        <!-- Player Assets Section -->
+        <div class="sidebar-section win-inset">
+            <div id="player-list">
+                <!-- JS loops through players and adds name + Gauges (GAUG0-9.png) -->
+            </div>
         </div>
 
-        <div class="controls">
-            <button id="btn-roll" class="win-btn">{{ m.roll_dice or 'Roll Dice' }}</button>
+        <!-- Land Info Section: Equivalent to VB ImageLandInfo -->
+        <div id="land-info-panel" class="sidebar-section win-inset hidden">
+            <div class="land-header">
+                <img id="land-info-img" src="" alt="Land Type">
+                <span id="land-name"></span>
+            </div>
+            <div id="land-stats" class="stats-text"></div>
+        </div>
+
+        <!-- Dice & Status Area -->
+        <div class="sidebar-section status-area win-inset">
+            <div id="dice-container">
+                <!-- Dice images (dice1.png, etc.) injected here -->
+            </div>
+            <div id="status-label" class="vb-label">{{ m.msg_turn or 'Ready' }}</div>
+        </div>
+
+        <!-- Controls: Fixed to bottom of sidebar -->
+        <div class="sidebar-controls">
+            <button id="btn-roll" class="win-btn default-btn">{{ m.roll_dice or 'Roll Dice' }}</button>
             <button id="btn-end-turn" class="win-btn hidden">{{ m.end_turn or 'End Turn' }}</button>
         </div>
     </aside>
 
-    <!-- Game Board -->
+    <!-- MAIN GAME BOARD: Equivalent to VB mapa PictureBox -->
     <main id="game-viewport">
-        <div id="game-board"></div>
+        <div id="game-board" class="win-inset">
+            <!-- Tiles and Pawns rendered via metropoly.js -->
+        </div>
     </main>
 </div>
 
 <!-- ===================== -->
-<!-- NEW GAME DIALOG (Ported from newgame.frm) -->
+<!-- WIN95 MODAL SYSTEM    -->
 <!-- ===================== -->
-<div id="new-game-modal" class="modal hidden">
-    <div class="win-dialog">
-        <div class="win-title-bar">
-            <span>{{ m.new_game or 'New Game' }}</span>
-        </div>
+
+<!-- 1. SALES SHOP (frmBuyDialog) -->
+<div id="buy-modal" class="modal hidden">
+    <!-- VB Style: Flat appearance, no Title bar, grey background -->
+    <div class="win95-dialog win95-bevel-out buy-dialog-style">
         <div class="win-body">
-            <div class="setup-row">
-                <label>Map: 
-                    <select id="map-select">
-                        <option value="Random">Random</option>
-                        <!-- Python will inject other .map files here -->
-                    </select>
-                </label>
-                <label>X: <input type="number" id="input-x" value="10" min="7"></label>
-                <label>Y: <input type="number" id="input-y" value="11" min="7"></label>
+            <p id="buy-question-text" class="vb-label-center">Label1</p>
+            <div class="win-buttons-center">
+                <button id="buy-yes-btn" class="win-btn">{{ turn.yes or 'Yes' }}</button>
+                <button id="buy-no-btn" class="win-btn" onclick="closeBuyModal()">{{ turn.no or 'No' }}</button>
             </div>
-            
-            <table id="player-setup-table">
-                <!-- Row for each of the 7 players from metropoly.ini -->
-                {% for i in range(1, 8) %}
-                <tr>
-                    <td><input type="checkbox" id="p{{i}}-active"></td>
-                    <td><input type="checkbox" id="p{{i}}-is-pc"> CPU</td>
-                    <td><input type="text" id="p{{i}}-name" placeholder="Player {{i}}"></td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="win-buttons">
-            <button id="btn-newgame-ok">{{ lang_dict.turn.yes or 'OK' }}</button>
-            <button id="btn-newgame-cancel">{{ lang_dict.turn.no or 'Cancel' }}</button>
         </div>
     </div>
 </div>
 
-<!-- ===================== -->
-<!-- DECISION MODAL (MsgBox equivalent) -->
-<!-- ===================== -->
-<div id="decision-modal" class="modal hidden">
-    <div class="win-dialog sm">
-        <div class="win-title-bar"><span id="decision-title">Metropoly</span></div>
-        <div class="win-body">
-            <p id="modal-text"></p>
+<!-- 2. ABOUT BOX (frmAbout) -->
+<div id="about-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 300px;">
+        <div class="win-title-bar">
+            <span>Metropoly</span>
+            <button class="win-close" onclick="closeAbout()">✕</button>
         </div>
-        <div class="win-buttons">
-            <button id="btn-yes">{{ lang_dict.turn.yes or 'Yes' }}</button>
-            <button id="btn-no">{{ lang_dict.turn.no or 'No' }}</button>
+        <div class="win-body text-center">
+            <img src="{{ url_for('metropoly.static', filename='assets/graphics/jail.png') }}">
+            <p><strong>Metropoly</strong></p>
+            <p>Version 1.0<br>32-bit Web Port</p>
+            <button class="win-btn" onclick="closeAbout()" style="width: 80px; margin-top: 10px;">OK</button>
         </div>
     </div>
 </div>
 
-<!-- ===================== -->
-<!-- FILE DIALOG (Open/Save) -->
-<!-- ===================== -->
-<div id="win-dialog-overlay" class="hidden"></div>
-<div id="win-dialog" class="win-dialog hidden">
-    <div class="win-title-bar">
-        <span id="win-dialog-title">Open</span>
-        <button class="win-close" id="btn-dialog-close">✕</button>
-    </div>
-    <div class="win-body">
-        <label class="win-label">{{ m.filename_label or 'File name:' }}</label>
-        <input id="win-filename" class="win-input" type="text">
-        <div class="win-file-list-container">
-            <ul id="win-file-list" class="win-file-list"></ul>
-        </div>
-    </div>
-    <div class="win-buttons">
-        <button id="btn-dialog-ok">OK</button>
-        <button id="btn-dialog-cancel">Cancel</button>
-    </div>
-</div>
 
-<!-- ===================== -->
-<!-- BOOTSTRAP DATA -->
-<!-- ===================== -->
-<script>
-    // Pass the initial game state from Python to JS immediately
-    window.INITIAL_STATE = {{ game|tojson }};
-</script>
 
-<script type="module">
-    import { wireGame } from "{{ url_for('metropoly.static', filename='js/wire.js') }}";
-    wireGame();
-</script>
+<script>window.INITIAL_STATE = {{ game|tojson }};</script>
+<script src="{{ url_for('metropoly.static', filename='metropoly.js') }}"></script>
 
 </body>
 </html>

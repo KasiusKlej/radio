@@ -1,0 +1,55 @@
+<!-- METROPOLY GRAPHICS SETTINGS (frmGraphics) -->
+<div id="graphics-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 440px;">
+        <div class="win-title-bar">
+            <span>{{ m.graphics_title or 'Metropoly Graphics' }}</span>
+            <button class="win-close" onclick="closeGraphics()">✕</button>
+        </div>
+
+        <div class="win95-dialog-body">
+            <!-- Instruction Label (Index 62) -->
+            <p class="win95-label-header" style="margin-bottom: 15px; text-align: center; font-size: 11px;">
+                {{ m.graphics_instr or 'Click to browse graphics, right-click to browse reversely.' }}
+            </p>
+
+            <div class="graphics-grid">
+                <!-- Row: Players -->
+                <div class="graphics-row">
+                    <label>Players:</label>
+                    <div class="preview-box win-inset" onclick="cycleGraphic('player', 1)" oncontextmenu="cycleGraphic('player', -1); return false;">
+                        <img id="preview-player" src="/assets/graphics/p1.png">
+                    </div>
+                </div>
+
+                <!-- Row: Flags -->
+                <div class="graphics-row">
+                    <label>Flags:</label>
+                    <div class="preview-box win-inset" onclick="cycleGraphic('flag', 1)" oncontextmenu="cycleGraphic('flag', -1); return false;">
+                        <img id="preview-flag" src="/assets/graphics/flag1.png">
+                    </div>
+                </div>
+
+                <!-- Row: Houses -->
+                <div class="graphics-row">
+                    <label>Buildings:</label>
+                    <div class="preview-box win-inset" onclick="cycleGraphic('house', 1)" oncontextmenu="cycleGraphic('house', -1); return false;">
+                        <img id="preview-house" src="/assets/graphics/h3.png">
+                    </div>
+                </div>
+
+                <!-- Row: Roads -->
+                <div class="graphics-row">
+                    <label>Road Style:</label>
+                    <div class="preview-box win-inset" onclick="cycleGraphic('road', 1)" oncontextmenu="cycleGraphic('road', -1); return false;">
+                        <img id="preview-road" src="/assets/graphics/roadlr.png">
+                    </div>
+                </div>
+            </div>
+
+            <div class="win-buttons" style="margin-top: 20px; justify-content: flex-end; gap: 10px;">
+                <button class="win-btn default-btn" onclick="saveGraphics()">{{ m.ok or 'OK' }}</button>
+                <button class="win-btn" onclick="closeGraphics()">{{ m.cancel or 'Cancel' }}</button>
+            </div>
+        </div>
+    </div>
+</div>

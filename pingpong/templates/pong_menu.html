@@ -1,0 +1,45 @@
+<ul class="menu-root win95-bevel-out">
+
+<li class="menu-item">Game
+    <ul class="dropdown win95-bevel-out">
+        <li onclick="location.reload()">New Game</li>
+        <li class="separator"></li>
+        <li onclick="location.href='{{ url_for('pingpong.exit_game') }}'">Exit</li>
+    </ul>
+</li>
+
+<li class="menu-item">Opponent
+    <ul class="dropdown win95-bevel-out">
+
+        <li onclick="setMode('HUMAN')">
+            {% if PONG_STATE.mode == "HUMAN" %}✓{% endif %} Human
+        </li>
+
+        <li onclick="setMode('AI')">
+            {% if PONG_STATE.mode == "AI" %}✓{% endif %} Computer
+        </li>
+
+        <li onclick="setMode('NETWORK')">
+            {% if PONG_STATE.mode == "NETWORK" %}✓{% endif %} Network
+        </li>
+
+    </ul>
+</li>
+
+<li class="menu-item">Help
+    <ul class="dropdown win95-bevel-out">
+        <li onclick="location.href='{{ url_for('pingpong.about') }}'">About</li>
+    </ul>
+</li>
+
+</ul>
+
+<script>
+function setMode(mode) {
+    fetch("{{ url_for('pingpong.set_state') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode })
+    }).then(() => location.reload());
+}
+</script>

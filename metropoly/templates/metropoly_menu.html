@@ -74,24 +74,20 @@
     <!-- LANGUAGE -->
     <li class="menu-item">{{ m.language or 'Language' }}
         <ul class="dropdown win95-bevel-out">
+            {% set mask = game.language_visibility_mask or "1111111111111" %}
             {% for code, label in [
-                ('eng','English'),
-                ('spa','Spanish'),
-                ('por','Portuguese'),
-                ('it','Italian'),
-                ('fr','French'),
-                ('ger','German'),
-                ('chn','Chinese'),
-                ('jap','Japanese'),
-                ('kor','Korean'),
-                ('slo','Slovenian'),
-                ('rus','Russian'),
-                ('yu','Serbocroatian'),
+                ('eng','English'), ('spa','Spanish'), ('por','Portuguese'),
+                ('it','Italian'), ('fr','French'), ('ger','German'),
+                ('chn','Chinese'), ('jap','Japanese'), ('kor','Korean'),
+                ('slo','Slovenian'), ('rus','Russian'), ('yu','Serbocroatian'),
                 ('other','Other')
             ] %}
-            <li onclick="location.href='{{ url_for('metropoly.set_language', code=code) }}'">
-                {{ label }}
-            </li>
+                {# Check the mask at current index loop.index0 #}
+                {% if mask[loop.index0] == "1" %}
+                <li onclick="location.href='{{ url_for('metropoly.set_language', code=code) }}'">
+                    {{ label }}
+                </li>
+                {% endif %}
             {% endfor %}
         </ul>
     </li>

@@ -330,26 +330,69 @@ function toggleAutoplay(element) {
 }
 
 
+// function showRules() {
+//     fetch("/cardgames/api/rules", {
+//         credentials: "same-origin"   // ✅ THIS FIXES IT
+//     })
+//         .then(res => {
+//             if (res.status === 401 || res.status === 404) {
+//                 openMsgBox(
+//                     "Session Expired", 
+//                     "Your game session has ended. Please select a game from the menu."
+//                 );
+//                 return null;
+//             }
+//             return res.json();
+//         })
+//         .then(data => {
+//             if (data) {
+//                 openMsgBox(`Rules: ${data.title}`, data.text);
+//             }
+//         })
+//         .catch(err => console.error("Rules fetch error:", err));
+// }
 function showRules() {
-    fetch("/cardgames/api/rules")
-        .then(res => {
-            if (res.status === 401 || res.status === 404) {
-                openMsgBox(
-                    "Session Expired", 
-                    "Your game session has ended. Please select a game from the menu."
-                );
-                return null;
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (data) {
-                openMsgBox(`Rules: ${data.title}`, data.text);
-            }
-        })
-        .catch(err => console.error("Rules fetch error:", err));
-}
+    // 1. ADD A CACHE-BUSTER (Timestamp)
+    // This forces the browser to treat every click as a brand new request,
+    // ensuring the server's new language choice is actually fetched.
+    const timestamp = new Date().getTime();
+    const url = `/cardgames/api/rules?t=${timestamp}`;
 
+    fetch(url, {
+        method: "GET",
+        // 2. CREDENTIALS
+        // 'same-origin' is good, but 'include' is even safer for session cookies
+        credentials: "same-origin", 
+        // 3. EXPLICIT CACHE CONTROL
+        cache: "no-store", 
+        headers: {
+            "Content-Type": "application/json",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache"
+        }
+    })
+    .then(res => {
+        if (res.status === 401) {
+            openMsgBox(
+                "Session Notice", 
+                "Your game session has ended. Please select a game from the menu."
+            );
+            return null;
+        }
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+    })
+    .then(data => {
+        if (data && data.text) {
+            // ✅ SUCCESS: Now shows the language currently set in the Python Engine
+            openMsgBox(`Rules: ${data.title}`, data.text);
+        }
+    })
+    .catch(err => {
+        console.error("Rules fetch error:", err);
+        openMsgBox("Error", "Could not load rules. Please try again.");
+    });
+}
 
 function openMsgBox(title, content) {
     document.getElementById('msgbox-title').innerText = title;
@@ -425,3 +468,13 @@ async function startAutoplayLoop(snapshot) {
 function stopAutoplayLoop() {
     autoplayRunning = false;
 }
+
+
+// logout
+window.addEventListener("beforeunload", (e) => {
+    // Send cleanup request (don't wait for response)
+    if (navigator.sendBeacon) {
+        navigator.sendBeacon("/cardgames/api/cleanup");
+    }
+   
+});

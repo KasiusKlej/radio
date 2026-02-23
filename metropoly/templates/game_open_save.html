@@ -1,16 +1,40 @@
-<h2>{{ caption }}</h2>
+<!-- METROPOLY OPEN / SAVE DIALOG (frmOpenSave) -->
+<div id="open-save-modal" class="modal hidden">
+    <div class="win95-dialog win95-bevel-out" style="width: 320px;">
+        <!-- Title Bar -->
+        <div class="win-title-bar">
+            <span id="open-save-title">{{ caption or 'Open/Save' }}</span>
+            <button class="win-close" onclick="closeOpenSave()">✕</button>
+        </div>
 
-<input type="text" name="filename" value="{{ filename }}">
+        <div class="win95-dialog-body" style="background: var(--win-gray); padding: 10px;">
+            <div style="margin-bottom: 8px;">
+                <label class="vb-label">{{ m.filename_label or 'File name:' }}</label>
+                <input type="text" id="os-filename" class="win-inset" style="width: 100%; margin-top: 4px;" value="{{ filename or '' }}">
+            </div>
 
-<select name="existing_files">
-  {% for f in files %}
-    <option value="{{ f }}">{{ f }}</option>
-  {% endfor %}
-</select>
+            <!-- File List Box (Port of VB File1) -->
+            <div class="win-inset" style="background: #fff; height: 120px; overflow-y: scroll; margin-bottom: 12px;">
+                <ul id="os-file-list" style="list-style: none; padding: 0; margin: 0; font-size: 12px; cursor: default;">
+                    {% for f in files %}
+                    <li class="file-item" onclick="selectOSFile('{{ f }}')" ondblclick="confirmOpenSave()">{{ f }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-{% if mode == "save" %}
-  <button>Save</button>
-{% else %}
-  <button>Open</button>
-{% endif %}
+            <!-- Action Buttons -->
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="win-btn default-btn" id="os-ok-btn" onclick="confirmOpenSave()" style="width: 75px;">
+                    {{ 'Open' if mode == 'open' else 'Save' }}
+                </button>
+                <button class="win-btn" onclick="closeOpenSave()" style="width: 75px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<style>
+    .file-item { padding: 2px 5px; }
+    .file-item:hover { background: #000080; color: #fff; }
+    .file-item.selected { background: #000080; color: #fff; }
+</style>

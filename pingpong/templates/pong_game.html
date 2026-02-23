@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Ping Pong</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pingpong.css') }}">
+</head>
+
+<body class="win95-theme">
+
+<div id="menu-bar">
+    {% include "pong_menu.html" %}
+</div>
+
+<main id="game-viewport" style="display:flex;justify-content:center;align-items:center;">
+    <canvas id="pongCanvas"
+        width="{{ FACTORY.geometry.width }}"
+        height="{{ FACTORY.geometry.height }}"
+        class="win-inset">
+    </canvas>
+</main>
+
+<script>
+    window.FACTORY = {{ FACTORY | tojson }};
+    window.PONG_STATE = {{ PONG_STATE | tojson }};
+</script>
+
+
+<script src="{{ url_for('static', filename='pingpong/pingpong.js') }}"></script>
+</body>
+</html>
+
+
+
+
+
+

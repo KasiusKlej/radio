@@ -398,66 +398,112 @@ def language_parser(lang_dir: Path, filename: str) -> dict:
 
 
 
+# def load_game_rules(
+#     gamename: str,
+#     language: str,
+#     lang_dir: Path,
+#     list_game: list[str],
+#     lang_vars: dict,
+# ) -> str:
+#     """
+#     Port of VB mnuRules_Click.
+
+#     Returns rules text for the given game and language.
+#     If nothing is found, returns an empty string or logo text.
+#     """
+
+#     # --- Build logo (used as fallback) ---
+#     logo = (
+#         f"{lang_vars.get('lang_logo1', '')}\n"
+#         f"{lang_vars.get('lang_logo2', '')}\n"
+#         f"{lang_vars.get('lang_logo3', '')}\n"
+#         f"{lang_vars.get('lang_logo4', '')}"
+#     )
+
+#     # --- 1) Try language file ---
+#     lang_file = lang_dir / f"{language}.txt"
+#     rules = ""
+    
+#     try:
+#         if lang_file.exists():
+#             with lang_file.open("r", encoding="utf-8") as f:
+#                 lines = iter(f)
+
+#                 for line in lines:
+#                     line = line.rstrip("\n")
+#                     if line == "[GAMENAME]":
+#                         name = next(lines, "").rstrip("\n")
+#                         if name == gamename:        # fragile match
+#                             # collect rules
+#                             for s in lines:
+#                                 s = s.rstrip("\n")
+#                                 if s.startswith("["):
+#                                     break
+#                                 rules += s + "\n"
+#                             break
+#     except Exception:
+#         # silent fallback (VB used On Error)
+#         pass
+
+#     if rules.strip():
+#         return rules.strip()
+
+#     # --- 2) Fallback: logo only ---
+#     if not gamename:
+#         return logo.strip()
+
+#     # --- 3) Fallback: read from ListGame ---
+#     rules = ""
+#     for s in list_game:
+#         if s.startswith("["):
+#             if rules:
+#                 break
+#             continue
+#         rules += s + "\n"
+
+#     return rules.strip()
 def load_game_rules(
-    gamename: str,
+    game_id: int,        # <--- Use ID (index) instead of Name
     language: str,
     lang_dir: Path,
     list_game: list[str],
     lang_vars: dict,
 ) -> str:
-    """
-    Port of VB mnuRules_Click.
-
-    Returns rules text for the given game and language.
-    If nothing is found, returns an empty string or logo text.
-    """
-
-    # --- Build logo (used as fallback) ---
-    logo = (
-        f"{lang_vars.get('lang_logo1', '')}\n"
-        f"{lang_vars.get('lang_logo2', '')}\n"
-        f"{lang_vars.get('lang_logo3', '')}\n"
-        f"{lang_vars.get('lang_logo4', '')}"
-    )
-
-    # --- 1) Try language file ---
-    lang_file = lang_dir / f"{language}.txt"
+    lang_file = lang_dir / f"{language.lower()}.txt"
     rules = ""
-
-    try:
-        if lang_file.exists():
+    
+    if lang_file.exists():
+        try:
             with lang_file.open("r", encoding="utf-8") as f:
                 lines = iter(f)
-
+                current_game_index = 0
+                
                 for line in lines:
-                    line = line.rstrip("\n")
+                    line = line.strip()
                     if line == "[GAMENAME]":
-                        name = next(lines, "").rstrip("\n")
-                        if name == gamename:
-                            # collect rules
+                        current_game_index += 1
+                        
+                        # --- THE INDEX MATCH ---
+                        # If we reached the n-th game block that matches zap_st_igre
+                        if current_game_index == game_id:
+                            # Skip the name line (the one with the typo like "Golf ")
+                            next(lines, "") 
+                            
+                            # Collect all lines until the next bracket "["
                             for s in lines:
                                 s = s.rstrip("\n")
                                 if s.startswith("["):
                                     break
                                 rules += s + "\n"
-                            break
-    except Exception:
-        # silent fallback (VB used On Error)
-        pass
+                            return rules.strip()
+        except Exception as e:
+            print(f"Error reading file: {e}")
 
-    if rules.strip():
-        return rules.strip()
-
-    # --- 2) Fallback: logo only ---
-    if not gamename:
-        return logo.strip()
-
-    # --- 3) Fallback: read from ListGame ---
+    # Fallback to internal lines (the hardcoded Slovenian ones)
     rules = ""
     for s in list_game:
         if s.startswith("["):
-            if rules:
-                break
+            if rules: break
             continue
         rules += s + "\n"
 
