@@ -344,6 +344,8 @@ def exit_game():
 # # def exit_pong():
 # #     return redirect("/")
 
+
+
 # # @pingpong_bp.route("/start")
 # # @pingpong_bp.route("/start/")
 # # def start_new_game():

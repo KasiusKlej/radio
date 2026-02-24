@@ -44,9 +44,9 @@
     <li class="menu-item">{{ m.help or 'Help' }}
         <ul class="dropdown win95-bevel-out">
             <li onclick="showRules()">{{ m.rules or 'Rules' }}</li>
-            <li>{{ m.customizing or 'Customizing' }}</li>
+            <li onclick="showCustomizing()">{{ m.customizing or 'Customizing' }}</li>
             <li class="separator"></li>
-            <li>{{ m.about or 'About' }}</li>
+            <li onclick="openMsgBox('Card Games for One Player', 'Karte za enega igralca.    (c) Miha 1999')">{{ m.about or 'O programu...' }}</li>
             <li>{{ m.register or 'Register' }}</li>
         </ul>
     </li>

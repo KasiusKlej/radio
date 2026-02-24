@@ -540,7 +540,7 @@ body.metropoly-mode #table-scroll { display: none; }
 
 /* IMPORTANT: tier-3 must NOT open unless THIS item is hovered */
 .menu-item-nested > .tier-3 {
-    display: block;
+    display: none;
     position: absolute;
     top: -2px;
     left: 100%;

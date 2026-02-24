@@ -330,27 +330,7 @@ function toggleAutoplay(element) {
 }
 
 
-// function showRules() {
-//     fetch("/cardgames/api/rules", {
-//         credentials: "same-origin"   // ✅ THIS FIXES IT
-//     })
-//         .then(res => {
-//             if (res.status === 401 || res.status === 404) {
-//                 openMsgBox(
-//                     "Session Expired", 
-//                     "Your game session has ended. Please select a game from the menu."
-//                 );
-//                 return null;
-//             }
-//             return res.json();
-//         })
-//         .then(data => {
-//             if (data) {
-//                 openMsgBox(`Rules: ${data.title}`, data.text);
-//             }
-//         })
-//         .catch(err => console.error("Rules fetch error:", err));
-// }
+
 function showRules() {
     // 1. ADD A CACHE-BUSTER (Timestamp)
     // This forces the browser to treat every click as a brand new request,
@@ -400,9 +380,76 @@ function openMsgBox(title, content) {
     document.getElementById('win95-modal-overlay').style.display = 'flex';
 }
 
-
 function closeMsgBox() {
     document.getElementById('win95-modal-overlay').style.display = 'none';
+}
+
+function showCustomizing() {
+    // Cache-buster to avoid stale loads during development
+    const timestamp = new Date().getTime();
+    const url = `/static/cards/customizing_card_games.html?t=${timestamp}`;
+    const url2 = `/static/cards/customizing_card_games2.html?t=${timestamp}`;
+
+    // Create modal overlay
+    const overlay = document.createElement("div");
+    overlay.id = "customizing-overlay";
+
+    overlay.innerHTML = `
+        <div class="win95-dialog win95-bevel-out" style="width: 420px; margin: 40px auto;">
+    
+        <!-- TITLE BAR -->
+        <div class="win-title-bar">
+            <span>Customizing Card Games</span>
+            <a href="" class="win-close">✕</a>
+        </div>
+
+        <!-- BODY -->
+        <div class="win95-dialog-body">
+
+            <div style="text-align: center; margin-bottom: 12px;">
+                <img src="/static/cards/1024x768c12.png" width="46" height="66">
+            </div>
+
+            <h3 style="margin: 0; text-align: center;">Card Games for One</h3>
+
+            <p style="text-align: center; font-size: 11px; margin-top: 4px;">
+                <br>
+                Contents<br>
+                <br>
+                Customizing card games<br>
+                Designing new game<br>
+                <br>
+            </p>
+            <div id="customizing-content">
+                <iframe 
+                    src="${url2}" 
+                    frameborder="0"
+                    id="customizing-iframe">
+                </iframe>
+            </div>
+            <p style="font-size: 11px; text-align: center; margin-top: 10px;">
+                <br>
+                Ported from original VB6 code<br>
+                <br>
+            
+                © 1999–2026 All rights reserved<br>
+                Author: Miha
+            </p>
+            <div style="text-align: center; margin-top: 12px;" id="customizing-footer">
+                <button id="customizing-ok">OK</button>
+            </div>
+
+        </div>
+    </div>
+
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Close behavior
+    document.getElementById("customizing-ok").onclick = () => {
+        document.body.removeChild(overlay);
+    };
 }
 
 

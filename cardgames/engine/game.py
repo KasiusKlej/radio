@@ -321,210 +321,329 @@ class CardGame:
     def do_action(self, act: str) -> bool:
         """
         VB Port: do_action
-        The interpreter for the game's script language. 
-        Operates exclusively on self.state.
+        
+        The interpreter for the game's script language.
+        Executes actions like movecolumn=, movepile=, trymovepile=, parameters, etc.
+        
+        Args:
+            act (str): Action string (e.g., "movecolumn=0-1", "parameter01=5")
+        
+        Returns:
+            bool: True if action succeeded, False otherwise
         """
         s = self.state
         success = False
         
-        # Import engine tools needed for these actions
-        # from .engine import (
-        #     turn_or_shuffle_column, move_condition, 
-        #     param_count_empty, param_cards_rowed, 
-        #     param_count_weight, minmax, 
-        #     check_ifduringaction_condition
-        # )
+        # Import engine tools
         from .engine import (
             turn_or_shuffle_column, move_condition, 
-            moveColumn, minmax,
-            check_ifduringaction_condition
+            moveColumn, minmax, check_ifduringaction_condition,
+            card_is_face_up
         )
-        # ----------------------------
-        # movecolumn=X-Y (Move whole column)
-        # ----------------------------
+        
+        # ────────────────────────────────────────────────────────────────
+        # movecolumn=X-Y (Move entire column)
+        # ────────────────────────────────────────────────────────────────
         if act.startswith("movecolumn="):
-            ac_body = act[len("movecolumn="):]
-            csource, cdest = map(int, ac_body.split("-"))
-
-            s.actionMode = True
-            s.simulateClickMode = True
-
-            if s.kup[csource].weight > 0:
-                # ✅ FIX: Call as function, passing self (game) as first arg
-                success = moveColumn(self, csource, cdest, s.kup[csource].weight)
-
-            s.actionMode = False
-            s.simulateClickMode = False
-
-        # ----------------------------
-        # turncolumn=X / shufflecolumn=X
-        # ----------------------------
-        elif act.startswith("turncolumn="):
-            col_idx = int(act[len("turncolumn="):])
-            success = turn_or_shuffle_column(s, col_idx, mode="turn")
-
-        elif act.startswith("shufflecolumn="):
-            col_idx = int(act[len("shufflecolumn="):])
-            success = turn_or_shuffle_column(s, col_idx, mode="shuffle")
-
-        # ----------------------------
-        # movepile=N,X-Y (Move top N cards)
-        # ----------------------------
-        elif act.startswith("movepile="):
-            ac_body = act[len("movepile="):]
-            n_str, rest = ac_body.split(",", 1)
-            n = int(n_str)
-            csource, cdest = map(int, rest.split("-"))
-
-            s.actionMode = True
-            s.simulateClickMode = True
-
-            actual_n = min(n, s.kup[csource].weight)
-            if actual_n > 0:
-                success = moveColumn(self, csource, cdest, actual_n)
-
-            s.actionMode = False
-            s.simulateClickMode = False
-
-        # ----------------------------
-        # trymovepile=MAX,SRC-DEST
-        # ----------------------------
-        elif act.startswith("trymovepile="):
-            ac_body = act[len("trymovepile="):]
-            max_part, col_range = ac_body.split(",", 1)
+            ac_body = act[11:]  # Right(act, Len(act) - 11)
+            parts = ac_body.split("-")
+            csource = int(parts[0])
+            cdest = int(parts[1])
             
-            # Resolve if max is a raw number or a parameter
+            s.actionMode = True
+            s.simulateClickMode = True
+            
+            success = False
+            if s.kup[csource].weight > 0:
+                success = moveColumn(self, csource, cdest, s.kup[csource].weight)
+            
+            s.actionMode = False
+            s.simulateClickMode = False
+        
+        # ────────────────────────────────────────────────────────────────
+        # shufflecolumn=X
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("shufflecolumn="):
+            col_idx = int(act[14:])
+            success = turn_or_shuffle_column(s, col_idx, mode="shuffle")
+        
+        # ────────────────────────────────────────────────────────────────
+        # turncolumn=X
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("turncolumn="):
+            col_idx = int(act[11:])
+            success = turn_or_shuffle_column(s, col_idx, mode="turn")
+        
+        # ────────────────────────────────────────────────────────────────
+        # movepile=N,X-Y (Move top N cards from X to Y)
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("movepile="):
+            ac_body = act[9:]  # Right(act, Len(act) - 9)
+            
+            # Parse: N,X-Y
+            comma_pos = ac_body.index(",")
+            n_str = ac_body[:comma_pos]
+            rest = ac_body[comma_pos + 1:]
+            
+            n = int(n_str)
+            
+            # Parse X-Y
+            dash_pos = rest.index("-")
+            csource = int(rest[:dash_pos])
+            dest_part = rest[dash_pos + 1:]
+            
+            # Check if destination is parameter
+            if dest_part.startswith("parameter"):
+                p_idx = int(dest_part[9:11])
+                cdest = s.parameter[p_idx]
+            else:
+                cdest = int(dest_part)
+            
+            s.actionMode = True
+            s.simulateClickMode = True
+            
+            # Cut n if it exceeds available cards
+            if n > s.kup[csource].weight:
+                n = s.kup[csource].weight
+            
+            success = False
+            if s.kup[csource].weight > 0:
+                success = moveColumn(self, csource, cdest, n)
+            
+            s.actionMode = False
+            s.simulateClickMode = False
+        
+        # ────────────────────────────────────────────────────────────────
+        # trymovepile=MAX,SRC-DEST
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("trymovepile="):
+            ac_body = act[12:]  # Right(act, Len(act) - 12)
+            
+            # Parse MAX (can be number or parameterXX)
+            comma_pos = ac_body.index(",")
+            max_part = ac_body[:comma_pos]
+            rest = ac_body[comma_pos + 1:]
+            
             if max_part.startswith("parameter"):
                 p_idx = int(max_part[9:11])
-                max_cards = s.parameter[p_idx]
+                n = s.parameter[p_idx]  # max cards allowed
             else:
-                max_cards = int(max_part)
-
-            src_str, dest_str = col_range.split("-")
-            csource = s.selectedColumn if src_str == "selected" else int(src_str)
-            cdest = int(dest_str)
-
-            if s.kup[csource].weight > 0:
-                how_many = 0
+                n = int(max_part)
+            
+            # Parse SRC-DEST
+            dash_pos = rest.index("-")
+            src_part = rest[:dash_pos]
+            dest_part = rest[dash_pos + 1:]
+            
+            if src_part == "selected":
+                csource = s.selectedColumn
+            else:
+                csource = int(src_part)
+            
+            cdest = int(dest_part)
+            
+            # ────────────────────────────────────────────────────────────
+            # VB LOGIC: Find deepest card that can move
+            # ────────────────────────────────────────────────────────────
+            success = False
+            p = 0
+            how_many = 0
+            
+            if s.kup[csource].weight > 1:
+                # Get cards from source column
                 cards = list(s.kup[csource].contents)
-
-                # ✅ FIX: Check how many cards form valid sequence
-                # Start with top card
-                how_many = 1
+                can_go = False
                 
-                # Check if top card can go on destination
-                top_card = cards[-1]
-                if not (move_condition(s, top_card.code, csource, cdest) and top_card.face_up):
-                    how_many = 0
-                else:
-                    # Now check how many cards below form valid sequence
-                    for i in range(1, min(len(cards), max_cards)):
-                        card_below = cards[-(i + 1)]  # Card below current
-                        card_above = cards[-i]         # Current card
-                        
-                        # Can card_above go on card_below? (sequence check)
-                        #if move_condition(s, card_above.code, csource, csource) and card_below.face_up:
-                        if move_condition(s, card_above.code, csource, cdest) and card_below.face_up:
-                            how_many = i + 1
-                        else:
-                            break
+                # VB: Start from top card, work backwards
+                # Looking for ANY card that can legally move to destination
                 
-                if how_many > 0:
+                for i in range(min(len(cards), n)):
+                #for i in range(min(len(cards), s.kup[csource].weight)):
+                    # Get card from top down: cards[-1], cards[-2], cards[-3], etc.
+                    card = cards[-(i + 1)]
+                    # VB: If move_condition(c, csource, cdest) And card_is_face_up(c)
+                    if move_condition(s, card.code, csource, cdest) and card.face_up:
+                        can_go = True
+                        how_many = i + 1
+                    # VB CRITICAL: DON'T break! Keep checking deeper cards
+                    # This finds the DEEPEST card that can move
+                    
+                    p = i + 1
+                    
+                    # Stop if we've checked all cards or hit limit
+                    if p >= s.kup[csource].weight or p >= n:            # can't move piles of cards because n=1 and it checks only one card deep. limit is the problem
+                        break
+                
+                print(f"can_go: '{can_go}'   howMany: '{how_many}'")
+                
+                # VB: If canGo And howMany > 1 Then (no use moving 1 card)
+                if can_go and how_many > 1:
+                    # Recursive call to movepile
                     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
-                    ##success = self._handle_trymovepile_action(act)
-
-
-                # this bug and do_action aree messing with moving piles of cards at once
-
-                # # Look for a sequence of cards that can move together bug
-                # for i in range(min(len(cards), max_cards)):
-                #     card = cards[-(i + 1)]
-                #     # Logic: Is the i-th card allowed to land on cdest?
-                #     if move_condition(s, card.code, csource, cdest) and card.face_up:
-                #         how_many = i + 1
-                #     else:
-                #         # In many card games, if the 3rd card can't move, 
-                #         # the 4th card behind it certainly can't.
-                #         break
-                # if how_many > 0:
-                #     success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
-
-
-
-        # ----------------------------
-        # parameter management (The Game's Variables)
-        # ----------------------------
-        elif act.startswith("parameter") or act.startswith("setparameter="):
-            # Clean the string
-            clean_act = act[len("setparameter="):] if act.startswith("setparameter=") else act
+                else:
+                    success = False
             
-            p_idx = int(clean_act[9:11])
-            expr = clean_act[12:]
-            success = True
-
-            if expr.isdigit():
-                s.parameter[p_idx] = int(expr)
-            
-            elif expr.startswith("countempty"):
-                # ✅ FIX: Call as method, not function
-                s.parameter[p_idx] = self.param_count_empty(expr[10:])
-            
-            elif expr.startswith("cardsrowed("):
-                col = s.selectedColumn if "selected" in expr else int(expr[11:-1])
-                # ✅ FIX: Call as method, not function
-                s.parameter[p_idx] = self.param_cards_rowed(col)
-            
-            elif expr.startswith("min(") or expr.startswith("max("):
-                fn = expr[:3]
-                val_a, val_b = expr[4:-1].split(",")
-                # ✅ FIX: minmax is standalone in engine.py - import it
-                from .engine import minmax
-                s.parameter[p_idx] = minmax(s, fn, val_a, val_b)
-            
-            elif expr.startswith("source_column"):
-                s.parameter[p_idx] = s.selectedColumn
-            
-            elif expr.startswith("weight_of"):
-                # ✅ FIX: Call as method, not function
-                s.parameter[p_idx] = self.param_count_weight(expr[9:])
-            
+            # If only 1 card in column, can't move pile
             else:
                 success = False
-
-        # ----------------------------
-        # Logic: increase(parameterX)
-        # ----------------------------
+        
+        # ────────────────────────────────────────────────────────────────
+        # parameter management (The Game's Variables)
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("parameter") or act.startswith("setparameter="):
+            # VB: If Left(act, 13) = "setparameter=" Then act = Right(act, Len(act) - 13)
+            if act.startswith("setparameter="):
+                clean_act = act[13:]
+            else:
+                clean_act = act
+            
+            success = False
+            
+            # VB: act = Right(act, Len(act) - 9)
+            clean_act = clean_act[9:]
+            
+            # VB: p = Val(Left(act, 2))
+            p_idx = int(clean_act[:2])
+            
+            # VB: act = Right(act, Len(act) - 3)
+            expr = clean_act[3:]
+            
+            # ────────────────────────────────────────────────────────────
+            # Simple numeric value
+            # ────────────────────────────────────────────────────────────
+            if expr.isdigit():
+                s.parameter[p_idx] = int(expr)
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # countempty(X,Y,Z)
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("countempty"):
+                # VB: c = param_count_empty(Right(act, Len(act) - 10))
+                c = self.param_count_empty(expr[10:])
+                s.parameter[p_idx] = c
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # cardsrowed(X) or cardsrowed(selected)
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("cardsrowed("):
+                # VB: act = Right(act, Len(act) - 11)
+                inner = expr[11:]
+                
+                # VB: If Left(act, 8) = "selected"
+                if inner.startswith("selected"):
+                    col_idx = s.selectedColumn
+                else:
+                    # VB: act = Left(act, Len(act) - 1) -- remove closing paren
+                    col_idx = int(inner[:-1])
+                
+                c = self.param_cards_rowed(col_idx)
+                s.parameter[p_idx] = c
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # min(A,B)
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("min("):
+                # VB: s = Right(act, Len(act) - 4)
+                # VB: s = Left(s, Len(s) - 1) -- remove closing paren
+                inner = expr[4:-1]
+                
+                # VB: Left(s, InStr(1, s, ",")), Right(s, Len(s) - InStr(1, s, ","))
+                comma_pos = inner.index(",")
+                val_a = inner[:comma_pos]
+                val_b = inner[comma_pos + 1:]
+                
+                c = minmax(s, "min", val_a, val_b)
+                s.parameter[p_idx] = c
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # max(A,B)
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("max("):
+                inner = expr[4:-1]
+                comma_pos = inner.index(",")
+                val_a = inner[:comma_pos]
+                val_b = inner[comma_pos + 1:]
+                
+                c = minmax(s, "max", val_a, val_b)
+                s.parameter[p_idx] = c
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # source_column
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("source_column"):
+                s.parameter[p_idx] = s.selectedColumn
+                success = True
+            
+            # ────────────────────────────────────────────────────────────
+            # weight_of(X)
+            # ────────────────────────────────────────────────────────────
+            elif expr.startswith("weight_of"):
+                # VB: c = param_count_weight(Right(act, Len(act) - 9))
+                c = self.param_count_weight(expr[9:])
+                s.parameter[p_idx] = c
+                success = True
+        
+        # ────────────────────────────────────────────────────────────────
+        # increase(parameterXX)
+        # ────────────────────────────────────────────────────────────────
         elif act.startswith("increase(parameter"):
-            p_idx = int(act[18:-1])
-            s.parameter[p_idx] += 1
+            # VB: act = Right(act, Len(act) - 18)
+            # VB: p = Val(Left(act, Len(act) - 1))
+            inner = act[18:]
+            p_idx = int(inner[:-1])  # Remove closing paren
+            
+            s.parameter[p_idx] = s.parameter[p_idx] + 1
             success = True
-
-        # ----------------------------
-        # Conditionals: ifduringaction(COND, ACTION)
-        # ----------------------------
+        
+        # ────────────────────────────────────────────────────────────────
+        # ifduringaction(CONDITION)then[ACTION]
+        # ────────────────────────────────────────────────────────────────
         elif act.startswith("ifduringaction("):
-            content = act[15:]
-            cond_str, subact = content.split(")", 1)
-            subact = subact.lstrip(",")
-
-            if check_ifduringaction_condition(s, cond_str):
+            # VB: act = Right(act, Len(act) - 15)
+            rest = act[15:]
+            
+            # VB: co = Left(act, InStr(1, act, ")") - 1)
+            close_paren = rest.index(")")
+            condition = rest[:close_paren]
+            
+            # VB: ac = Right(act, Len(act) - InStr(1, act, ")") - 4)
+            # Skip ")then" which is 5 chars, but VB uses -4 (might be offset difference)
+            subact = rest[close_paren + 5:]  # Skip ")then"
+            
+            can_go = check_ifduringaction_condition(s, condition)
+            
+            if can_go:
                 success = self.do_action(subact)
-
-        # ----------------------------
-        # Recursion: whole action block [ActionName]
-        # ----------------------------
+        
+        # ────────────────────────────────────────────────────────────────
+        # autoplay
+        # ────────────────────────────────────────────────────────────────
+        elif act.startswith("autoplay"):
+            self.try_every_turn_actions()
+            success = True
+        
+        # ────────────────────────────────────────────────────────────────
+        # [ActionName] - Execute whole action block
+        # ────────────────────────────────────────────────────────────────
         elif act.startswith("["):
             self.do_whole_action(act)
             success = True
-
-        # ----------------------------
-        # post-action maintenance
-        # ----------------------------
+        
+        # ────────────────────────────────────────────────────────────────
+        # Post-action maintenance
+        # ────────────────────────────────────────────────────────────────
         if success:
             from .engine import check_allways_facedown_columns
             check_allways_facedown_columns(s)
-
+        
         return success
+
+
 
     def do_whole_action(self, action_name: str) -> bool:
         """
@@ -595,38 +714,99 @@ class CardGame:
         """
         Action: cardsrowed(col)
         Checks how many cards at the top of a column follow the sequence rules.
-        
-        Returns the count of cards that form a valid descending sequence
-        according to the column's rules (alternate color, same suit, etc.)
+        Returns count of cards that form valid descending alternate-color sequence.
         """
         s = self.state
         
-        # Validate column index
-        if not (0 <= col_idx < len(s.kup)):
+        if not (0 <= col_idx < len(s.kup)): 
             return 0
         
         column = s.kup[col_idx]
-        if column.weight <= 1:
+        
+        if column.weight <= 1: 
             return column.weight
         
-        # ✅ FIX: Import match_alternates as a function
-        from .engine import match_alternates
-        
-        # Check from top down
+        # Get cards list
         cards = list(column.contents)
-        cards.reverse()  # Top card is now at index 0
         
-        row_count = 1  # Top card always counts
+        # Start with 1 (top card is always counted)
+        row_count = 1
         
+        # ✅ Check card-to-card sequence from top down
         for i in range(len(cards) - 1):
-            # Check if card i can be placed on card i+1 (the card under it)
-            # ✅ FIX: Call as function, passing state as first argument
-            if match_alternates(s, col_idx, cards[i].code):
+            card_above = cards[-(i + 1)]  # e.g., 5♦
+            card_below = cards[-(i + 2)]  # e.g., 6♠
+            
+            # ✅ FIX: Direct card-to-card check
+            if self._can_card_go_on_card(card_above.code, card_below.code, column):
                 row_count += 1
             else:
-                break  # Sequence breaks, stop counting
+                break
         
         return row_count
+
+    def _can_card_go_on_card(self, card_above_code, card_below_code, column):
+        """
+        Check if card_above can be placed on card_below according to column rules.
+        
+        Args:
+            card_above_code (str): e.g., "d05" (5 of diamonds)
+            card_below_code (str): e.g., "s06" (6 of spades)
+            column (Column): Column object with alternate/suit/card_value rules
+        
+        Returns:
+            bool: True if card_above can go on card_below
+        """
+        # Parse cards
+        above_suit = card_above_code[0]
+        above_val = int(card_above_code[1:])
+        below_suit = card_below_code[0]
+        below_val = int(card_below_code[1:])
+        
+        # ────────────────────────────────────────────────────────────
+        # Check based on column rules
+        # ────────────────────────────────────────────────────────────
+        
+        # Helper: Check if suits are alternate colors
+        def is_alternate(suit_a, suit_b):
+            red = ['d', 'h']
+            black = ['c', 's']
+            return (suit_a in red and suit_b in black) or (suit_a in black and suit_b in red)
+        
+        # Rule 1: Alternate color (FreeCell uses alternate=0 for descending)
+        if column.alternate == "0":
+            # Descending alternate: 5♦ on 6♠ (5 = 6-1, red on black)
+            if above_val == below_val - 1 and is_alternate(above_suit, below_suit):
+                return True
+        
+        elif column.alternate == "1":
+            # Ascending alternate: 7♦ on 6♠ (7 = 6+1, red on black)
+            if above_val == below_val + 1 and is_alternate(above_suit, below_suit):
+                return True
+        
+        # Rule 2: Suit matching
+        if column.suit == "0":
+            # Descending same suit
+            if above_val == below_val - 1 and above_suit == below_suit:
+                return True
+        
+        elif column.suit == "1":
+            # Ascending same suit
+            if above_val == below_val + 1 and above_suit == below_suit:
+                return True
+        
+        # Rule 3: Card value
+        if column.card_value == "3":
+            # Descending value (any suit)
+            if above_val == below_val - 1:
+                return True
+        
+        elif column.card_value == "2":
+            # Ascending value (any suit)
+            if above_val == below_val + 1:
+                return True
+        
+        return False
 
     def try_if_actions(self):
         """
@@ -776,6 +956,9 @@ class CardGame:
         VB Form_Load equivalent.
         This is the MASTER function where the game logic river flows.
         """
+        #from flask import session
+        #self.autoplay_enabled = bool(session.get("autoplay_enabled", False))
+
         s = self.state 
         
         # --- STEP 1: SETUP MEMORY & SCRIPT (Old Phase 1 & 2) ---
@@ -1240,48 +1423,7 @@ class CardGame:
         return any_moves_made  # ✅ NEW: Tell frontend if moves were made
 
 
-    # Moves (Web Context)
-    def move_card(self, from_col_idx, to_col_idx, card_code):
-        """
-        Web entry point for moving a card. 
-        Works on self.state.kup indexed by current player.
-        """
-        s = self.state
-        try:
-            from_idx = int(from_col_idx)
-            to_idx = int(to_col_idx)
-            src_col = s.kup[from_idx]
-            dst_col = s.kup[to_idx]
-        except (ValueError, IndexError):
-            return False
-
-        # Find the card in the source column
-        for i, card in enumerate(src_col.contents):
-            if card.code == card_code:
-                # Move the card object
-                moving_card = src_col.contents.pop(i)
-                dst_col.contents.append(moving_card)
-                
-                # Update weights and strings (Duality check)
-                from .engine import sync_column_contents
-                sync_column_contents(src_col)
-                sync_column_contents(dst_col)
-                return True
-        return False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
                 
@@ -1335,377 +1477,6 @@ class CardGame:
 
 
 
-
-
-
-
-
-# ============================================================================
-# CLEAN REWRITE: try_every_turn_actions
-# ============================================================================
-# This is a complete, production-ready rewrite with:
-# - Proper error handling
-# - Clear logging
-# - Correct signatures
-# - Clean architecture
-# ============================================================================
-
-def _try_every_turn_actions(self):
-    """
-    VB Port: try_every_turn_actions
-    
-    The autoplay engine that executes "every_turn=" actions from game script.
-    Loops until no more automatic moves are possible.
-    
-    Returns:
-        bool: True if any moves were made, False otherwise
-    """
-    s = self.state
-    
-    # ────────────────────────────────────────────────────────────────
-    # Early exit if autoplay disabled
-    # ────────────────────────────────────────────────────────────────
-    if not s.autoplay_enabled:
-        self.try_if_actions()
-        return False
-    
-    print(f"🤖 Autoplay: Starting...")
-    
-    # ────────────────────────────────────────────────────────────────
-    # Main loop: Keep trying moves until none succeed
-    # ────────────────────────────────────────────────────────────────
-    MAX_LOOPS = 50  # Safety limit to prevent infinite loops
-    any_moves_made = False
-    
-    for loop_iteration in range(MAX_LOOPS):
-        s.clickModeSuceededSoTryAgain = False
-        moves_this_round = 0
-        
-        # ────────────────────────────────────────────────────────────
-        # Parse all lines in game script
-        # ────────────────────────────────────────────────────────────
-        for line in s.LIST_GAME_LINES:
-            line = line.strip()
-            
-            # Stop at [FINISH] marker
-            if line == "[FINISH]":
-                break
-            
-            # Skip non-autoplay lines
-            if not line.startswith("every_turn="):
-                continue
-            
-            # Extract action command after "every_turn="
-            action_cmd = line[11:]
-            
-            # ────────────────────────────────────────────────────────
-            # Execute the action based on type
-            # ────────────────────────────────────────────────────────
-            success = self._execute_autoplay_action(action_cmd)
-            
-            if success:
-                any_moves_made = True
-                s.clickModeSuceededSoTryAgain = True
-                moves_this_round += 1
-        
-        # ────────────────────────────────────────────────────────────
-        # Exit loop if no moves this round
-        # ────────────────────────────────────────────────────────────
-        print(f"🤖 Round {loop_iteration + 1}: {moves_this_round} moves")
-        
-        if not s.clickModeSuceededSoTryAgain:
-            print(f"🤖 Autoplay: Complete (total moves: {any_moves_made})")
-            break
-    
-    # ────────────────────────────────────────────────────────────────
-    # Always run if() checks after autoplay
-    # ────────────────────────────────────────────────────────────────
-    self.try_if_actions()
-    
-    return any_moves_made
-
-
-def _execute_autoplay_action(self, action_cmd):
-    """
-    Execute a single every_turn action.
-    
-    Args:
-        action_cmd (str): The action string (e.g., "0-4", "[action1]", "parameter01=5")
-    
-    Returns:
-        bool: True if action succeeded, False otherwise
-    """
-    s = self.state
-    
-    # ────────────────────────────────────────────────────────────────
-    # TYPE 1: Action block [name]
-    # ────────────────────────────────────────────────────────────────
-    if action_cmd.startswith("["):
-        try:
-            return self.do_whole_action(action_cmd)
-        except Exception as e:
-            print(f"⚠️  Autoplay action block '{action_cmd}' failed: {e}")
-            return False
-    
-    # ────────────────────────────────────────────────────────────────
-    # TYPE 2: Parameter setting
-    # ────────────────────────────────────────────────────────────────
-    if action_cmd.startswith("parameter"):
-        try:
-            return self.do_action(action_cmd)
-        except Exception as e:
-            print(f"⚠️  Autoplay parameter '{action_cmd}' failed: {e}")
-            return False
-    
-    # ────────────────────────────────────────────────────────────────
-    # TYPE 3: Card move (e.g., "0-4" means column 0 → column 4)
-    # ────────────────────────────────────────────────────────────────
-    return self._try_autoplay_card_move(action_cmd)
-
-
-def _try_autoplay_card_move(self, action_cmd):
-    """
-    Try to move a card as part of autoplay.
-    
-    Args:
-        action_cmd (str): Source-destination format (e.g., "0-4")
-    
-    Returns:
-        bool: True if card was moved, False otherwise
-    """
-    s = self.state
-    
-    try:
-        # ────────────────────────────────────────────────────────
-        # Parse source and destination
-        # ────────────────────────────────────────────────────────
-        src_idx, dst_idx = map(int, action_cmd.split("-"))
-        
-        # Validate indices
-        if not (0 <= src_idx < len(s.kup) and 0 <= dst_idx < len(s.kup)):
-            return False
-        
-        source_col = s.kup[src_idx]
-        
-        # Nothing to move if column is empty
-        if not source_col.contents:
-            return False
-        
-        # ────────────────────────────────────────────────────────
-        # Get top card and save state
-        # ────────────────────────────────────────────────────────
-        top_card = source_col.contents[-1]
-        original_weight = source_col.weight
-        
-        # ────────────────────────────────────────────────────────
-        # Import column_click function (standalone in engine.py)
-        # ────────────────────────────────────────────────────────
-        from .engine import column_click
-        
-        # ────────────────────────────────────────────────────────
-        # Set simulation mode flags
-        # ────────────────────────────────────────────────────────
-        s.simulateClickMode = True
-        s.actionMode = False  # Let move rules check validity
-        s.usermode = 0
-        
-        # ────────────────────────────────────────────────────────
-        # Simulate two clicks: select, then place
-        # ────────────────────────────────────────────────────────
-        column_click(self, src_idx, top_card.code)  # Select
-        column_click(self, dst_idx, top_card.code)  # Place
-        
-        s.simulateClickMode = False
-        
-        # ────────────────────────────────────────────────────────
-        # Check if move succeeded by comparing weights
-        # ────────────────────────────────────────────────────────
-        if source_col.weight < original_weight:
-            print(f"  ✅ {top_card.code}: {src_idx}→{dst_idx}")
-            return True
-        
-        return False
-        
-    except Exception as e:
-        print(f"⚠️  Autoplay move '{action_cmd}' error: {e}")
-        return False
-
-
-# ============================================================================
-# CLEAN REWRITE: trymovepile in do_action
-# ============================================================================
-
-def _handle_trymovepile_action(self, act):
-    """
-    Handle trymovepile= action.
-    
-    Finds the deepest card sequence that can be moved together
-    and moves the pile.
-    
-    Args:
-        act (str): Full action string (e.g., "trymovepile=parameter03,selected-8")
-    
-    Returns:
-        bool: True if pile was moved, False otherwise
-    """
-    s = self.state
-    
-    try:
-        # ────────────────────────────────────────────────────────
-        # Parse: trymovepile=MAX,SOURCE-DEST
-        # ────────────────────────────────────────────────────────
-        ac_body = act[len("trymovepile="):]
-        max_part, col_range = ac_body.split(",", 1)
-        
-        # Resolve maximum cards allowed
-        if max_part.startswith("parameter"):
-            p_idx = int(max_part[9:11])
-            max_cards = s.parameter[p_idx]
-        else:
-            max_cards = int(max_part)
-        
-        # Parse source and destination
-        src_str, dest_str = col_range.split("-")
-        csource = s.selectedColumn if src_str == "selected" else int(src_str)
-        cdest = int(dest_str)
-        
-        # ────────────────────────────────────────────────────────
-        # Validate column indices
-        # ────────────────────────────────────────────────────────
-        if not (0 <= csource < len(s.kup) and 0 <= cdest < len(s.kup)):
-            return False
-        
-        if s.kup[csource].weight == 0:
-            return False
-        
-        # ────────────────────────────────────────────────────────
-        # Calculate how many cards can move together
-        # ────────────────────────────────────────────────────────
-        how_many = self._calculate_movable_pile(csource, cdest, max_cards)
-        
-        if how_many > 0:
-            # Execute the pile move
-            success = self.do_action(f"movepile={how_many},{csource}-{cdest}")
-            return success
-        
-        return False
-        
-    except Exception as e:
-        print(f"⚠️  trymovepile error: {e}")
-        return False
-
-
-def _calculate_movable_pile(self, csource, cdest, max_cards):
-    """
-    Calculate how many cards from top of source column can move together.
-    
-    Cards must:
-    1. Form a valid descending sequence
-    2. Top card must be able to land on destination
-    3. All cards must be face up
-    
-    Args:
-        csource (int): Source column index
-        cdest (int): Destination column index
-        max_cards (int): Maximum cards allowed to move
-    
-    Returns:
-        int: Number of cards that can move (0 if none)
-    """
-    s = self.state
-    from .engine import move_condition
-    
-    cards = s.kup[csource].contents
-    if not cards:
-        return 0
-    
-    # ────────────────────────────────────────────────────────────
-    # Check if top card can go on destination
-    # ────────────────────────────────────────────────────────────
-    top_card = cards[-1]
-    
-    if not top_card.face_up:
-        return 0
-    
-    if not move_condition(s, top_card.code, csource, cdest):
-        return 0
-    
-    # Top card can move
-    pile_size = 1
-    
-    # ────────────────────────────────────────────────────────────
-    # Check how many cards below top card form valid sequence
-    # ────────────────────────────────────────────────────────────
-    for i in range(1, min(len(cards), max_cards)):
-        card_above = cards[-(i)]      # Card we just checked
-        card_below = cards[-(i + 1)]  # Card below it
-        
-        # Both cards must be face up
-        if not card_below.face_up:
-            break
-        
-        # Check if card_above can go on card_below (sequence check)
-        # We use same column for both to check if they form valid sequence
-        if move_condition(s, card_above.code, csource, csource):
-            pile_size = i + 1
-        else:
-            break
-    
-    return pile_size
-
-
-# ============================================================================
-# INTEGRATION NOTES
-# ============================================================================
-
-"""
-TO INTEGRATE THESE FUNCTIONS INTO game.py:
-
-1. REPLACE the existing try_every_turn_actions() method completely
-
-2. ADD the three helper methods:
-   - _execute_autoplay_action()
-   - _try_autoplay_card_move()
-   - _calculate_movable_pile()
-   - _handle_trymovepile_action()
-
-3. IN do_action(), REPLACE the trymovepile section with:
-   
-   elif act.startswith("trymovepile="):
-       success = self._handle_trymovepile_action(act)
-
-5. IN routes.py set_autoplay(), ADD session storage:
-   
-   session["autoplay_enabled"] = enabled
-
-6. IN model.py Column.__init__(), FIX backstyle/backcolor:
-   
-   self.backstyle = -1  # Integer, not "-1"
-   self.backcolor = -1  # Integer, not "-1"
-
-7. IN _prepare_columns Stage 1, FIX default overlap parsing:
-   
-   s.default_overlap_x = int(l.split("=")[1])  # No to_px()
-   s.default_overlap_y = int(l.split("=")[1])  # No to_px()
-
-"""
-
-# ============================================================================
-# TESTING CHECKLIST
-# ============================================================================
-
-"""
-After integration, test:
-
-✅ FreeCell: Home columns (4-7) appear GREY, not green
-✅ FreeCell: Empty cells (0-3) appear GREEN
-✅ Beleaguered Castle: Cards spread correctly with overlap_x=default
-✅ FreeCell: Can drag pile of 3 cards at once (if they form valid sequence)
-✅ Spider: Can drag pile of descending same-suit cards
-✅ Autoplay: Move a card → Ace revealed → Ace flies home automatically
-✅ Autoplay: Turn on → Start new game → Autoplay still ON
-✅ Autoplay: Multiple moves cascade (ace flies, reveals 2, 2 flies, reveals 3, etc.)
-"""
 
 
 

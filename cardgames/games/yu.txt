@@ -1,293 +1,291 @@
-Igre s kartami
- u okvari.
-Pobedio si.
-Izgubio si
-Igre s kartami za jednog igraÄŤa
-           za Windows
-  (c) september 2000
-  (p) miha11@yahoo.com
-Broj pobedjenih:
-Broj izgubljenih: 
-Broj odigranih:
-Procent: 
-Procent alfa: 
----
-&Nova igra
-&Zoom
-&Opcije
-&PomoÄŤ
-&Izlaz
-&PoveÄŤaj
-&Smanji
-Ma&ximalni zoom
-Mi&nimalni zoom
-&Automatsko odigravanje
-&Rastegljive karte
-&Upotrebi druge karte
-&Statistika
-&OpĹˇta statistika
-&Pravila
-&O programu...
----
-OK
-Ostav
----
-OK
-Legenda:
-pobede
-nezavrĹˇene igre
-porazi
----
-&Jezik...
-&Kustomizacija...
-&Registracija...
------------
------------
-Ovaj program je shareware.
-Ako Ĺľelite veÄŤ se molim registrirajte na
-http://abulafia.ijs.si/bbxmih/games/
+Карташке игре 
+квар. 
+Нећете. 
+Изгубљени сте. 
+Карташке игре за једног играча за Windows (c) септембар 2000 (p) miha11@yahoo.com
 
+Ова игра је shareware. 
+Ако желите више од тога, региструјте се.
+Победа:
+Изгубљено:
+Оиграно:
+Проценат:
+Проценат алфа:
+---
+&Нова игра
+&Зумирање
+&Опције
+&Помоћ
+&Излаз
+Увећај &Зумирање
+Умањи &Зумирање
+Максимално зумирање
+Минимално зумирање
+&Аутоматска игра
+&Карте променљиве величине
+&Учитај друге карте...
+&Статистика...
+&Укупна статистика...
+&Правила
+&О нама...
+---
+ОК
+Откажи
+---
+ОК
+Легенда:
+победа
+незавршено
+изгубљено
+---
+&Језик...
+&Прилагођавање...
+&Региструј се...
 -----------
 -----------
-[Registration form]
-Registracioni formular
----
-Niste joĹˇ potpun igraÄŤ Igra s kartama.
-Dok se ne registrirate, neÄŤete moÄŤi igrati sve igre.
-Registrirati se moĹľete za 18 $ ili manje.
-PoĹˇaljite nam izpunjen formular i pare.
+Ова игра је shareware. 
+Ако желите више од тога, региструјте се.
 
-Ako ste veÄŤ platili za igre i primili serijski broj,
-onda moĹľete unesti serijski broj
-i tako postati registrirani igraÄŤ.
----
-Kupio bih igre s kartami
 
-PlatiÄŤu sa
-gotovinom
-nov. transf.
-ÄŤek
-kredit. kart.
+-------------
+------------
+[Образац за регистрацију]
+Образац за регистрацију
+---
+Још увек нисте потпуно регистровани корисник Карташких игара.
+Можда нећете моћи да играте све игре уколико се не региструјете.
+Можете се регистровати за 18 долара или мање.
+Да бисте се регистровали, пошаљите нам захтев.
+Ако сте већ платили за Карташке игре и добили серијски број,
+онда можете унети серијски број и постати регистровани играч.
+Такође можете посетити http://abulafia.ijs.si/bbxmih/games/
+---
+Желим да купим карташке игре
+
+Платићу са
+готовином
+уплатницом
+чеком
+кредитном картицом
 VISA
 Mastercard
-drugo...
+друго...
 
-Primiti Ĺľelim
-serijski broj
-3,5" disketu
+Желим да примим
+Серијски број
+Дискета од 3,5 инча
 CD-ROM
 
-Produkt Ĺľelim primiti po
-po poĹˇti
-e-poĹˇti
-Moj naslov
-Moj e-mail
-Ime: 
-Ulica: 
-Grad: 
-ZIP code (US only)
-State (US only)
-DrĹľava: 
+Желим да примим производ
+поштом
+е-поштом
+Моја адреса
+Мој е-маил
+Име:
+Улица:
+Град:
+Поштански број (само за САД)
+Држава (само за САД)
+Земља:
 
-Ne Ĺľelim sve igre
-(to bi moglo pojeftiniti stvar)
+Не желим све игре
+(ово ће смањити цену)
 
-Cena
-PoĹˇtanski troĹˇkovi
-Suma
+Износ
+Трошкови испоруке
+Укупан износ
 ---
-Printaj formular
-Ĺ alji po poĹˇti
-Da bi poslao po poĹˇti, printaj formular i poĹˇalji ga na gornju adresu.
-Ĺ alji po elektronskoj poĹˇti
-Unesi serijski broj
-OK
-Zatvori
+Одштампајте формулар за регистрацију
+Пошаљите поруџбину поштом
+Да бисте послали поруџбину поштом, одштампајте формулар за регистрацију и пошаљите га на горе наведену адресу.
+Пошаљите поруџбину е-поштом
+Унесите серијски број
+ОК
+Затвори
 ---
-To:
-Subject:
+Коме:
+Наслов:
 ---
 
 
-[GAMENAME]
-Oslobodi celicu
-  Cilj igre je spremiti sve karte na 4 bazne pozicije
-gore desno poÄŤev sa kriĹľevim, karinim, srÄŤevim i 
-pikovim asom. Karte, koje slede asovima, moraju odgovarati  
-boji i naraĹˇÄŤajuÄŤem zaporedju.
 
 [GAMENAME]
-ÄŚetiri godiĹˇnja doba
-  Spremi sve karte u kutove poÄŤev sa asom u svakom kutu
-i gradi v naraĹˇÄŤajuÄŤem zaporedju.
-  Pet karata je na srednjih petih pozicijah, a ostale su 
-joĹˇ u paketu. Srednjih pet pozicija upotrebi za hranjenje 
-karata u padajuÄŤem zaporedju.
-  Iz kupa kart moĹľeĹˇ premestiti kartu u talon (kup pored)
-ili na odgovarajuÄŤu poziciju na tabli.
+Бесплатно ћелија
+Циљ игре је да се све карте сложе
+на горња 4 десна места почевши од аса трефа,
+аса кароа, аса срца и аса пика
+на свако од 4 места.
 
 [GAMENAME]
-Golf
-Cilj igre je spremiti sve karte iz kupa i sedmih stupaca
-u talon. Karta ustreza talonu, ako se ujema u naraĹˇÄŤajuÄŤem ili 
-padajuÄŤem redu, bez obzira na boju. 
+Четири годишња доба
+Сложите све карте у углове почевши од асова
+у сваком углу. Постоји 5 карата на средњих 5 позиција
+и друге карте у шпилу. Користите средње позиције за
+складиштење карата. Можете премештати карте из шпила на место
+близу шпила или на 5 средњих позиција.
 
 [GAMENAME]
-Alternacija
-  Izgradi 4 kupe u izmenjujuÄŤi boji (alternacija) u 
-naraĹˇÄŤajuÄŤem redu na asove i padajuÄŤem redu na kraljeve.
-  Uzimaj po jednu kartu, ako karta ne ustreza bazi, ide
-na bilo koji od ÄŤetiri rezervnih stupcaca (desno).
-Vrhnja karta svakoga rezervnoga kupa je uvek dostupna.
-  Kad u kupu nestane karata, poberi karte iz rezervnih kupova
-i bez meĹˇanja ponovno jih razdeli. MoguÄŤi sta dve 
-ponovni deobi.
+Голф
+Циљ игре је да се све карте из
+шпила и из 7 колона у талон премештају растућим или опадајућим
+редом без обзира на знак.
 
 [GAMENAME]
-Kenfild
-  Cilj igre je napuniti sve ÄŤetiri bazne stupce poÄŤevĹˇi sa asovima
-gradeÄŤi naraĹˇÄŤajuÄŤe in u boji.
-  Upotrebi 4 tabelne stupce za hranjenje karata u padajuÄŤem redu
-i barvno alternirajuÄŤe. U tabelnim stolpcima u poÄŤetku su 4 karte.
-  Upotrebi gornju kartu iz rezerve, gde na poÄŤetku ima 13 karata.
-  Ostalih 34 karata je v kupu. Uzmi 3 karte iz kupa u ruku. Samo 
-gornja karta u ruki je dostupna. Kad si odigrao sve tri moguÄŤe karte,
-uzemi preostatak treh karata (karte koje niso odigrane) i premesti jih
-u talon (dole).
-  Kad u kupu nestane karata, okrene se talon, ki bez meĹˇanja postane 
-novi kup, iz kojega se opet uzima po 3 karte. Nema ograniÄŤenja koliko
-puta ovo moĹľe da se ponovi.
+Наизменично
+Направите 4 гомиле у наизменичним бојама растућим
+редом асова и опадајућим редом краљева.
+Делите карте једну по једну, градећи где је то могуће или
+одбацујући у било коју од четири гомиле отпада. Горња карта
+сваке гомиле је увек доступна. Када Све карте су подељене, поделите карте без мешања. Дозвољена су два таква поновна дељења.
 
 [GAMENAME]
-V starim vremenima
-Gradi naraĹˇÄŤajuÄŤe u boji od asova do kraljeva.
-Upotrebi tablu za hranjenje karata v padajuÄŤem 
-alternirajuÄŤem redu. Dvoklikni na zalogi karata 
-za ponovnu deobu. 
+Кенфилд
+Циљ игре је да се попуне све четири основне гомиле
+почевши од асова и градећи навише по редоследу боја.
+Користите гомиле табеле да бисте складиштили карте у опадајућем редоследу
+наизменичне боје. На почетку игре постоје четири карте у табели.
+
+Искористите горњу карту из залиха, где је на почетку било 13 карата.
+
+Преостале су 34 карте у шпилу. Узмите 3 карте из шпила
+у руку. Само горња карта је доступна. Када су све 3 могућности
+одигране, окрените и одбаците преостале 3 карте (које нису одигране) у талон.
+Када се шпил исцрпи, талон се окреће без
+мешања и постаје нови шпил, карте у њему се поново окрећу
+у пакетима од по три. Не постоји ограничење колико пута се ово
+може Готово.
 
 [GAMENAME]
-Ĺ panski gradovi
-  Cilj igre je kompletirati sve ÄŤetiri bazne stupce
-poÄŤevĹˇi sa asovima gradeÄŤi naraĹˇÄŤajuÄŤe u baoji do kraljeva.
-  Upotrebi tablu za hranjenje karata v padajuÄŤem 
-alternirajuÄŤem redu. Dvoklikni na pokrivenoj karti, 
-da ju okreneĹˇ. 
+Aud Lang Syne
+Наравнајте карте навише у знаку од асова до краљева.
+Користите табелу да бисте складиштили карте у опадајућем
+алтернативном редоследу. Двапут кликните на залиху да бисте поново поделили.
 
 [GAMENAME]
-Klondajk
-(stupanj: vrlo teĹˇka)
-
-  Cilj igre je kompletirati sve ÄŤetiri bazne stupce
-poÄŤevĹˇi sa asovima gradeÄŤi naraĹˇÄŤajuÄŤe u boji do kraljeva.
-  Upotrebi stupce na tabli za hranjenje karata v padajuÄŤem 
-alternirajuÄŤem redu. Ako je tabelni stupec ispraznjen, 
-moĹľeĹˇ nanj poloĹľiti kralja ili sekvencu karata sa kraljem
-kao bazu. Dvoklikni pokrivenu kartu, da ju okreneĹˇ. 
-  Kad si odigrao sve moguÄŤe poteze na tabli, otvaraj
-karte iz rezerve jednu po jednu, gradeÄŤi na bazo ili na tablu
-ili u talon, ako potez nije moguÄŤ. 
-  Dozvoljena je jedna ponovna deoba talona.
+Дворци у Шпанији
+Циљ игре је да се попуне све четири
+основне колоне градећи од асова узлазно
+до краљева у знаку. Користите табелу да бисте складиштили карте
+у опадајућем алтернативном редоследу. Двапут кликните на
+карту окренуту лицем надоле да бисте је окренули.
 
 [GAMENAME]
-Brodski oblik i Bristolska moda
-  Cilj je izgraditi 4 bazne stupce naraĹˇÄŤajuÄŤe, 
-bez obzira na boju, poÄŤevĹˇi sa asovima.
-  Gradnja u tabelnim stupcima je padajuÄŤa,
-bez obzira na boju. Premikati moĹľeĹˇ po jednu kartu.
-  Dvoklikni na rezervi, da podeliĹˇ sledeÄ‡e
-tri karte na rezervne stupce.
+Клондајк
+(ранг: веома тешко)
+
+Поставите све карте у четири основне колоне
+почевши од асова градећи карте у знаку до краљева.
+Користите табелу да бисте складиштили карте у опадајућем алтернативном
+редоследу. Ако се упражњено место у табели створи током игре,
+можете ставити краља или низ са краљем као основну
+карту. Двапут кликните на карту окренуту лицем надоле да бисте је окренули.
+Када су сви могући потези у табели направљени,
+окрените карте у залихи једну по једну, играјући било које
+карте које се могу играти на одговарајућу карту у
+талон или на његову темељну гомилу. Карте које се не могу
+играти стављају се у талон. Једно поновно дељење талона
+је дозвољено.
 
 [GAMENAME]
-Bitka dama
-  Trije pubovi su izvzeti i poloĹľeni krajno desno, pored rezerve.
-Preostali (srÄŤev) pub nalazi se na vrhu piramide. Cilj je 
-graditi na ÄŤetirih damah do desetica naraĹˇÄŤajuÄŤe u boji.
-  Ime igre potiÄŤe od pravila, da prva dama, koja izgradi do desetice,
-pokupi puba iz vrha piramide i tako pobedi.
-  Stupcevi na stranama piramide se grade padajuÄŤe u alternirajuÄŤi
-boji. Premikati moĹľeĹˇ samo po jednu. Nastale praznine se zapunjavju
-sa kartama iz rezerve. Kad nema viĹˇe moguÄŤih poteza, podeli 6 karata iz
-rezerve na stranice piramide sa dvoklikom na rezervi.
-  Kad je rezerva ispraznjena, pokuĹˇe se karte sa strana piramide
-i ponovo se razdele. Za ponovnu deobu dvoklikni puba na
-vrhu piramide.
+Облик брода и Бристолски стил
+Циљ је изградити 4 темеља навише
+без обзира на боју почевши од асова.
+Паковање унутар табеле је надоле,
+без обзира на боју. Само једна карта истовремено
+може се играти.
+Двапут кликните на сто да бисте поделили следеће три карте
+да бисте резервисали колоне.
 
 [GAMENAME]
-SreÄŤkoviÄ‡
-  Cilj je kompletirati bazne stupce poÄŤevĹˇi sa asovima i 
-gradeÄŤi naraĹˇÄŤajuÄŤe u boji do kraljeva.
-  Upotrebi dva reda karata na tabli za hranjenje karata u 
-padajuÄŤem redu i u istoj boji.
-  Karte iz rezerve, koje nije moguÄŤe odigrati na tablu 
-ili bazu, idu u rezervni stupac (za to moĹľeĹˇ da dvoklikneĹˇ
-rezervu).
-  Vrhnja karta rezervnoga stupca je uvek dostupna.
-  Svaka nastala praznina na tabli se zapuni iz rezervnoga
-stupca ili, ako je ta prazan, iz rezerve.
+Битка дама
+Три џандера су искључена из шпила и стављају се крајње десно, близу базе.
+Други џандер је на врху пирамиде. Циљ је градити од 4 даме
+навише до десетица према знаку.
+Назив игре потиче од старог правила дама
+чија је основа завршена прва узима џандера и побеђује.
+Карте са стране пирамиде се граде надоле у ​​наизменичним
+бојама. Могу се померати само једна по једна. Настала места се попуњавају
+картама из базе. Када више није могуће померање, поделите 6
+карта из базе на стране пирамиде двоструким кликом на базу.
+Када се база исцрпи, карте са страна пирамиде се узимају и
+поново деле. Дозвољена су два таква поновна дељења. Да бисте поново поделили, двоструко кликните на
+карту џандера на врху пирамиде.
 
 [GAMENAME]
-Opkoljeni zamak
-(stupanj: vrlo teĹˇka)
-
-Cilj igre je kompletirati 4 bazne stupce gradeÄŤi
-od asova do kraljeva. Upotrebi 8 stranskih stupceva
-za hranjenje karata u padajuÄŤem alternirajuÄŤem redu.
-
-[GAMENAME]
-Bizli
-(stupanj: vrlo teĹˇka)
-
-  Gradi nadole u boi poÄŤevĹˇi sa kraljevima.
-Karta iz tablenoga stupca smije na kartu, koja
-se sklada u boji i susednja je po vrednosti
-(kriĹľeva osmica smije na kriĹľevu sedmico i 
-kriĹľevu deveticu).
+Син среће
+Циљ је попунити колоне основе од асова
+до краљева градећи у боји.
+Користите два реда у табели да бисте складиштили карте у опадајућем
+редоследу подударања боја.
+Карте које се не могу играти из гомиле у темељ или на табелу
+стављају се у колону отпада (можете двапут кликнути на гомилу да бисте то урадили).
+Горња карта у колони отпада је увек доступна.
+Сва празнина која се креирају у табели попуњавају се
+са гомиле отпада или, ако је празна, са табеле.
 
 [GAMENAME]
-TvrÄ‘ava
-(stupanj: vrlo teĹˇka)
+Замак под опсадом
+(ранг: веома тешко)
 
-  Izgradi 4 bazne stupce poÄŤevĹˇi sa asovima, gradeÄŤi
-naraĹˇÄŤajuÄŤe u boji.
-  Stranske karte smiju na kartu, koja se sklada 
-u boji i susednja je po vrednosti (kriĹľeva osmica 
-smije na kriĹľevu sedmico i kriĹľevu deveticu).
+Циљ игре је да се доврше 4 гомиле темеља
+градећи од асова до краљева. Користите 8 бочних колона
+чувајте карте у опадајућем наизменичном редоследу.
 
 [GAMENAME]
-Dedina ura
-  Dvanaest baznih stupceva oblikuje sat. Na svakome
-gradiĹˇ naraĹˇÄŤajuÄŤe u boji, poÄŤevĹˇi sa tampĹˇnjom kartom
-i zavrĹˇivĹˇi sa kartom, koja dosegne broj ure na toj 
-poziciji (od 1 do 12).
-  Pet stupaca na tabli moĹľeĹˇ upotrebiti za hranjenje karata 
-u padajuÄŤem redu bez obzira na boju. Dvoklikni pokrivenu kartu,
-da ju okreneĹˇ.
+Бизли
+(ранг: веома тешко)
+
+Градите надоле у ​​боји почевши од краљева.
+Карта са табеле може се померити на карту која
+се подудара у боји и налази се поред ње по рангу (осам
+трефова може ићи на девет или седам трефова).
 
 [GAMENAME]
-Princ Albert
-  Gradi naraĹˇÄŤajuÄŤe u boji poÄŤevĹˇi sa asovima.
-  Upotrebi tablu (9 stupceva) za hranjenje karata u 
-padajuÄŤem alternirajuÄŤem redu.
-  Sedam karata iz rezerve smije na bazu, na tablu, ali 
-ne i natrag u rezervu.
+Тврђава
+(ранг: веома тешко)
+
+Направите четири гомиле навише у знаку почевши од кечева.
+Бочне карте се могу померити на карту која
+се подудара у знаку и налази се поред ње по рангу (осам
+трефова може ићи на девет или седам трефова).
 
 [GAMENAME]
-ÄŚetvorka
-  Tu igru moĹľeĹˇ igrati sa dvoklikanjem na rezervi.
-
-  (Karte se uzimaju iz rezerve po jednu. Bazne karte su
-petice i Ĺˇestice. Petice idu na sever, jug, istok, 
-zapad pozicije, a Ĺˇestice idu izmeÄ‘u petice. Na petice
-gradiĹˇ padajuÄŤe u boji do asova, a na Ĺˇestice gradiĹˇ
-naraĹˇÄŤajuÄŤe do pubova. Dame u toj igri nemaju ulogu. Kad
-se pojaviju, odstrani jih na sredinu table. Dozvoljeni
-sta dvije deobe kad nestane karata u rezervi.)
+Дедин сат
+Постоји 12 темељних колона које формирају сат.
+Морате градити у знаку на свакој, почевши од
+темељне карте и градећи док низ не достигне
+број сати у којима се налази основна карта. Користите пет редова табеле да бисте складиштили карте у опадајућем редоследу
+без обзира на знак. Двапут кликните на карту табеле да бисте окренули
+готово је.
 
 [GAMENAME]
-Raglan
-  Cilj je izgraditi 4 bazne stupce od asova do kraljeva.
-  Upotrebi tabelne stupce za hranjenje karata u padajuÄŤem
-alternirajuÄŤem redu.
-  Dvoklikni pokrivenu kartu, da ju okreneĹˇ.
-  Ĺ est karata iz rezerve moĹľeĹˇ premestiti na bazu, a ne 
-i na tablu.
+Принц Алберт
+Направите навише у знаку почевши од кечева.
+Користите табелу (9 колона) да бисте складиштили карте у
+алтернативном опадајућем редоследу.
+
+Седам карата из резерве може се играти
+на основу или табелу, али не и назад у
+резерву.
+
+[GAMENAME]
+Кадрил
+Ову игру можете играти двоструким кликом на залиху.
+
+(Карте се окрећу из залихе једна по једна.
+Основне карте су петице и шестице. Петице иду
+на северну, западну, источну и јужну позицију, шестице иду
+између њих. На петицама можете градити доле у ​​знаку
+до асова, на шестицама можете градити до жандара. Даме
+не играју никакву улогу у игри. Када се окрену, стављају се
+у средњу позицију.
+Дозвољена су два поновна дељења након што се залиха исцрпи.)
+
+[GAMENAME]
+Раглан
+Циљ је изградити четири основе од асова
+до краљева.
+Користите талон да бисте складиштили карте у наизменичном опадајућем редоследу.
+Двапут кликните на карту окренуту лицем надоле да бисте је окренули.
+Шест карата из резерве могу се ставити на основу
+али не могу се ставити на талон.

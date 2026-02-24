@@ -789,53 +789,6 @@ def hide_previous_requisites(state):
     # Hide the selection indicator
     state.ShapeSelektor.visible = False
 
-
-# def check_allways_facedown_columns(state):
-#     """
-#     VB: check_allways_facedown_columns
-#     Syncs facedown overlays with the current position of the columns.
-#     """
-#     s = state  # Short reference
-
-#     # We iterate through all columns in the player's private 'kup'
-#     for i, col in enumerate(s.kup):
-#         # We only care about columns tagged as "always facedown" (usually the deck)
-#         if col.allways_facedown == "1":
-            
-#             # If the column has cards, the overlay must be visible and correctly positioned
-#             if col.weight > 0:
-#                 # 1. Resolve Column Position (VB Index)
-#                 pos_idx = int(col.position) if col.position else 0
-                
-#                 # 2. Vertical Position (Y)
-#                 if col.custom_y not in (-1, None, ""):
-#                     # Specific override in script
-#                     s.imageFaceDown[i].top = int(col.custom_y)
-#                 else:
-#                     # Standard grid position + fan overlap
-#                     s.imageFaceDown[i].top = (
-#                         s.columnY[pos_idx] + (col.overlap_y * col.weight)
-#                     )
-
-#                 # 3. Horizontal Position (X)
-#                 if col.custom_x not in (-1, None, ""):
-#                     s.imageFaceDown[i].left = int(col.custom_x)
-#                 else:
-#                     s.imageFaceDown[i].left = (
-#                         s.columnX[pos_idx] + (col.overlap_x * col.weight)
-#                     )
-
-#                 # 4. Update the card reference (VB .Tag)
-#                 # Since col.contents is a list of Card objects, we take the last one's code
-#                 if col.contents:
-#                     s.imageFaceDown[i].card_code = col.contents[-1].code
-                
-#                 s.imageFaceDown[i].visible = True
-#             else:
-#                 # Column is empty, hide the facedown image
-#                 s.imageFaceDown[i].visible = False
-#                 s.imageFaceDown[i].card_code = ""
-
 def check_allways_facedown_columns(state):
     s = state
     fd_idx = 0  # <-- separate counter for imageFaceDown
@@ -881,7 +834,6 @@ def check_allways_facedown_columns(state):
                 s.imageFaceDown[fd_idx].card_code = ""
 
             fd_idx += 1  # <-- only advance when we've consumed one overlay
-
 
 def match_specificCol(state, specifCol, col_idx):
     """

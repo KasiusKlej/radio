@@ -30,8 +30,7 @@ def get_user_game():
         game_id = session.get("zap_st_igre")
         if game_id:
             engine = CardGame(game_id)
-            active_games[sid] = engine
-            print(f"🛠️  Auto-repaired engine for {game_id}")
+            active_games[sid] = engine            
 
     if engine:
         # SYNC: The "Ace of Spades" must match the current session choice
@@ -74,7 +73,8 @@ def inject_games():
     return dict(
         games=session.get('_cached_games_list', []),
         lang_dict=session.get('_cached_lang_dict', {}),
-        m=session.get('_cached_lang_dict', {}).get('menu', {}) 
+        m=session.get('_cached_lang_dict', {}).get('menu', {}), 
+        #autoplay_enabled=session.get('autoplay_enabled', False)
     )
 
 @cardgames_bp.route("/")
@@ -93,7 +93,8 @@ def play_game(game_id):
     # Start fresh
     engine = CardGame(game_id)
     engine.state.CURRENT_LANGUAGE = session.get("lang", "slo")
-    
+    engine.autoplay_enabled = session.get("autoplay_enabled", False)
+
     active_games[sid] = engine
     session["zap_st_igre"] = game_id
 
@@ -192,7 +193,8 @@ def set_language(code):
     engine = get_user_game()
     if engine:
         engine.state.CURRENT_LANGUAGE = code
-    session.pop('_cached_lang_dict', None) # Force menu refresh
+
+    session.pop('_cached_lang_dict', None) # Force menu refresh   
     return redirect(request.referrer or url_for("cardgames.index"))
 
 @cardgames_bp.route("/exit")
@@ -207,13 +209,61 @@ def exit_game():
 @cardgames_bp.route("/api/options/autoplay", methods=["POST"])
 @cardgames_bp.route("/api/options/autoplay/", methods=["POST"])
 def toggle_autoplay():
-    enabled = request.json.get("enabled", False)
-
-    # bug preprecuje autoplay
-    #session["autoplay"] = enabled
-    #session["autoplay_enabled"] = enabled
+    enabled = bool(request.json.get("enabled", False))
+    session["autoplay_enabled"] = enabled
+    engine = get_user_game()
+    if engine:
+        engine.autoplay_enabled = enabled
+        print(f"toggled {enabled}")
 
     return jsonify({
         "ok": True,
-        "autoplay": enabled
+        "autoplay_enabled": enabled
     })
+
+# for later
+@cardgames_bp.route("/api/register")
+@cardgames_bp.route("/api/register/")
+def api_about():
+    """
+    Displays application 'About' information.
+    Uses the same popup mechanism as Rules.
+    """
+    try:
+        engine = get_user_game()
+
+        # language fallback
+        lang_code = (
+            engine.state.CURRENT_LANGUAGE
+            if engine and engine.state.CURRENT_LANGUAGE
+            else session.get("lang", "slo")
+        )
+
+        from .engine.game import get_language_dict
+        lang_data = get_language_dict(lang_code)
+        lang = lang_data.get("lang", {})
+
+        # Compose About text (VB-style)
+        title = lang.get("app", "Card Games for One Player")
+
+        text = (
+            f"{lang.get('logo1', 'Card Games for One Player')}\n"
+            f"{lang.get('logo2', '')}\n"
+            f"{lang.get('logo3', 'made in 1999')}\n"
+            f"{lang.get('logo4', '')}"
+        ).strip()
+
+        # Last line of defense
+        if not text:
+            text = "Card Games for One Player\nmade in 1999"
+
+        return jsonify({
+            "title": title,
+            "text": text
+        })
+
+    except Exception:
+        return jsonify({
+            "title": "Register",
+            "text": "Card Games for One Player\nmade in 1999"
+        }), 200

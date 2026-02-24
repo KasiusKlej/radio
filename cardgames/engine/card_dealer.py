@@ -25,8 +25,7 @@ def dealCards(state):
     """
     from .engine import sync_column_contents
 
-    print(f"DEBUG: Dealer starting. Deck size: {len(state.LIST_DECK)}")
-
+    
     for col in state.kup:
         # Clear any old data
         col.contents = []
@@ -74,4 +73,4 @@ def dealCards(state):
         col.weight = len(col.contents)
         sync_column_contents(state, col)
 
-    #print(f"DEBUG: Dealing finished. Cards left in deck: {len(state.LIST_DECK)}")
+    

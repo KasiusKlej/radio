@@ -20,7 +20,7 @@
      -        (*)                                     -                                        
        -        made in ljubljana                      -- -                                    
         -         -                                        - -                                
-         --    --   -                   (c) miha11@yahoo.com   -                             
+         --    --   -                 (c) striparna@gmail.com  -                             
            --        -                                          -                          
                       - -         - -         - -                -                      
                          - -    -    -       -    -             -                     
