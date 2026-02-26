@@ -35,8 +35,8 @@
             <li style="color: gray;">Resizable</li>
             <li style="color: gray;">Other Cards</li>
             <li class="separator"></li>
-            <li>{{ m.statistics or 'Statistics' }}</li>
-            <li>{{ m.overall or 'Overall' }}</li>
+            <li style="color: gray;">{{ m.statistics or 'Statistics' }}</li>
+            <li style="color: gray;">{{ m.overall or 'Overall' }}</li>
         </ul>
     </li>
 
@@ -47,7 +47,7 @@
             <li onclick="showCustomizing()">{{ m.customizing or 'Customizing' }}</li>
             <li class="separator"></li>
             <li onclick="openMsgBox('Card Games for One Player', 'Karte za enega igralca.    (c) Miha 1999')">{{ m.about or 'O programu...' }}</li>
-            <li>{{ m.register or 'Register' }}</li>
+            <li style="color: gray;">{{ m.register or 'Register' }}</li>
         </ul>
     </li>
 

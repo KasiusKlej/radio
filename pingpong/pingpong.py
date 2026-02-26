@@ -12,11 +12,11 @@ from flask import Blueprint, render_template, session, redirect, url_for, jsonif
 FACTORY = {
     "geometry": {"width": 1920, "height": 1280, "background": "#0B6B2A",},
     "racket": {"width": 45, "height": 190, "speed": 12,},
-    "ball": {"radius": 32, "speed": 16, "spin": 0.6,},
+    "ball": {"radius": 32, "speed": 20, "spin": 0.6,},
     "rules": {"max_score": 52,},
     "assets": {"dice_path": "/static/metropoly/assets/graphics/",},
     "modes": {  "HUMAN": {}, 
-                "AI": {"levels": {"BAD":   0.04, "UGLY":  0.08, "GOOD":  0.15,}},
+                "AI": {"levels": {"AI_EASY":   0.04, "AI_MEDIUM":  0.08, "AI_HARD":  0.15,}},
                 "NETWORK": {"sync_rate": 30,}
     }
 }

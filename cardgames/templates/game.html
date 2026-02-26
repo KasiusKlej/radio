@@ -9,15 +9,18 @@
 <!-- THE WIN95 MESSAGE BOX (The 4th Actor) -->
 <div id="win95-modal-overlay" style="display:none;">
     <div class="win95-dialog win95-bevel-out">
+
+        <!-- Title Bar -->
         <div class="win95-title-bar">
-            <span id="msgbox-title">System Message</span>
-            <button class="win95-btn-close" onclick="closeMsgBox()">X</button>
+            <span id="msgbox-title" class="win95-title-text">Message</span>
+            <button class="win95-btn-close" onclick="closeMsgBox()" aria-label="Close"></button>
         </div>
+
+        <!-- Content -->
         <div class="win95-dialog-body">
-            <div id="msgbox-content" style="white-space: pre-wrap;">
-                <!-- Rules or Messages appear here -->
-            </div>
-            <div class="win95-dialog-footer" style="text-align: center; margin-top: 20px;">
+            <div id="msgbox-content" class="win95-text-area"></div>
+
+            <div class="win95-dialog-footer">
                 <button class="win95-btn win95-bevel-out" onclick="closeMsgBox()">OK</button>
             </div>
         </div>

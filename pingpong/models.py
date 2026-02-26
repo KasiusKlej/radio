@@ -1,5 +1,5 @@
 # =============================================================================
-# 🌍 DATA MODEL
+# 🌍 pingpong DATA MODEL
 # =============================================================================
 from dataclasses import dataclass, field
 from typing import Dict, Optional
@@ -12,7 +12,7 @@ class Player:
     side: str                     # "LEFT" | "RIGHT"
 
     # Control & Mode
-    control_mode: str             # HUMAN | AI | NETWORK
+    control_mode: str             # HUMAN | AI_EASY, AI_MEDIUM, AI_HARD | NETWORK
     ai_level: Optional[str] = None
     input_state: Dict[str, bool] = field(default_factory=dict)
 

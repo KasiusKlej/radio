@@ -8,11 +8,18 @@
 
 <body class="win95-theme">
 
+
+<div id="title-bar">
+    <span class="title-text"> Ping pong </span>
+</div>
+
+
 <div id="menu-bar">
     {% include "pong_menu.html" %}
 </div>
 
 <div id="game-container">
+    <img src="{{ url_for('static', filename='pingpong/pingpong4a.png') }}" class="bottom-left" alt="left image">
     <canvas
         id="pongCanvas"
         width="{{ PINGPONG.factory.geometry.width }}"
@@ -21,6 +28,8 @@
     <!-- Score display -->
     <div id="score-left" class="score-display">0</div>
     <div id="score-right" class="score-display">0</div>
+    
+    <img src="{{ url_for('static', filename='pingpong/pingpong4b.png') }}" class="bottom-right" alt="right image">
 </div>
 
 <script>

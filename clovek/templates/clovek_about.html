@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Človek ne jezi se</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/clovek.css') }}">
+</head>
+
+<body class="win95-theme">
+
+<div class="win95-dialog win95-bevel-out" style="width: 420px; margin: 40px auto;">
+    
+    <!-- TITLE BAR -->
+    <div class="win-title-bar">
+        <span>O programu</span>
+        <a href="{{ url_for('clovek.index') }}" class="win-close">✕</a>
+    </div>
+
+    <!-- BODY -->
+    <div class="win95-dialog-body">
+
+        <div style="text-align: center; margin-bottom: 12px;">
+            <img src="{{ url_for('static', filename='favicon.ico') }}" width="32" height="32">
+        </div>
+
+
+        <h3 style="margin: 0; text-align: center;">Človek ne jezi se</h3>
+
+        <p style="text-align: center; font-size: 10px; margin-top: 4px;">
+            igra je napisana v Visual Basicu leta 1999<br>
+            in prirejena za splet leta 2026
+        </p>
+
+        <hr>
+        
+        <h4>Tipke</h4>
+        <ul style="font-size: 12px;">
+            <li>Levi igralec:     1,2,3,4</li>
+            <li>Desni igralec:    5,6,7,8</li>
+            <li>Met kocke:        x</li>
+        </ul>
+
+        <h4>Načini igre</h4>
+        <ul style="font-size: 12px;">
+            <li><b>Človek</b> – Igra za dva igralca na eni tipkovnici.</li>
+            <li><b>Računalnik</b> – Igra proti računalniku.</li>
+            <li><b>Network</b> – Igra z nasprotnikom iz interneta. </li>
+        </ul>
+        <div style="text-align: center; margin-bottom: 12px;">
+            <img src="{{ url_for('static', filename='clovek/R2.png') }}" width="66" height="60">
+            <img src="{{ url_for('static', filename='clovek/R4.png') }}" width="68" height="68">
+            <img src="{{ url_for('static', filename='clovek/M5.png') }}" width="72" height="72">
+            <img src="{{ url_for('static', filename='clovek/M6.png') }}" width="66" height="68">
+        </div>
+        <p style="font-size: 11px; text-align: center; margin-top: 10px;">
+            © 1998–2026 Vse pravice pridržane<br>
+            Avtor: Miha
+        </p>
+
+        <div style="text-align: right; margin-top: 12px;">
+            <a href="{{ url_for('clovek.index') }}" class="win-btn">OK</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

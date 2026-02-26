@@ -1,11 +1,7 @@
 /* ============================================================================
- * PINGPONG.JS - Clean Complete Rewrite
+ * PINGPONG.JS - Complete with 3 AI Difficulty Levels
  * ============================================================================
- * Production-ready ping pong game with:
- * - Proper factory/state data model integration
- * - No duplicated logic
- * - Clear separation of concerns
- * - Consistent physics
+ * Modes: HUMAN, AI_EASY, AI_MEDIUM, AI_HARD, NETWORK
  * ============================================================================
  */
 
@@ -32,11 +28,39 @@ const BALL_SPEED = factory.ball.speed;
 
 // Physics tuning constants
 const PHYSICS = {
-    paddleSpinFactor: 0.1,      // How much paddle motion affects ball dy
+    paddleSpinFactor: 0.75,         // How much paddle motion affects ball dy
     wallBouncePreserve: -1,      // Wall bounce (perfect reflection)
-    maxBallDY: BALL_SPEED * 1.5, // Prevent ball from going too vertical
-    effortPerSecond: 1.0,        // Effort accumulation rate
-    effortSpeedBonus: 0.11       // 11% speed boost per effort point
+    maxBallDY: BALL_SPEED * 15,   // Prevent ball from going too vertical
+    effortPerSecond: 2.0,        // Effort accumulation rate
+    effortSpeedBonus: 0.60       // Speed boost per effort point
+};
+
+// AI Configuration
+const AI_CONFIG = {
+    EASY: {
+        reactionSpeed: 0.15,     // Slow reaction (0-1, higher = faster)
+        predictionAccuracy: 0.3, // Poor prediction (0-1)
+        errorMargin: 60,         // Large random errors in pixels
+        updateDelay: 8,          // Slow update (frames between AI updates)
+        speedMultiplier: 0.7,    // 70% of normal speed
+        smartness: 0.2           // 20% chance to make optimal move
+    },
+    MEDIUM: {
+        reactionSpeed: 0.35,
+        predictionAccuracy: 0.6,
+        errorMargin: 30,
+        updateDelay: 4,
+        speedMultiplier: 0.9,
+        smartness: 0.5
+    },
+    HARD: {
+        reactionSpeed: 0.65,
+        predictionAccuracy: 0.9,
+        errorMargin: 10,
+        updateDelay: 2,
+        speedMultiplier: 1.1,
+        smartness: 0.8
+    }
 };
 
 /* ============================================================================
@@ -62,8 +86,8 @@ const game = {
 const player1 = {
     y: canvas.height / 2 - PADDLE_HEIGHT / 2,
     score: 0,
-    velocity: 0,        // Current velocity (for ball spin)
-    effort: 0,          // Accumulated effort
+    velocity: 0,
+    effort: 0,
     lastMoveTime: performance.now()
 };
 
@@ -72,7 +96,11 @@ const player2 = {
     score: 0,
     velocity: 0,
     effort: 0,
-    lastMoveTime: performance.now()
+    lastMoveTime: performance.now(),
+    // AI-specific state
+    targetY: canvas.height / 2,
+    aiUpdateCounter: 0,
+    lastBallX: canvas.width / 2
 };
 
 const ball = {
@@ -80,7 +108,7 @@ const ball = {
     y: canvas.height / 2,
     dx: BALL_SPEED,
     dy: 0,
-    value: 1  // Dice face (1-6)
+    value: 1
 };
 
 const keys = {};
@@ -174,9 +202,10 @@ function updatePaddles() {
     player1.y = clampPaddle(player1.y);
     
     // ────────────────────────────────────────────────────────────
-    // Player 2 (Right - Arrow keys or AI)
+    // Player 2 (Right - Human or AI)
     // ────────────────────────────────────────────────────────────
     if (state.mode === "HUMAN") {
+        // Human player with arrow keys
         const p2Moving = keys["ArrowUp"] || keys["ArrowDown"];
         updateEffort(player2, p2Moving);
         
@@ -193,14 +222,9 @@ function updatePaddles() {
         player2.y += player2.velocity;
         player2.y = clampPaddle(player2.y);
         
-    } else if (state.mode === "AI") {
-        // Simple AI: follow ball
-        const paddleCenter = player2.y + PADDLE_HEIGHT / 2;
-        const diff = ball.y - paddleCenter;
-        
-        player2.velocity = diff * factory.ai.difficulty;
-        player2.y += player2.velocity;
-        player2.y = clampPaddle(player2.y);
+    } else if (state.mode === "AI_EASY" || state.mode === "AI_MEDIUM" || state.mode === "AI_HARD") {
+        // AI opponent
+        updateAI();
     }
 }
 
@@ -210,9 +234,9 @@ function updateEffort(player, isMoving) {
     
     if (isMoving) {
         player.effort += dt * PHYSICS.effortPerSecond;
-        player.effort = Math.min(player.effort, 1); // Cap at 1
+        player.effort = Math.min(player.effort, 1);
     } else {
-        player.effort = Math.max(0, player.effort - dt * 2); // Decay faster
+        player.effort = Math.max(0, player.effort - dt * 2);
     }
     
     player.lastMoveTime = now;
@@ -220,6 +244,106 @@ function updateEffort(player, isMoving) {
 
 function clampPaddle(y) {
     return Math.max(0, Math.min(canvas.height - PADDLE_HEIGHT, y));
+}
+
+/* ============================================================================
+ * AI LOGIC - Three Difficulty Levels
+ * ============================================================================ */
+
+function updateAI() {
+    // Get difficulty config
+    let config;
+    if (state.mode === "AI_EASY") config = AI_CONFIG.EASY;
+    else if (state.mode === "AI_MEDIUM") config = AI_CONFIG.MEDIUM;
+    else config = AI_CONFIG.HARD;
+    
+    // Update AI at specified interval (not every frame)
+    player2.aiUpdateCounter++;
+    if (player2.aiUpdateCounter < config.updateDelay) {
+        // Continue moving towards last target
+        moveTowardsTarget(config);
+        return;
+    }
+    player2.aiUpdateCounter = 0;
+    
+    // ────────────────────────────────────────────────────────────
+    // Decide target position
+    // ────────────────────────────────────────────────────────────
+    
+    // Check if ball is moving towards AI
+    const ballMovingTowardsAI = ball.dx > 0;
+    
+    if (!ballMovingTowardsAI) {
+        // Ball moving away - return to center (with some laziness)
+        player2.targetY = canvas.height / 2 - PADDLE_HEIGHT / 2;
+        
+        // Easy AI is very lazy
+        if (state.mode === "AI_EASY" && Math.random() > 0.3) {
+            return; // Don't update target 70% of the time when ball is away
+        }
+    } else {
+        // Ball moving towards AI - calculate intercept
+        const interceptY = predictBallIntercept(config);
+        player2.targetY = interceptY - PADDLE_HEIGHT / 2;
+        
+        // Add random error based on difficulty
+        const error = (Math.random() - 0.5) * config.errorMargin;
+        player2.targetY += error;
+        
+        // Smart move: occasionally aim for optimal position
+        if (Math.random() < config.smartness) {
+            // Aim for paddle center to maximize control
+            player2.targetY = interceptY - PADDLE_HEIGHT / 2;
+        }
+    }
+    
+    // Move towards target
+    moveTowardsTarget(config);
+}
+
+function predictBallIntercept(config) {
+    // Simple prediction: where will ball be when it reaches paddle?
+    const distanceToAI = (canvas.width - PADDLE_WIDTH) - ball.x;
+    const timeToReach = distanceToAI / Math.abs(ball.dx);
+    
+    // Predict Y position
+    let predictedY = ball.y + (ball.dy * timeToReach * config.predictionAccuracy);
+    
+    // Account for wall bounces (simplified)
+    while (predictedY < 0 || predictedY > canvas.height) {
+        if (predictedY < 0) {
+            predictedY = -predictedY;
+        }
+        if (predictedY > canvas.height) {
+            predictedY = 2 * canvas.height - predictedY;
+        }
+    }
+    
+    // Add prediction inaccuracy
+    if (config.predictionAccuracy < 1) {
+        const inaccuracy = (1 - config.predictionAccuracy) * 100;
+        predictedY += (Math.random() - 0.5) * inaccuracy;
+    }
+    
+    return predictedY;
+}
+
+function moveTowardsTarget(config) {
+    const paddleCenter = player2.y + PADDLE_HEIGHT / 2;
+    const diff = player2.targetY + PADDLE_HEIGHT / 2 - paddleCenter;
+    
+    // Calculate movement speed
+    const baseSpeed = PADDLE_SPEED * config.speedMultiplier;
+    const moveSpeed = baseSpeed * config.reactionSpeed;
+    
+    // Move towards target
+    if (Math.abs(diff) > 2) {
+        player2.velocity = Math.sign(diff) * moveSpeed;
+        player2.y += player2.velocity;
+        player2.y = clampPaddle(player2.y);
+    } else {
+        player2.velocity = 0;
+    }
 }
 
 /* ============================================================================
@@ -283,6 +407,13 @@ function handlePaddleHit(player) {
     // Clamp vertical speed
     ball.dy = Math.max(-PHYSICS.maxBallDY, Math.min(PHYSICS.maxBallDY, ball.dy));
     
+    // Keep ball from getting stuck in paddle
+    if (player === player1) {
+        ball.x = PADDLE_WIDTH + BALL_RADIUS;
+    } else {
+        ball.x = canvas.width - PADDLE_WIDTH - BALL_RADIUS;
+    }
+    
     // Play sound (if available)
     if (window.game?.execSviraj) {
         window.game.execSviraj("FIGURA.WAV");
@@ -295,20 +426,24 @@ function resetBall(lastScorer) {
     
     // Serve towards player who didn't score
     if (lastScorer === 1) {
-        ball.dx = -BALL_SPEED; // Serve to player 1
+        ball.dx = -BALL_SPEED;
     } else if (lastScorer === 2) {
-        ball.dx = BALL_SPEED;  // Serve to player 2
+        ball.dx = BALL_SPEED;
     } else {
         // Random serve
         ball.dx = (Math.random() > 0.5 ? 1 : -1) * BALL_SPEED;
     }
-    
+    ball.dx = ball.dx + (Math.random()-0.5)*0.1 * ball.dx
+
     // Random vertical velocity
     ball.dy = (Math.random() * BALL_SPEED) - (BALL_SPEED / 2);
+    
+    // Reset AI tracking
+    player2.lastBallX = ball.x;
 }
 
 function handleGoal(scoringPlayer) {
-    const points = ball.value; // Dice value determines points
+    const points = ball.value;
     
     if (scoringPlayer === 1) {
         player1.score += points;
@@ -322,9 +457,10 @@ function handleGoal(scoringPlayer) {
     if (player1.score >= WIN_SCORE || player2.score >= WIN_SCORE) {
         game.running = false;
         
-        const winner = player1.score >= WIN_SCORE ? "Left Player" : "Right Player";
+        const winner = player1.score >= WIN_SCORE ? "Levi igralec " : "Desni igralec ";
         setTimeout(() => {
-            alert(`${winner} Wins!`);
+            alert(`${winner} je zmagal!`);
+            //openMsgBox(`Zmaga`, `${winner} je zmagal!`)
             newGame();
         }, 100);
         return;
@@ -333,6 +469,8 @@ function handleGoal(scoringPlayer) {
     // Reset ball (serve towards scorer)
     resetBall(scoringPlayer);
 }
+
+
 
 /* ============================================================================
  * RENDERING
@@ -380,7 +518,7 @@ function drawBall() {
     const img = DICE[ball.value];
     
     if (!img || !img.complete) {
-        // Fallback: draw white circle if dice not loaded
+        // Fallback: draw white circle
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
@@ -454,6 +592,7 @@ window.newGame = function() {
     player2.score = 0;
     player1.effort = 0;
     player2.effort = 0;
+    player2.aiUpdateCounter = 0;
     
     updateScoreDisplay();
     resetBall();
@@ -463,13 +602,17 @@ window.newGame = function() {
 };
 
 window.togglePause = function() {
-    if (state.mode === "NETWORK") return; // Can't pause network games
+    if (state.mode === "NETWORK") return;
     game.paused = !game.paused;
 };
 
 window.exitGame = function() {
     location.href = "/pingpong/exit";
 };
+
+function closeMsgBox() {
+    document.getElementById('win95-modal-overlay').style.display = 'none';
+}
 
 /* ============================================================================
  * START GAME

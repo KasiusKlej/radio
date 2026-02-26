@@ -15,7 +15,7 @@ html, body {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; font-family: "Tahoma", sans-serif;
     display: flex; flex-direction: column;
-    background: linear-gradient(to right, var(--win-blue), var(--win-blue-light));
+    background: linear-gradient(to right, var(--table-green), var(--table-green));
 }
 
 /* --- TITLE BAR --- */
@@ -550,4 +550,28 @@ body.metropoly-mode #table-scroll { display: none; }
 
 .menu-item-nested:hover > .tier-3 {
     display: block;
+}
+
+.menu-item-disabled {
+    color: #808080;
+    background: #c0c0c0;
+    padding: 4px 12px;
+}
+
+.menu-item-disabled:hover {
+    background: #c0c0c0;
+}
+
+/* Bottom left corner */
+.bottom-left {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Bottom right corner */
+.bottom-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }

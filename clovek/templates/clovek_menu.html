@@ -1,0 +1,506 @@
+<!-- ============================================================================
+     CLOVEK - Main Menu (Windows 95 Style)
+     ============================================================================
+     Three-tier menu with toggles and radio button options
+     ============================================================================ -->
+
+<ul class="menu-root win95-bevel-out">
+
+    <!-- ========================================================================
+         GAME MENU
+         ======================================================================== -->
+    <li class="menu-item">
+        <span class="menu-label" data-label-key="game">Igra</span>
+        <ul class="dropdown">
+            <li onclick="newGame()">
+                <span data-label-key="new">Nova igra</span>
+            </li>
+            <li class="separator"></li>
+            <li onclick="endGame()">
+                <span data-label-key="end">Končaj igro</span>
+            </li>
+            <li class="separator"></li>
+            <li onclick="location.href='{{ url_for("clovek.exit_game") }}'">
+                Izhod
+            </li>
+        </ul>
+    </li>
+
+    <!-- ========================================================================
+         OPTIONS MENU
+         ======================================================================== -->
+    <li class="menu-item">
+        <span class="menu-label" data-label-key="options">Opcije</span>
+        <ul class="dropdown">
+            
+            <!-- FAST MODE (Toggle) -->
+            <li onclick="toggleOption('fast')">
+                <span class="menu-checkbox">
+                    {% if CLOVEK.state.options.fast %}✓{% endif %}
+                </span>
+                <span data-label-key="fast">Hitro</span>
+            </li>
+            
+            <!-- SOUND (Toggle) -->
+            <li onclick="toggleOption('sound')">
+                <span class="menu-checkbox">
+                    {% if CLOVEK.state.options.sound %}✓{% endif %}
+                </span>
+                <span data-label-key="sound">Zvok</span>
+            </li>
+            
+            <!-- SAVE RESULT (Toggle) -->
+            <li onclick="toggleOption('save_result')">
+                <span class="menu-checkbox">
+                    {% if CLOVEK.state.options.save_result %}✓{% endif %}
+                </span>
+                <span data-label-key="save_result">Shrani rezultat</span>
+            </li>
+            
+            <li class="separator"></li>
+            
+            <!-- STATISTICS (Action) -->
+            <li onclick="showStatistics()">
+                <span data-label-key="statistics">Statistika</span>
+            </li>
+            
+            <!-- BOARD (Action) -->
+            <li onclick="showBoard()">
+                <span data-label-key="board">Tabla</span>
+            </li>
+            
+        </ul>
+    </li>
+
+    <!-- ========================================================================
+         OPPONENT MENU
+         ======================================================================== -->
+    <li class="menu-item">
+        <span class="menu-label" data-label-key="opponent">Nasprotnik</span>
+        <ul class="dropdown">
+
+            <!-- COMPUTER (Nested submenu) -->
+            <li class="menu-item-nested">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.mode.startswith("AI_") %}●{% else %}○{% endif %}
+                </span>
+                <span>Računalnik ▶</span>
+
+                <ul class="dropdown tier-3">
+                    
+                    <!-- AI EASY -->
+                    <li onclick="setOpponent('AI_EASY')">
+                        <span class="menu-radio">
+                            {% if CLOVEK.state.mode == "AI_EASY" %}●{% else %}○{% endif %}
+                        </span>
+                        <span data-label-key="bad">Slab</span>
+                    </li>
+                    
+                    <!-- AI MEDIUM -->
+                    <li onclick="setOpponent('AI_MEDIUM')">
+                        <span class="menu-radio">
+                            {% if CLOVEK.state.mode == "AI_MEDIUM" %}●{% else %}○{% endif %}
+                        </span>
+                        <span data-label-key="good">Dober</span>
+                    </li>
+                    
+                    <!-- AI HARD -->
+                    <li onclick="setOpponent('AI_HARD')">
+                        <span class="menu-radio">
+                            {% if CLOVEK.state.mode == "AI_HARD" %}●{% else %}○{% endif %}
+                        </span>
+                        <span data-label-key="very_good">Zelo dober</span>
+                    </li>
+                    
+                </ul>
+            </li>
+
+            <!-- HUMAN (Radio option) -->
+            <li onclick="setOpponent('HUMAN')">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.mode == "HUMAN" %}●{% else %}○{% endif %}
+                </span>
+                <span data-label-key="human">Človek</span>
+            </li>
+
+            <!-- NETWORK (Radio option) -->
+            <li onclick="setOpponent('NETWORK')">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.mode == "NETWORK" %}●{% else %}○{% endif %}
+                </span>
+                <span data-label-key="network">Omrežje</span>
+            </li>
+
+        </ul>
+    </li>
+
+    <!-- ========================================================================
+         LANGUAGE MENU
+         ======================================================================== -->
+    <li class="menu-item">
+        <span class="menu-label" data-label-key="language">Jezik</span>
+        <ul class="dropdown">
+            
+            <!-- SLOVENIAN -->
+            <li onclick="setLanguage('slo')">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.language == "slo" %}●{% else %}○{% endif %}
+                </span>
+                <span data-label-key="slovene">Slovensko</span>
+            </li>
+            
+            <!-- ENGLISH -->
+            <li onclick="setLanguage('eng')">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.language == "eng" %}●{% else %}○{% endif %}
+                </span>
+                <span data-label-key="english">Angleško</span>
+            </li>
+            
+        </ul>
+    </li>
+
+    <!-- ========================================================================
+         HELP MENU
+         ======================================================================== -->
+
+     <!-- HELP -->
+    <li class="menu-item">
+        Pomoč
+        <ul class="dropdown">
+            <li onclick="location.href='{{ url_for("clovek.about") }}'">
+                O programu...
+            </li>
+        </ul>
+    </li>
+
+</ul>
+
+<!-- ============================================================================
+     JAVASCRIPT FUNCTIONS
+     ============================================================================ -->
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// Game Actions
+// ────────────────────────────────────────────────────────────────────────────
+
+function newGame() {
+    fetch("/clovek/api/game/new", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(err => console.error("Error starting new game:", err));
+}
+
+function endGame() {
+    if (confirm("Ste prepričani, da želite končati igro?")) {
+        fetch("/clovek/api/game/end", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(err => console.error("Error ending game:", err));
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Toggle Options (Fast, Sound, Save Result)
+// ────────────────────────────────────────────────────────────────────────────
+
+function toggleOption(option) {
+    fetch("/clovek/api/options/toggle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ option: option })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update checkbox in menu
+            updateMenuCheckbox(option, data.value);
+        }
+    })
+    .catch(err => console.error(`Error toggling ${option}:`, err));
+}
+
+function updateMenuCheckbox(option, isChecked) {
+    // Find the menu item and update its checkbox
+    const menuItems = document.querySelectorAll('[onclick*="toggleOption"]');
+    menuItems.forEach(item => {
+        if (item.getAttribute('onclick').includes(option)) {
+            const checkbox = item.querySelector('.menu-checkbox');
+            if (checkbox) {
+                checkbox.textContent = isChecked ? '✓' : '';
+            }
+        }
+    });
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Show Dialogs
+// ────────────────────────────────────────────────────────────────────────────
+
+function showStatistics() {
+    fetch("/clovek/api/statistics")
+    .then(response => response.json())
+    .then(data => {
+        // Display statistics modal/dialog
+        displayStatisticsDialog(data);
+    })
+    .catch(err => console.error("Error fetching statistics:", err));
+}
+
+function showBoard() {
+    // Toggle board view or bring focus to board
+    const boardElement = document.getElementById("game-board");
+    if (boardElement) {
+        boardElement.scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+function displayStatisticsDialog(stats) {
+    // Create and show statistics modal
+    // This is a placeholder - implement your modal logic
+    alert(JSON.stringify(stats, null, 2));
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Set Opponent Mode (Radio buttons - mutually exclusive)
+// ────────────────────────────────────────────────────────────────────────────
+
+function setOpponent(mode) {
+    fetch("/clovek/api/opponent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: mode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload to update game mode
+            location.reload();
+        }
+    })
+    .catch(err => console.error(`Error setting opponent to ${mode}:`, err));
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Set Language (Radio buttons - mutually exclusive)
+// ────────────────────────────────────────────────────────────────────────────
+
+function setLanguage(lang) {
+    fetch("/clovek/api/language", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: lang })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update all labels on page
+            updateAllLabels(lang);
+        }
+    })
+    .catch(err => console.error(`Error setting language to ${lang}:`, err));
+}
+
+function updateAllLabels(lang) {
+    // Fetch translated labels
+    fetch(`/clovek/api/labels/${lang}`)
+    .then(response => response.json())
+    .then(labels => {
+        // Update all elements with data-label-key attribute
+        document.querySelectorAll('[data-label-key]').forEach(element => {
+            const key = element.getAttribute('data-label-key');
+            if (labels[key]) {
+                element.textContent = labels[key];
+            }
+        });
+        
+        // Reload page to update everything
+        setTimeout(() => location.reload(), 100);
+    })
+    .catch(err => console.error("Error updating labels:", err));
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Menu Behavior (Windows 95 style)
+// ────────────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.menu-root')) {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+        }
+    });
+    
+    // Handle menu item hover for dropdowns
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            // Close other dropdowns
+            this.parentElement.querySelectorAll(':scope > .menu-item').forEach(other => {
+                if (other !== this) {
+                    const dropdown = other.querySelector(':scope > .dropdown');
+                    if (dropdown) dropdown.style.display = 'none';
+                }
+            });
+            
+            // Open this dropdown
+            const dropdown = this.querySelector(':scope > .dropdown');
+            if (dropdown) {
+                dropdown.style.display = 'block';
+            }
+        });
+    });
+    
+    // Handle nested menu items
+    document.querySelectorAll('.menu-item-nested').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const nestedDropdown = this.querySelector('.tier-3');
+            if (nestedDropdown) {
+                nestedDropdown.style.display = 'block';
+            }
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            const nestedDropdown = this.querySelector('.tier-3');
+            if (nestedDropdown) {
+                nestedDropdown.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<!-- ============================================================================
+     CSS STYLES (Include in your main CSS file)
+     ============================================================================ -->
+<style>
+/* Menu Root */
+.menu-root {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #c0c0c0;
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+}
+
+/* Top-level menu items */
+.menu-root > .menu-item {
+    position: relative;
+    padding: 4px 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.menu-root > .menu-item:hover {
+    background-color: #000080;
+    color: white;
+}
+
+/* Dropdowns */
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    min-width: 180px;
+    z-index: 1000;
+    list-style: none;
+    padding: 2px;
+    margin: 0;
+}
+
+.dropdown li {
+    padding: 4px 20px 4px 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.dropdown li:hover {
+    background-color: #000080;
+    color: white;
+}
+
+/* Separator */
+.dropdown .separator {
+    height: 1px;
+    background-color: #808080;
+    margin: 2px 4px;
+    padding: 0;
+    cursor: default;
+}
+
+.dropdown .separator:hover {
+    background-color: #808080;
+}
+
+/* Nested menus (tier 3) */
+.menu-item-nested {
+    position: relative;
+}
+
+.tier-3 {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -2px;
+    background-color: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    min-width: 160px;
+    z-index: 1001;
+    list-style: none;
+    padding: 2px;
+    margin: 0;
+}
+
+/* Checkboxes (for toggles) */
+.menu-checkbox {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    margin-right: 4px;
+}
+
+/* Radio buttons (for mutually exclusive options) */
+.menu-radio {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    margin-right: 4px;
+    font-size: 10px;
+}
+
+/* Disabled items */
+.menu-item-disabled {
+    color: #808080;
+    cursor: not-allowed;
+}
+
+.menu-item-disabled:hover {
+    background-color: #c0c0c0 !important;
+    color: #808080 !important;
+}
+</style>

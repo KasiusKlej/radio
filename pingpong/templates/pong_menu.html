@@ -1,63 +1,80 @@
 <ul class="menu-root win95-bevel-out">
 
+    <!-- GAME -->
     <li class="menu-item">
-        Game
+        Igra
         <ul class="dropdown">
-            <li onclick="location.reload()">New Game</li>
+            <li onclick="location.reload()">Nova igra</li>
             <li class="separator"></li>
             <li onclick="location.href='{{ url_for("pingpong.exit_game") }}'">
-                Exit
+                Izhod
             </li>
         </ul>
     </li>
 
-    <li class="menu-item">Opponent
-    <ul class="dropdown">
-
-        <!-- HUMAN -->
-        <li onclick="setMode('HUMAN')">
-            {% if PINGPONG.state.mode == "HUMAN" %}✓{% endif %}
-            Human
-        </li>
-
-        <!-- COMPUTER (NESTED) -->
-        <li class="menu-item-nested">
-            {% if PINGPONG.state.mode.startswith("AI") %}✓{% endif %}
-            Computer ▶
-
-            <ul class="dropdown tier-3">
-                {% for lvl in ["BAD", "UGLY", "GOOD"] %}
-                <li onclick="setAI('{{ lvl }}')">
-                    {% if PINGPONG.state.mode == lvl %}✓{% endif %}
-                    {{ lvl }}
-                </li>
-                {% endfor %}
-            </ul>
-        </li>
-
-        <!-- NETWORK -->
-        <li onclick="setMode('NETWORK')">
-            {% if PINGPONG.state.mode == "NETWORK" %}✓{% endif %}
-            Network
-        </li>
-
-    </ul>
-</li>
-
-
+    <!-- OPPONENT -->
     <li class="menu-item">
-        Help
+        Nasprotnik
+        <ul class="dropdown">
+
+            <!-- HUMAN -->
+            <li onclick="setMode('HUMAN')">
+                {% if PINGPONG.state.mode == "HUMAN" %}✓{% endif %}
+                Človek
+            </li>
+
+            <!-- COMPUTER -->
+            <li class="menu-item-nested">
+                {% if PINGPONG.state.mode.startswith("AI_") %}✓{% endif %}
+                Računalnik ▶
+
+                <ul class="dropdown tier-3">
+
+                    <li onclick="setMode('AI_EASY')">
+                        {% if PINGPONG.state.mode == "AI_EASY" %}✓{% endif %}
+                        Slab
+                    </li>
+
+                    <li onclick="setMode('AI_MEDIUM')">
+                        {% if PINGPONG.state.mode == "AI_MEDIUM" %}✓{% endif %}
+                        Dober
+                    </li>
+
+                    <li onclick="setMode('AI_HARD')">
+                        {% if PINGPONG.state.mode == "AI_HARD" %}✓{% endif %}
+                        Zloben
+                    </li>
+
+                </ul>
+            </li>
+
+            <!-- NETWORK -->
+            <li class="menu-item-disabled" onclick="setMode('NETWORK')">
+                {% if PINGPONG.state.mode == "NETWORK" %}✓{% endif %}
+                Omrežje
+            </li>
+
+        </ul>
+    </li>
+
+    <!-- HELP -->
+    <li class="menu-item">
+        Pomoč
         <ul class="dropdown">
             <li onclick="location.href='{{ url_for("pingpong.about") }}'">
-                About
+                O programu...
             </li>
         </ul>
     </li>
 
 </ul>
 
-<script> 
-    function setMode(mode) { fetch("/pingpong/api/state", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({mode}) }).then(()=>location.reload()); } 
-    function setAI(level) { fetch("/pingpong/api/state", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({mode:"AI", ai_level: level}) }).then(()=>location.reload()); } 
+<script>
+function setMode(mode) {
+    fetch("/pingpong/api/state", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: mode })
+    }).then(() => location.reload());
+}
 </script>
-
