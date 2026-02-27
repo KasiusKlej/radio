@@ -104,9 +104,9 @@ class MetropolyGame:
         self.ini_path = base_path / "metropoly.ini"
 
         # --- B. 150 LANGUAGE SLOTS ---
-        self.lngg = [""] * 151 
+        ####self.lngg = [""] * 151 
         self.selectedLanguage = "slo" # File code (e.g. 'slo')
-        self.CURRENT_LANGUAGE = "slo"  # ISO code (e.g. 'sl')
+        ####self.CURRENT_LANGUAGE = "slo"  # ISO code (e.g. 'sl')
 
         # --- C. BOARD & GLOBALS (VB Checklist) ---
         self.dimx = 10
@@ -167,10 +167,10 @@ class MetropolyGame:
         Note: load/switch language must happen BEFORE set_data.
         """
         # 1. Determine language from .ini
-        load_language(self) 
+        ####load_language(self) 
 
         # 2. Fill the 150 lngg lines from text file
-        switch_language(self) 
+        ####switch_language(self) 
 
         # 3. Scan for map files (Port of fill_combo)
         fill_combo_logic(self)
@@ -190,38 +190,59 @@ class MetropolyGame:
             config_players = load_metropoly_players(str(self.ini_path))
             init_players_logic(self, config_players)
 
-    def to_dict(self):
+    def to_dict(self, lang_data):
+        #### old
         """Returns the full game state for the JavaScript frontend."""
-        # Standardize player and grid serialization
-        player_data = {str(pid): p.to_dict() for pid, p in self.players.items()}
-        grid_data = [[t.to_dict() for t in row] for row in self.grid]
+        # player_data = {str(pid): p.to_dict() for pid, p in self.players.items()}
+        # grid_data = [[t.to_dict() for t in row] for row in self.grid]
+        # # Deliver and flush audio
+        # current_sounds = list(self.audio_queue)
+        # self.audio_queue = []
+        # return {
+        #     "dimx": self.dimx,
+        #     "dimy": self.dimy,
+        #     "grid": grid_data,
+        #     "players": player_data,
+        #     "curpl": self.curpl,
+        #     "faza": self.faza,
+        #     "kocka": self.kocka,
+        #     "dayOfWeek": self.dayOfWeek,
+        #     "dayName": self.dayOfWeekName[self.dayOfWeek] if 0 < self.dayOfWeek < 8 else "",
+        #     "status_label": self.status_label,
+        #     "clkMode": self.clkMode,
+        #     "is_editor_active": self.is_editor_active,
+        #     "mapEditorMode": self.mapEditorMode,
+        #     "shortcuts": self.shortcuts,
+        #     "audio_queue": current_sounds,
+        #     "lang": self.CURRENT_LANGUAGE,
+        #     "zoom": self.zoomfaktor,
+        #     "dimx": self.dimx,
+        #     "dimy": self.dimy,
+        #     "map_list": self.map_list, # <--- The "Combo1" data
+        #     "players": {str(pid): p.to_dict() for pid, p in self.players.items()}
+        # }
 
-        # Deliver and flush audio
-        current_sounds = list(self.audio_queue)
-        self.audio_queue = []
-
+        #### ✅ REWRITE to_dict to accept the translation as an external input:
+        #### Instead of the engine "knowing" the language, the route hands the language to the engine only during the moment of serialization.
+        """
+        Serializes the state, using the provided lang_data for UI labels.
+        The engine stays language-neutral.
+        """
+        l = lang_data.get("raw", [""] * 151) # The 150 lines
+        
         return {
             "dimx": self.dimx,
             "dimy": self.dimy,
-            "grid": grid_data,
-            "players": player_data,
-            "curpl": self.curpl,
             "faza": self.faza,
-            "kocka": self.kocka,
-            "dayOfWeek": self.dayOfWeek,
-            "dayName": self.dayOfWeekName[self.dayOfWeek] if 0 < self.dayOfWeek < 8 else "",
-            "status_label": self.status_label,
-            "clkMode": self.clkMode,
-            "is_editor_active": self.is_editor_active,
-            "mapEditorMode": self.mapEditorMode,
-            "shortcuts": self.shortcuts,
-            "audio_queue": current_sounds,
-            "lang": self.CURRENT_LANGUAGE,
-            "zoom": self.zoomfaktor,
-            "dimx": self.dimx,
-            "dimy": self.dimy,
-            "map_list": self.map_list, # <--- The "Combo1" data
-            "players": {str(pid): p.to_dict() for pid, p in self.players.items()}
+            "curpl": self.curpl,
+            "status_label": self.status_label, # This is still logic (e.g. "P1 pays P2")
+            "players": {str(pid): p.to_dict() for pid, p in self.players.items()},
+            "grid": [[t.to_dict() for t in row] for row in self.grid],
+            
+            # We attach the TRANSLATED menu/UI specifically for this one player
+            "m": lang_data.get("menu", {}),
+            "turn": lang_data.get("turn", {}),
+            "dayName": l[127 + self.dayOfWeek] if hasattr(self, 'dayOfWeek') else ""
         }
 
 
@@ -1748,28 +1769,42 @@ def end_map_editor(state):
     VB: Sub end_map_editor()
     Resumes game or triggers a new game depending on how the map was edited.
     """
-    mode = state.mapEditorMode # 1=New, 2=Modified, 3=Opened/Modified
+    # 1. Capture the editor mode before clearing
+    # 1: New Map, 2: Modified Current, 3: Opened/Modified
+    mode = state.mapEditorMode 
     
-    # Reset modes
+    # 2. Reset Editor-specific flags
     state.is_editor_active = False
     state.clkMode = 0 
     
-    # Restore 'timer' logic (faza)
-    if state.pauseGame1: state.faza = 2
-    elif state.pauseGame2: state.faza = 3
-    else: state.faza = 4 # Default to waiting for turn end
+    # 3. Restore the "Timer" logic (Game Phase)
+    # pauseGame1/2 were set in begin_map_editor to remember what was happening
+    if state.pauseGame1:
+        state.faza = 2  # Roll Dice phase
+    elif state.pauseGame2:
+        state.faza = 3  # Moving/Jumping phase
+    else:
+        state.faza = 4  # Interaction/End Turn phase
     
-    # VB Logic for MapEditorMode transitions
+    # 4. Handle Mode Transitions
     if mode == 1 or mode == 3:
-        # Trigger 'New Game' logic on the newly edited map
+        # Re-initialize the session on the new map (Reset positions, players, day)
+        # This calls the helper we ported earlier
+        finalize_new_game_setup(state)
         
-        reset_game_state(state)
     elif mode == 2:
-        # Simply continue where we left off
+        # Mode 2 means we just edited the current map while playing.
+        # We simply resume exactly where we were.
         pass
         
+    # 5. Final Cleanup
     state.mapEditorMode = 0
-    return state.to_dict()
+    state.pauseGame1 = False
+    state.pauseGame2 = False
+
+    # Return the state object. 
+    # The Route will handle to_dict(lang_data).
+    return state
 
 def edit_map_tile(state, x, y, tool_index):
     """
@@ -2082,35 +2117,22 @@ def risi_cesto(state, x, y):
 def set_data(state):
     """
     VB: Sub set_data()
-    Initializes game constants, semaphor rules, and translated names.
+    Initializes logical game constants and semaphore rules.
+    NOTE: Language-specific names (Days, Education) are now handled 
+    by the Context Processor and to_dict(lang_data).
     """
-    # 1. Reset Modes & Time
+    # 1. Reset Modes & Time Counters (Pure Logic)
     state.clkMode = 0
     state.dayOfWeek = 1
     state.gameTurnVpadnica = 0
     state.gameTurnSmer = 0
     state.mapEditorMode = 0
     
-    # 2. Map Translated Names from the lngg list (populated by switch_language)
-    # VB: dayOfWeekName(1..7) = lngg(128..134)
-    # We use a 1-based list or a dict to stay consistent with VB logic
-    # Ensure these exist as lists before filling
-    if not hasattr(state, 'dayOfWeekName') or not state.dayOfWeekName:
-        state.dayOfWeekName = [""] * 8
-
-    state.dayOfWeekName = [None] * 8
-    for i in range(1, 8):
-        # state.lngg is the list of 150 lines from the text file
-        state.dayOfWeekName[i] = state.lngg[127 + i] 
-    
-    # VB: izobrazbaNaziv(0..5)
-    state.izobrazbaNaziv = [""] * 6
-    for i in range(1, 6):
-        state.izobrazbaNaziv[i] = state.lngg[134 + i]
-
-    # 3. The Semafor Rule Table (81 Presets)
-    # We initialize with an empty string at index 0 to stay 1-based
+    # 2. The Semafor Rule Table (81 Logical Presets)
+    # We use a list of 82 to allow 1-based indexing (1..81) to match VB
     state.semaforData = [""] * 82
+    
+    # These strings are directions (NSWE), not text. They stay in the engine.
     state.semaforData[1] = "211133363942"
     state.semaforData[2] = "211233363943"
     state.semaforData[3] = "211333363944"

@@ -1,3 +1,4 @@
+import os
 import uuid
 import traceback
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
@@ -7,42 +8,77 @@ from .engine.parser import load_game_rules
 
 cardgames_bp = Blueprint("cardgames", __name__, template_folder="templates")
 
-# Global in-memory storage: sid -> CardGame instance
+# ============================================================================
+# CRITICAL FIX: Worker-Isolated Storage
+# ============================================================================
+# PROBLEM: Multiple production workers share the same in-memory dictionary
+#   Worker 1: active_games["user123"] = GameA
+#   Worker 2: active_games["user123"] = GameB  ← COLLISION!
+#   Result: Cards teleport, languages switch, chaos
+#
+# SOLUTION: Include worker PID in storage key
+#   Worker 1: active_games[(PID1, "user123")] = GameA  ✅
+#   Worker 2: active_games[(PID2, "user123")] = GameB  ✅
+#   Result: Complete isolation, no interference
+#
+# WHY IT WORKS:
+#   - Each worker process has a unique PID
+#   - Storage key = (worker_pid, session_id)
+#   - Same session_id on different workers → different keys
+#   - No cross-contamination possible
+# ============================================================================
+
+WORKER_ID = os.getpid()  # Unique per worker process
+
+# Storage: {(worker_id, session_id): CardGame}
 active_games = {}
 
+def get_session_key():
+    """Generate worker-specific session key to prevent cross-contamination."""
+    sid = session.get("user_sid")
+    if not sid:
+        return None
+    return (WORKER_ID, sid)
+
 # -------------------------------------------------
-# 1. CORE HELPERS (The "Safety Net")
+# 1. CORE HELPERS (Now with Complete Isolation)
 # -------------------------------------------------
 
 def get_user_game():
     """
-    Fetches the engine. Ensures the Engine and Session are 
-    ALWAYS in the same language.
+    Fetches the engine with complete worker isolation.
+    CRITICAL: Each worker maintains its own game instances.
     """
-    sid = session.get("user_sid")
-    if not sid:
+    session_key = get_session_key()
+    if not session_key:
         return None
 
-    engine = active_games.get(sid)
+    engine = active_games.get(session_key)
     
-    # Self-healing: If engine is gone but cookie exists, recreate it
+    # Self-healing: If engine is gone but session exists, recreate it
     if not engine:
         game_id = session.get("zap_st_igre")
         if game_id:
             engine = CardGame(game_id)
-            active_games[sid] = engine            
+            engine.state.CURRENT_LANGUAGE = session.get("lang", "slo")
+            active_games[session_key] = engine
+            print(f"🔧 Recreated game for worker {WORKER_ID}, session {session_key[1][:8]}")
 
     if engine:
-        # SYNC: The "Ace of Spades" must match the current session choice
+        # SYNC: Ensure THIS session's language is active
         current_lang = session.get("lang", "slo")
-        engine.state.CURRENT_LANGUAGE = current_lang
+        if engine.state.CURRENT_LANGUAGE != current_lang:
+            engine.state.CURRENT_LANGUAGE = current_lang
+            print(f"🔄 Synced language to {current_lang} for session {session_key[1][:8]}")
         
     return engine
 
 def ensure_sid():
     """Ensures a unique ID exists and sets default language."""
     if "user_sid" not in session:
-        session["user_sid"] = str(uuid.uuid4())
+        new_sid = str(uuid.uuid4())
+        session["user_sid"] = new_sid
+        print(f"✨ New session: {new_sid[:8]} on worker {WORKER_ID}")
     if "lang" not in session:
         session["lang"] = "slo"
     return session["user_sid"]
@@ -89,14 +125,23 @@ def index():
 @cardgames_bp.route("/play/<game_id>/")
 def play_game(game_id):
     sid = ensure_sid()
+    session_key = get_session_key()
     
-    # Start fresh
+    # CRITICAL: Clean up old game for THIS worker/session combo only
+    if session_key in active_games:
+        del active_games[session_key]
+        print(f"🗑️  Cleaned up old game for session {sid[:8]} on worker {WORKER_ID}")
+    
+    # Start fresh with isolated instance
     engine = CardGame(game_id)
     engine.state.CURRENT_LANGUAGE = session.get("lang", "slo")
     engine.autoplay_enabled = session.get("autoplay_enabled", False)
 
-    active_games[sid] = engine
+    # Store with worker-specific key
+    active_games[session_key] = engine
     session["zap_st_igre"] = game_id
+    
+    print(f"🎮 Started game {game_id} for session {sid[:8]} on worker {WORKER_ID}")
 
     return render_template(
         "game.html",
@@ -200,9 +245,14 @@ def set_language(code):
 @cardgames_bp.route("/exit")
 @cardgames_bp.route("/exit/")
 def exit_game():
-    sid = session.get("user_sid")
-    if sid in active_games:
-        del active_games[sid]
+    """Exit and clean up THIS worker/session only."""
+    session_key = get_session_key()
+    
+    # Clean up THIS worker's game instance only
+    if session_key and session_key in active_games:
+        del active_games[session_key]
+        print(f"🗑️  Session {session_key[1][:8]} exited from worker {WORKER_ID}")
+    
     session.clear()
     return redirect("/")
 

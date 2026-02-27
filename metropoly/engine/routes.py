@@ -55,19 +55,47 @@ metropoly_bp = Blueprint(
 
 
 
-active_metropoly_games = {}
+
+#### 🔥 What is happening (root cause)
+# You have TWO overlapping sources of truth for language and game state:
+# Global in-memory objects
+# Session-based expectations
+# They are not isolated per game, and not isolated per worker.
+#### We need two dictionaries: one to hold the unique games, and one to map users to them.
+#### active_metropoly_games = {}
+
+# 1. Store the actual game data (The Universal Truth)
+# Key: game_instance_id (e.g. "game-123"), Value: MetropolyGame object
+METRO_GAMES = {}
+
+# 2. Store which player is looking at which game
+# Key: user_sid (from session), Value: game_instance_id
+PLAYER_MAP = {}
+
+
 
 # -------------------------------------------------
 # HELPERS
 # -------------------------------------------------
 
+# def get_user_game():
+#     sid = session.get("user_sid")
+#     game = active_metropoly_games.get(sid)
+#     if game:
+#         # SYNC: One place to ensure engine matches user preference
+#         game.CURRENT_LANGUAGE = session.get("metropoly_lang", "eng")
+#     return game
+
+#### rewriten
 def get_user_game():
+    """Fetches the game instance this specific player is attached to."""
     sid = session.get("user_sid")
-    game = active_metropoly_games.get(sid)
-    if game:
-        # SYNC: One place to ensure engine matches user preference
-        game.CURRENT_LANGUAGE = session.get("metropoly_lang", "eng")
-    return game
+    game_id = PLAYER_MAP.get(sid)
+    
+    if not game_id:
+        return None
+        
+    return METRO_GAMES.get(game_id)
 
 def ensure_sid():
     if "user_sid" not in session:
@@ -81,38 +109,68 @@ def ensure_sid():
 # -------------------------------------------------
 
 # --- 3. THE CONTEXT PROCESSOR ---
+# @metropoly_bp.context_processor
+# def inject_metropoly_context():
+#     # Import the parser inside to avoid circular issues with logic.py
+#     from .new_engine_without_circular_imports import metropoly_language_parser
+    
+#     lang_iso = session.get('lang', 'slo')
+    
+#     # Use the map defined at the top of the file
+#     file_prefix = LANG_MAP.get(lang_iso, 'eng') 
+    
+#     # Robust Path Resolution:
+#     # We go up from 'engine' (root_path) to 'metropoly', then to 'mywebsite'
+#     mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
+    
+#     # Path: mywebsite/static/metropoly/assets/languages/
+#     lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
+    
+#     target_filename = f"{file_prefix}.txt"
+
+#     try:
+#         # Pass the Path object and the filename
+#         raw_lang = metropoly_language_parser(lang_dir, target_filename)
+#     except Exception as e:
+#         # Helpful console output if it fails again
+#         raw_lang = {"menu": {}, "phrases": {}, "turn": {}}
+
+#     return {
+#         "m": raw_lang.get("menu", {}),
+#         "phrases": raw_lang.get("phrases", {}),
+#         "turn": raw_lang.get("turn", {}), # 👈 ADD THIS: Fixes the crash
+#         "lang_dict": raw_lang,
+#         "game": get_user_game()
+#     }
+
+
+#### The context processor is now the only place that cares about the .txt files.
+import copy
 @metropoly_bp.context_processor
 def inject_metropoly_context():
-    # Import the parser inside to avoid circular issues with logic.py
-    from .new_engine_without_circular_imports import metropoly_language_parser
-    
+    # 1. Get the language from the session (Personal preference)
     lang_iso = session.get('lang', 'slo')
+    file_prefix = LANG_MAP.get(lang_iso, 'slo')
     
-    # Use the map defined at the top of the file
-    file_prefix = LANG_MAP.get(lang_iso, 'eng') 
-    
-    # Robust Path Resolution:
-    # We go up from 'engine' (root_path) to 'metropoly', then to 'mywebsite'
+    # 2. Parse the file
     mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
-    
-    # Path: mywebsite/static/metropoly/assets/languages/
     lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
     
-    target_filename = f"{file_prefix}.txt"
+    # 🩹 CRITICAL: Return a deep copy to prevent cross-player contamination
+    raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
+    lang_data = copy.deepcopy(raw_data)
 
-    try:
-        # Pass the Path object and the filename
-        raw_lang = metropoly_language_parser(lang_dir, target_filename)
-    except Exception as e:
-        # Helpful console output if it fails again
-        raw_lang = {"menu": {}, "phrases": {}, "turn": {}}
+    # 3. Get the game logic
+    game_instance = get_user_game()
+    
+    # 4. If the game exists, render its state using this player's language
+    game_json = game_instance.to_dict(lang_data) if game_instance else None
 
     return {
-        "m": raw_lang.get("menu", {}),
-        "phrases": raw_lang.get("phrases", {}),
-        "turn": raw_lang.get("turn", {}), # 👈 ADD THIS: Fixes the crash
-        "lang_dict": raw_lang,
-        "game": get_user_game()
+        "m": lang_data.get("menu", {}),
+        "lang_dict": lang_data,
+        "game": game_json, # This is the "Personalized View"
+        "current_lang": lang_iso
     }
 
 
@@ -120,64 +178,97 @@ def inject_metropoly_context():
 
 
 
+# @metropoly_bp.route("/exit")
+# @metropoly_bp.route("/exit/")
+# def exitGame():
+#     sid = session.get("user_sid")
+#     active_metropoly_games.pop(sid, None)
+#     session.pop("zap_st_igre", None)
+#     # 🩹 FIX: Explicitly return the redirect so Flask doesn't get 'None'
+#     return redirect("/")
+# @metropoly_bp.route("/")
+# def index():
+#     ensure_sid()
+#     sid = session["user_sid"]
+#     if sid not in active_metropoly_games:
+#         active_metropoly_games[sid] = MetropolyGame() 
+#     return render_template("metropoly_game.html", game=active_metropoly_games[sid].to_dict())
 
+
+@metropoly_bp.route("/exit")
+@metropoly_bp.route("/exit/")
+def exitGame():
+    """
+    Cleans up the player's connection to the game and returns home.
+    Following the 'Universal Games' rule: we only remove the PLAYER'S connection.
+    """
+    sid = session.get("user_sid")
+    
+    # 1. Remove this specific player from the map
+    # (The game instance stays in METRO_GAMES in case other players are in the match)
+    PLAYER_MAP.pop(sid, None)
+    
+    # 2. Cleanup session markers
+    session.pop("zap_st_igre", None)
+    
+    print(f"🚪 Player {sid} exited Metropoly.")
+    
+    # 🩹 FIX: Always return a valid redirect response
+    return redirect("/")
 
 @metropoly_bp.route("/")
 def index():
+    """
+    Main entry point. Ensures the user has a game to look at.
+    """
     ensure_sid()
-    sid = session["user_sid"]
-    if sid not in active_metropoly_games:
-        active_metropoly_games[sid] = MetropolyGame() 
-    return render_template("metropoly_game.html", game=active_metropoly_games[sid].to_dict())
+    sid = session.get("user_sid")
+
+    # 1. Check if the player is already assigned to a game
+    instance_id = PLAYER_MAP.get(sid)
+
+    # 2. If not, create a new match instance and link the player to it
+    if not instance_id:
+        instance_id = f"game-{uuid.uuid4().hex[:8]}" # Unique match ID
+        METRO_GAMES[instance_id] = MetropolyGame()
+        PLAYER_MAP[sid] = instance_id
+        print(f"⚓ NEW MATCH: {instance_id} initialized for Player {sid}")
+
+    # 3. RENDER
+    # We do NOT pass 'game=' here. 
+    # Because we use the @metropoly_bp.context_processor we built earlier, 
+    # Flask will automatically call get_user_game(), get the language 
+    # from the session, and inject the translated 'game' object into 
+    # 'metropoly_game.html' for us.
+    return render_template("metropoly_game.html")
+
 
 # -------------------------------------------------
 # CORE GAME API
 # -------------------------------------------------
 
-# click on board
-@metropoly_bp.route("/api/map_click", methods=["POST"])
-@metropoly_bp.route("/api/map_click", methods=["POST"])
-def api_map_click():
-    game = get_user_game()
-    data = request.get_json()
-    
-    # x, y come from JS based on which tile was clicked
-    handle_map_click(game, data['x'], data['y'])
-    
-    return jsonify({"success": True, "game": game.to_dict()})
 
-# keyboard shortcuts
-@metropoly_bp.route("/api/set_mode/<int:mode_id>", methods=["POST"])
-@metropoly_bp.route("/api/set_mode/<int:mode_id>", methods=["POST"])
-def set_clk_mode(mode_id):
-    """
-    VB: Logic inside mnuRoad_Click, mnuSell_Click, etc.
-    Sets the mouse behavior and updates the status label from lngg.
-    """
-    game = get_user_game()
-    if not game: return jsonify({"success": False}), 401
-    
-    p = game.players[game.curpl]
-    
-    if not p.is_pc:
-        game.clkMode = mode_id
-        # Map mode to lngg index
-        if mode_id == 1: # SELL
-            game.status_label = game.lngg[100]
-        elif mode_id == 2: # ROAD
-            game.status_label = game.lngg[113]
-        elif mode_id == 3: # CREATE SEMAPHORE
-            game.status_label = game.lngg[83]
-            
-    return jsonify({"success": True, "game": game.to_dict()})
+
+
 
 # File / new
 @metropoly_bp.route("/api/game/new", methods=["POST"])
 @metropoly_bp.route("/api/game/new/", methods=["POST"])
-@metropoly_bp.route("/api/game/new", methods=["POST"])
-@metropoly_bp.route("/api/game/new/", methods=["POST"])
 def api_new_game():
     try:
+        
+        #### When a player clicks "New Game," we create the instance ID and link them to it.
+        sid = session.get("user_sid")
+        # 1. Create a unique ID for this match
+        instance_id = f"game-{uuid.uuid4().hex[:8]}"
+        # 2. Create the universal engine
+        new_engine = MetropolyGame()
+        # 3. Register it
+        METRO_GAMES[instance_id] = new_engine
+        PLAYER_MAP[sid] = instance_id
+
+
+
         engine = get_user_game()
         if not engine:
             return jsonify({"success": False, "error": "No active session"}), 401
@@ -198,7 +289,8 @@ def api_new_game():
             player_settings=players
         )
         
-        return jsonify({"success": True, "game": result})
+        ####return jsonify({"success": True, "game": result})
+        return jsonify({"success": True})
 
     except Exception as e:
         # 🐛 This prints the REAL error to your VS Code console
@@ -224,41 +316,9 @@ def handle_action():
     return jsonify({"success": True, "game": engine.to_dict()})
 
 
-@metropoly_bp.route("/api/roll", methods=["POST"])
-@metropoly_bp.route("/api/roll/", methods=["POST"])
-def roll():
-    game = get_user_game()
-    if not game: return jsonify({"success": False}), 401
-    
-    # 1. Roll (sets engine.kocka)
-    dice_results = game.roll_dice() 
-    
-    # 2. Process (Calculates path AND runs landing logic)
-    # This now uses the function you just verified
-    steps = game.process_move_sequence() 
-    
-    return jsonify({
-        "success": True,
-        "dice": dice_results,
-        "steps": steps, # The list of x, y, smer for JS animation
-        "game": game.to_dict() # Includes the results of pristanek()
-    })
 
-@metropoly_bp.route("/api/end_turn", methods=["POST"])
-@metropoly_bp.route("/api/end_turn/", methods=["POST"])
-def api_end_turn():
-    game = get_user_game()
-    if not game:
-        return jsonify({"success": False}), 401
-    
-    # Call the ported VB logic
-    # We use engine.state if it's external, or engine if it's the class method
-    mnu_end_turn_click(game)
-    
-    return jsonify({
-        "success": True, 
-        "game": game.to_dict()
-    })
+
+
 
 # -------------------------------------------------
 # MENU & SETTINGS
@@ -272,43 +332,6 @@ def set_language(code):
     
     # Engine will sync on the next get_user_game() call
     return redirect(url_for("metropoly.index"))
-
-# File / exit
-@metropoly_bp.route("/exit")
-@metropoly_bp.route("/exit/")
-def exitGame():
-    sid = session.get("user_sid")
-    active_metropoly_games.pop(sid, None)
-    session.pop("zap_st_igre", None)
-    # 🩹 FIX: Explicitly return the redirect so Flask doesn't get 'None'
-    return redirect("/")
-
-@metropoly_bp.route("/api/editor/begin", methods=["POST"])
-@metropoly_bp.route("/api/editor/begin/", methods=["POST"])
-def editor_begin():
-    """Triggers the begin_map_editor logic in the engine."""
-    game = get_user_game()
-    if not game: return jsonify({"success": False}), 401
-    
-    # Use the function we ported to your big engine file
-    from .new_engine_without_circular_imports import begin_map_editor
-    begin_map_editor(game) 
-    
-    return jsonify({"success": True, "game": game.to_dict()})
-
-@metropoly_bp.route("/api/editor/end", methods=["POST"])
-@metropoly_bp.route("/api/editor/end/", methods=["POST"])
-def editor_end():
-    """Triggers the end_map_editor logic and returns to game mode."""
-    game = get_user_game()
-    if not game: return jsonify({"success": False}), 401
-    
-    from .new_engine_without_circular_imports import end_map_editor
-    end_map_editor(game)
-    
-    return jsonify({"success": True, "game": game.to_dict()})
-
-
 
 # toggle buttons
 @metropoly_bp.route("/api/toggle/<option_name>", methods=["POST"])
@@ -338,22 +361,160 @@ def toggle_option(option_name):
 def favicon():
     return "", 204
 
+
+
+
+
+import copy
+from pathlib import Path
+from flask import jsonify, request, session
+
+# =============================================================================
+# ROUTE HELPERS
+# =============================================================================
+
+def get_current_lang_data():
+    """
+    Helper to fetch and deep-copy the current player's language dictionary.
+    Ensures the 'Personal Eyes' rule is followed for every response.
+    """
+    from .new_engine_without_circular_imports import metropoly_language_parser
+    
+    lang_iso = session.get('lang', 'slo')
+    file_prefix = LANG_MAP.get(lang_iso, 'slo')
+    
+    # Path: mywebsite/static/metropoly/assets/languages/
+    root = Path(metropoly_bp.root_path).resolve().parent.parent
+    lang_dir = root / "static" / "metropoly" / "assets" / "languages"
+    
+    raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
+    return copy.deepcopy(raw_data)
+
+# =============================================================================
+# CORE API ROUTES
+# =============================================================================
+
 @metropoly_bp.route("/api/save_map", methods=["POST"])
-@metropoly_bp.route("/api/save_map/", methods=["POST"])
 def api_save_map():
     game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+    
     data = request.get_json()
     filename = data.get("filename", "my.map")
+    lang_data = get_current_lang_data()
 
     from .new_engine_without_circular_imports import save_map_to_disk, fill_combo_logic
     
     success = save_map_to_disk(game, filename)
-    
     if success:
-        # VB: NewGame.fill_combo (Refresh the list of available maps)
         fill_combo_logic(game)
         
     return jsonify({
         "success": success, 
-        "game": game.to_dict() # Returns updated map_list
+        "game": game.to_dict(lang_data) 
     })
+
+@metropoly_bp.route("/api/end_turn", methods=["POST"])
+def api_end_turn():
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+    
+    lang_data = get_current_lang_data()
+
+    from .new_engine_without_circular_imports import mnu_end_turn_click
+    mnu_end_turn_click(game)
+    
+    return jsonify({
+        "success": True, 
+        "game": game.to_dict(lang_data)
+    })
+
+@metropoly_bp.route("/api/map_click", methods=["POST"])
+def api_map_click():
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+
+    data = request.get_json()
+    lang_data = get_current_lang_data()
+
+    from .new_engine_without_circular_imports import handle_map_click
+    handle_map_click(game, data['x'], data['y'])
+    
+    return jsonify({
+        "success": True, 
+        "game": game.to_dict(lang_data)
+    })
+
+@metropoly_bp.route("/api/set_mode/<int:mode_id>", methods=["POST"])
+def set_clk_mode(mode_id):
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+    
+    lang_data = get_current_lang_data()
+    p = game.players.get(game.curpl)
+    
+    if p and not p.is_pc:
+        game.clkMode = mode_id
+        # We pull the correct translated label from the lang_data we just loaded
+        # Replicating VB: LabelStatus.Caption = lngg(100/113/83)
+        l = lang_data.get("raw", [""] * 151)
+        if mode_id == 1: game.status_label = l[100]
+        elif mode_id == 2: game.status_label = l[113]
+        elif mode_id == 3: game.status_label = l[83]
+            
+    return jsonify({
+        "success": True, 
+        "game": game.to_dict(lang_data)
+    })
+
+@metropoly_bp.route("/api/roll", methods=["POST"])
+def roll():
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+    
+    lang_data = get_current_lang_data()
+    
+    # 1. Roll (sets engine.kocka)
+    # 2. Process Sequence (Calculates path AND runs landing logic)
+    dice_results = game.roll_dice() 
+    steps = game.process_move_sequence() 
+    
+    return jsonify({
+        "success": True,
+        "dice": dice_results,
+        "steps": steps, 
+        "game": game.to_dict(lang_data)
+    })
+
+@metropoly_bp.route("/api/editor/begin", methods=["POST"])
+def editor_begin():
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+    
+    lang_data = get_current_lang_data()
+
+    from .new_engine_without_circular_imports import begin_map_editor
+    begin_map_editor(game) 
+    
+    return jsonify({
+        "success": True, 
+        "game": game.to_dict(lang_data)
+    })
+
+
+@metropoly_bp.route("/api/editor/end", methods=["POST"])
+@metropoly_bp.route("/api/editor/end/", methods=["POST"])
+def editor_end():
+    """Triggers the end_map_editor logic and returns to game mode."""
+    game = get_user_game()
+    if not game: return jsonify({"success": False}), 401
+
+    lang_data = get_current_lang_data()
+    
+    from .new_engine_without_circular_imports import end_map_editor
+    end_map_editor(game)
+        
+    return jsonify({"success": True, "game": game.to_dict(lang_data)})
+
+
+

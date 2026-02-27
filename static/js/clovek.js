@@ -164,12 +164,19 @@ function animateDiceRoll(finalValue) {
         ? FACTORY.dice_throw_area.red 
         : FACTORY.dice_throw_area.blue;
     
+    // Clear the initial center position (only used for display before game starts)
+    gameState.dicePosition = null;
+    
     const duration = gameState.options.fast ? 400 : 800;
     const frameDelay = gameState.options.fast ? 60 : 120;
     const startTime = performance.now();
     
     function animateFrame(currentTime) {
         const elapsed = currentTime - startTime;
+        
+        // Clear canvas during animation
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        redrawAllPawns();  // Keep pawns visible
         
         if (elapsed < duration) {
             // Show random dice face during roll
@@ -178,12 +185,16 @@ function animateDiceRoll(finalValue) {
             
             setTimeout(() => requestAnimationFrame(animateFrame), frameDelay);
         } else {
-            // Show final value
-            drawDice(area.x, area.y, finalValue);
+            // Show final value and store position
             gameState.diceValue = finalValue;
+            gameState.dicePosition = { x: area.x, y: area.y };
+            drawDice(area.x, area.y, finalValue);
             gameState.animating = false;
             
             console.log(`🎲 Dice rolled: ${finalValue}`);
+            
+            // Check if player can move at all
+            checkIfPlayerCanMove();
         }
     }
     
@@ -244,8 +255,14 @@ function selectPawn(pawnId) {
  * ]
  */
 
+// Store pawn positions for persistent rendering
+const pawnPositions = {};  // { pawn_id: tile_id }
+
 function queueAnimationSequence(sequence) {
-    animationQueue.push(...sequence);
+    // Add all animations to the queue
+    sequence.forEach(anim => animationQueue.push(anim));
+    
+    console.log(`📋 Queued ${sequence.length} animations (total: ${animationQueue.length})`);
     
     if (!gameState.animating) {
         processNextAnimation();
@@ -257,11 +274,21 @@ function processNextAnimation() {
         gameState.animating = false;
         gameState.diceValue = null;
         console.log("✅ Animation sequence complete");
+        
+        // Redraw all pawns in their final positions
+        redrawAllPawns();
+        
+        // Unpause game after preparation
+        gameState.paused = false;
+        console.log("▶️  Game unpaused, ready to play!");
+        
         return;
     }
     
     gameState.animating = true;
     const anim = animationQueue.shift();
+    
+    console.log(`🎬 Animating pawn ${anim.pawn}: ${anim.from} → ${anim.to}`);
     
     animatePawnMove(anim);
 }
@@ -279,15 +306,19 @@ function animatePawnMove(anim) {
         return;
     }
     
-    // Play sound if specified
-    if (sound) {
+    // Play sound based on the sound parameter:
+    // - "GREMO", "DA", "NE" = play that sound variation
+    // - undefined = play FIGURA (default step sound)
+    // - null = silent (preparation moves)
+    if (sound === "GREMO" || sound === "DA" || sound === "NE") {
         playSoundVariation(sound);
-    } else {
+    } else if (sound === undefined) {
         // Default step sound
         playSound("FIGURA");
     }
+    // If sound === null, it's silent (preparation)
     
-    // Animate movement
+    // Get duration based on fast mode
     const duration = gameState.options.fast ? 150 : 300;
     const startTime = performance.now();
     const pawnImage = getPawnImage(pawn);
@@ -296,36 +327,102 @@ function animatePawnMove(anim) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Interpolate position
+        // Clear canvas and redraw everything
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Redraw all other pawns at their current positions
+        redrawAllPawns(pawn);  // Exclude the animating pawn
+        
+        // Interpolate position for animating pawn
         const x = fromTile.x + (toTile.x - fromTile.x) * progress;
         const y = fromTile.y + (toTile.y - fromTile.y) * progress;
         
-        // Draw pawn at interpolated position
+        // Draw animating pawn at interpolated position
         drawPawn(x, y, pawnImage);
+        
+        // Redraw dice if visible
+        if (gameState.diceValue && gameState.dicePosition) {
+            drawDice(
+                gameState.dicePosition.x,
+                gameState.dicePosition.y,
+                gameState.diceValue
+            );
+        }
         
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
-            // Move complete, process next
-            processNextAnimation();
+            // Animation complete - update pawn position
+            pawnPositions[pawn] = to;
+            console.log(`✓ Pawn ${pawn} now at tile ${to}`);
+            
+            // Process next animation after a small delay
+            setTimeout(() => processNextAnimation(), 50);
         }
     }
     
     requestAnimationFrame(animateFrame);
 }
 
+function redrawAllPawns(excludePawn = null) {
+    /**
+     * Redraw all pawns at their stored positions.
+     * Optionally exclude one pawn (the one currently animating).
+     */
+    for (const [pawnId, tileId] of Object.entries(pawnPositions)) {
+        const pawnIdNum = parseInt(pawnId);
+        
+        // Skip the excluded pawn
+        if (pawnIdNum === excludePawn) {
+            continue;
+        }
+        
+        const tile = getBoardTile(tileId);
+        if (tile) {
+            const pawnImage = getPawnImage(pawnIdNum);
+            if (pawnImage && pawnImage.complete) {
+                drawPawn(tile.x, tile.y, pawnImage);
+            }
+        }
+    }
+}
+
 /* ============================================================================
  * DRAWING FUNCTIONS
  * ============================================================================ */
 
+// Pawn position offsets (adjust these to fine-tune pawn placement)
+const PAWN_OFFSET_X = 17;  // Pixels to the right
+const PAWN_OFFSET_Y = 17;  // Pixels down
+
 function drawPawn(x, y, image) {
     if (!ctx || !image) return;
     
-    const size = FACTORY.pawns.width;
-    const offsetX = x - size / 2;
-    const offsetY = y - size / 2;
+    const size = FACTORY?.pawns?.width || 28;
+    
+    // Apply offsets and center the pawn
+    const offsetX = x + PAWN_OFFSET_X - size / 2;
+    const offsetY = y + PAWN_OFFSET_Y - size / 2;
     
     ctx.drawImage(image, offsetX, offsetY, size, size);
+}
+
+function drawAllPawns(pawnPositions) {
+    /**
+     * Draw all pawns at their current positions.
+     * pawnPositions: { pawn_id: tile_id, ... }
+     */
+    if (!ctx || !pawnPositions) return;
+    
+    for (const [pawnId, tileId] of Object.entries(pawnPositions)) {
+        const tile = getBoardTile(tileId);
+        if (tile) {
+            const pawnImage = getPawnImage(parseInt(pawnId));
+            if (pawnImage && pawnImage.complete) {
+                drawPawn(tile.x, tile.y, pawnImage);
+            }
+        }
+    }
 }
 
 function getPawnImage(pawnId) {
@@ -385,12 +482,34 @@ function playSoundVariation(soundFamily) {
 
 function updateGameState(newState) {
     Object.assign(gameState, newState);
+    
+    // If state includes pawn positions, redraw
+    if (newState.pawns) {
+        drawAllPawns(newState.pawns);
+    }
+    
     render();
 }
 
 function updateOptions(options) {
     gameState.options = { ...gameState.options, ...options };
     console.log("Options updated:", gameState.options);
+}
+
+function handlePreparationAnimations(animations) {
+    /**
+     * Handle the 8 preparation moves when game starts.
+     * These move pawns from random positions to home squares.
+     */
+    if (!animations || animations.length === 0) {
+        console.log("No preparation animations");
+        return;
+    }
+    
+    console.log(`🏠 Processing ${animations.length} preparation animations`);
+    
+    // Queue all preparation animations
+    queueAnimationSequence(animations);
 }
 
 /* ============================================================================
@@ -402,6 +521,9 @@ function render() {
     
     // Clear canvas (board image is in background HTML img tag)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw all pawns at their stored positions
+    redrawAllPawns();
     
     // Draw dice if we have a value and position
     if (gameState.diceValue && gameState.dicePosition) {
@@ -417,10 +539,65 @@ function render() {
             : (FACTORY?.dice_throw_area?.blue || { x: 730, y: 50 });
         drawDice(area.x, area.y, gameState.diceValue);
     }
-    
-    // Draw pawns
-    // TODO: Get pawn positions from game state and draw them
 }
+
+/* ============================================================================
+ * TURN MANAGEMENT
+ * ============================================================================ */
+
+function checkIfPlayerCanMove() {
+    /**
+     * Check if current player has any valid moves.
+     * If not, automatically pass turn to opponent.
+     */
+    fetch("/clovek/api/game/check-moves", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            dice_value: gameState.diceValue 
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && !data.can_move) {
+            console.log(`❌ ${data.current_player} cannot move, passing turn`);
+            
+            // Auto-pass after short delay
+            setTimeout(() => {
+                passTurn();
+            }, 1000);
+        } else if (data.success && data.can_move) {
+            console.log(`✓ ${data.current_player} has ${data.valid_moves} valid moves`);
+        }
+    })
+    .catch(err => console.error("Error checking moves:", err));
+}
+
+function passTurn() {
+    /**
+     * Pass turn to opponent (no valid moves available).
+     */
+    fetch("/clovek/api/game/pass-turn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(`🔄 Turn passed to ${data.current_turn}`);
+            
+            // Update game state
+            gameState.currentTurn = data.current_turn;
+            gameState.diceValue = null;
+            gameState.dicePosition = null;
+            
+            // Redraw board
+            render();
+        }
+    })
+    .catch(err => console.error("Error passing turn:", err));
+}
+
 
 /* ============================================================================
  * CLICK HANDLERS
@@ -431,27 +608,66 @@ if (canvas) {
         if (gameState.animating) return;
         
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+        
+        console.log(`🖱️  Click at (${Math.round(x)}, ${Math.round(y)})`);
         
         // Check if clicked on dice area
         const diceArea = gameState.currentTurn === "red" 
-            ? FACTORY.dice_throw_area.red 
-            : FACTORY.dice_throw_area.blue;
+            ? FACTORY?.dice_throw_area?.red 
+            : FACTORY?.dice_throw_area?.blue;
         
-        if (isPointInRect(x, y, diceArea)) {
+        if (diceArea && isPointInRect(x, y, diceArea)) {
+            console.log("🎲 Dice clicked");
             throwDice();
             return;
         }
         
-        // Check if clicked on pawn
-        // TODO: Implement pawn click detection
+        // Check if clicked on any pawn
+        const clickedPawn = findPawnAtPosition(x, y);
+        if (clickedPawn) {
+            console.log(`🎯 Pawn ${clickedPawn} clicked`);
+            selectPawn(clickedPawn);
+            return;
+        }
     });
 }
 
 function isPointInRect(x, y, rect) {
     return x >= rect.x && x <= rect.x + rect.width &&
            y >= rect.y && y <= rect.y + rect.height;
+}
+
+function findPawnAtPosition(clickX, clickY) {
+    /**
+     * Find which pawn (if any) was clicked.
+     * Returns pawn ID (1-8) or null.
+     */
+    const clickRadius = 20;  // Click tolerance in pixels
+    
+    for (const [pawnId, tileId] of Object.entries(pawnPositions)) {
+        const tile = getBoardTile(tileId);
+        if (!tile) continue;
+        
+        // Calculate pawn's actual drawn position (with offsets)
+        const pawnX = tile.x + PAWN_OFFSET_X;
+        const pawnY = tile.y + PAWN_OFFSET_Y;
+        
+        // Check if click is within radius
+        const distance = Math.sqrt(
+            Math.pow(clickX - pawnX, 2) + 
+            Math.pow(clickY - pawnY, 2)
+        );
+        
+        if (distance <= clickRadius) {
+            return parseInt(pawnId);
+        }
+    }
+    
+    return null;
 }
 
 /* ============================================================================
@@ -504,6 +720,11 @@ function displayInitialPawnsAndDice() {
         { x: 700, y: 250 },
         { x: 350, y: 300 }
     ];
+    
+    // Store initial pawn positions (these will be overwritten during preparation)
+    for (let i = 1; i <= 8; i++) {
+        pawnPositions[i] = 0;  // 0 = undefined/random position
+    }
     
     // Draw all 8 pawns randomly
     for (let i = 1; i <= 8; i++) {
@@ -568,7 +789,9 @@ window.clovekGame = {
     selectPawn,
     updateOptions,
     updateGameState,
-    queueAnimationSequence
+    queueAnimationSequence,
+    handlePreparationAnimations,
+    drawAllPawns
 };
 
 /* ============================================================================

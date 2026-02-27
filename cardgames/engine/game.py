@@ -35,7 +35,7 @@ def load_default_language():
             "meta": {},
         }
 
-CURRENT_LANGUAGE = load_default_language()      # this is out of phase, should be phase 0
+#CURRENT_LANGUAGE = load_default_language()      # this is out of phase, should be phase 0
 
 
 

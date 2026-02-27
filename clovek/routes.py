@@ -198,14 +198,39 @@ def api_new_game():
     # Create fresh game
     game = get_or_create_game()
     
+    # Prepare pawns (move them to home squares)
+    from .engine.engine import prepare_all_pawns
+    
+    animations = []
+    
     # Start game unless in network mode waiting for opponent
     if session["mode"] != "NETWORK":
+        # Prepare red pawns (move 1-4 to tiles 1-4)
+        from .engine.engine import prepare_pawns  # .engine.engine is correct!
+        from .engine.model import PlayerColor
+        
+        red_animations = prepare_pawns(game, PlayerColor.RED)
+        animations.extend(red_animations)
+        
+        # Prepare blue pawns (move 5-8 to tiles 5-8)
+        blue_animations = prepare_pawns(game, PlayerColor.BLUE)
+        animations.extend(blue_animations)
+        
+        # Unpause game after preparation
         session["clovek_paused"] = False
+        
+        # Set initial turn to red
+        from .engine.model import PlayerColor
+        game.current_turn = PlayerColor.RED
+        
+        print(f"✅ Game started in {session['mode']} mode")
     
     return jsonify({
         "success": True,
         "message": "Nova igra začeta",
-        "paused": session["clovek_paused"]
+        "paused": session["clovek_paused"],
+        "preparation_animations": animations,
+        "current_turn": game.current_turn.value
     })
 
 
@@ -324,7 +349,6 @@ def api_statistics():
 # 🎮 MENU ROUTES - OPPONENT SETTINGS
 # =============================================================================
 @clovek_bp.route("/human")
-@clovek_bp.route("/human/")
 def set_human():
     """Set mode to two human players (hotseat)."""
     ensure_session()
@@ -464,7 +488,6 @@ def api_set_opponent():
 # 🎮 MENU ROUTES - LANGUAGE
 # =============================================================================
 @clovek_bp.route("/api/language", methods=["POST"])
-@clovek_bp.route("/api/language/", methods=["POST"])
 def api_set_language():
     """Set interface language."""
     ensure_session()
@@ -703,14 +726,94 @@ def api_move_pawn():
             "error": "Roll dice first"
         }), 400
     
-    # TODO: Implement move validation and execution
-    # This will use the game engine logic
+    # Execute move using game engine
+    from .engine.engine import execute_move, end_turn, check_victory
     
-    # For now, basic response
+    animations = execute_move(game, pawn_id, game.dice_value)
+    
+    if not animations:
+        return jsonify({
+            "success": False,
+            "error": "Invalid move"
+        }), 400
+    
+    # Check for victory
+    game_over = check_victory(game)
+    
+    # End turn (gives another turn if rolled 6)
+    rolled_six = game.dice_value == 6
+    end_turn(game, rolled_six)
+    
     return jsonify({
         "success": True,
-        "pawn_id": pawn_id,
-        "message": "Move executed"
+        "animation_sequence": animations,
+        "rolled_six": rolled_six,
+        "current_turn": game.current_turn.value,
+        "game_over": game_over,
+        "winner": game.winner.value if game.winner else None
+    })
+
+
+@clovek_bp.route("/api/game/check-moves", methods=["POST"])
+def api_check_moves():
+    """Check if current player has any valid moves."""
+    ensure_session()
+    sid = session["sid"]
+    
+    if sid not in active_games:
+        return jsonify({
+            "success": False,
+            "error": "No active game"
+        }), 400
+    
+    game = active_games[sid]
+    
+    data = request.get_json() or {}
+    dice_value = data.get("dice_value") or game.dice_value
+    
+    if dice_value is None:
+        return jsonify({
+            "success": False,
+            "error": "No dice value"
+        }), 400
+    
+    # Check if player can move
+    from .engine.engine import can_player_move_at_all, get_valid_moves
+    
+    can_move = can_player_move_at_all(game, dice_value)
+    valid_moves = get_valid_moves(game, dice_value) if can_move else []
+    
+    return jsonify({
+        "success": True,
+        "can_move": can_move,
+        "valid_moves": len(valid_moves),
+        "current_player": game.current_turn.value
+    })
+
+
+@clovek_bp.route("/api/game/pass-turn", methods=["POST"])
+def api_pass_turn():
+    """Pass turn to opponent (no valid moves available)."""
+    ensure_session()
+    sid = session["sid"]
+    
+    if sid not in active_games:
+        return jsonify({
+            "success": False,
+            "error": "No active game"
+        }), 400
+    
+    game = active_games[sid]
+    
+    # Pass turn to opponent
+    from .engine.engine import pass_turn
+    
+    pass_turn(game)
+    
+    return jsonify({
+        "success": True,
+        "current_turn": game.current_turn.value,
+        "message": "Turn passed"
     })
 
 

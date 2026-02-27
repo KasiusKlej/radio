@@ -24,7 +24,7 @@ FACTORY = {
     
     # Dice animation settings
     "dice": {
-        "size": 48,             # Dice display size in pixels
+        "size": 40,             # Dice display size in pixels
         "animation_speed": 120, # Animation frame delay (ms)
         "roll_duration": 800,   # Total roll animation time (ms)
         "bounce_count": 3       # Number of bounces during roll
@@ -64,8 +64,8 @@ FACTORY = {
     
     # Pawn animation settings
     "pawns": {
-        "width": 28,            # Pawn display size
-        "height": 28,
+        "width": 32,            # Pawn display size
+        "height": 32,
         "move_speed": 300,      # Movement animation speed (ms per tile)
         "capture_animation": 500, # Capture/return animation time (ms)
         "home_celebration": 1000  # Celebration when reaching goal (ms)
