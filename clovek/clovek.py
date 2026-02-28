@@ -24,23 +24,23 @@ FACTORY = {
     
     # Dice animation settings
     "dice": {
-        "size": 40,             # Dice display size in pixels
-        "animation_speed": 120, # Animation frame delay (ms)
-        "roll_duration": 800,   # Total roll animation time (ms)
-        "bounce_count": 3       # Number of bounces during roll
+        "size": 36,             # Dice display size in pixels
+        "animation_speed": 130, # Animation frame delay (ms)
+        "roll_duration": 900,   # Total roll animation time (ms)
+        "bounce_count": 5       # Number of bounces during roll
     },
     
     # Dice throw areas (where dice appears during player's turn)
     "dice_throw_area": {
         "red": {
-            "x": 100,           # Red player dice position
-            "y": 450,
+            "x": 120,           # Red player dice position
+            "y": 270,
             "width": 60,
             "height": 60
         },
         "blue": {
-            "x": 730,           # Blue player dice position
-            "y": 50,
+            "x": 520,           # Blue player dice position
+            "y": 150,
             "width": 60,
             "height": 60
         }
@@ -64,8 +64,8 @@ FACTORY = {
     
     # Pawn animation settings
     "pawns": {
-        "width": 32,            # Pawn display size
-        "height": 32,
+        "width": 40,            # Pawn display size
+        "height": 40,
         "move_speed": 300,      # Movement animation speed (ms per tile)
         "capture_animation": 500, # Capture/return animation time (ms)
         "home_celebration": 1000  # Celebration when reaching goal (ms)
@@ -199,8 +199,8 @@ def ensure_sid():
     if "user_sid" not in session:
         session["user_sid"] = str(uuid.uuid4())
     
-    if "lang" not in session:
-        session["lang"] = "slo"
+    if "clovek_lang" not in session:
+        session["clovek_lang"] = "slo"
     
     return session["user_sid"]
 
@@ -347,7 +347,7 @@ def inject_clovek_ui():
     """
     return {
         "FACTORY": FACTORY,
-        "lang": session.get("lang", "slo"),
+        "clovek_lang": session.get("clovek_lang", "slo"),
         "user_sid": session.get("user_sid", "")
     }
 

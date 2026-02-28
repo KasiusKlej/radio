@@ -22,7 +22,7 @@ def ensure_session():
     session.setdefault("sid", str(uuid.uuid4()))
     session.setdefault("mode", "NETWORK")
     session.setdefault("clovek_paused", True)
-    session.setdefault("language", "slo")
+    session.setdefault("clovek_lang", "slo")
     session.setdefault("red_player_name", "Rdeči igralec")
     session.setdefault("blue_player_name", "Modri igralec")
     session.setdefault("options", {
@@ -30,6 +30,119 @@ def ensure_session():
         "sound": True,
         "save_result": True
     })
+
+
+def process_ai_turn(game: GameState) -> dict:
+    """
+    Process AI turn automatically.
+    Returns animation sequence for AI move.
+    """
+    from .engine.engine import (
+        can_player_move_at_all,
+        select_ai_move,
+        execute_move,
+        pass_turn,
+        end_turn,
+        check_victory
+    )
+    
+    current_player = game.get_current_player()
+    
+    # Check if current player is AI
+    if not current_player.is_ai:
+        return {"ai_move": False}
+    
+    print(f"🤖 AI turn starting for {current_player.name}")
+    
+    # Roll dice automatically
+    dice_value = random.randint(1, 6)
+    game.dice_value = dice_value
+    
+    print(f"🎲 AI rolled: {dice_value}")
+    
+    # Check if AI can move
+    if not can_player_move_at_all(game, dice_value):
+        # No valid moves, pass turn
+        print(f"⏭️  AI passes (no valid moves)")
+        pass_turn(game)
+        
+        return {
+            "ai_move": True,
+            "dice_value": dice_value,
+            "animations": [],
+            "passed": True,
+            "current_turn": game.current_turn.value
+        }
+    
+    # AI makes move
+    pawn_id = select_ai_move(game, dice_value)
+    
+    if pawn_id:
+        animations = execute_move(game, pawn_id, dice_value)
+        
+        # Check for victory
+        game_over = check_victory(game)
+        
+        # End turn (gives another turn if rolled 6)
+        rolled_six = dice_value == 6
+        end_turn(game, rolled_six)
+        
+        print(f"✅ AI moved pawn {pawn_id}")
+        
+        return {
+            "ai_move": True,
+            "dice_value": dice_value,
+            "pawn_id": pawn_id,
+            "animations": animations,
+            "rolled_six": rolled_six,
+            "current_turn": game.current_turn.value,
+            "game_over": game_over,
+            "winner": game.winner.value if game.winner else None
+        }
+    else:
+        # Shouldn't happen, but pass turn as fallback
+        pass_turn(game)
+        return {
+            "ai_move": True,
+            "dice_value": dice_value,
+            "animations": [],
+            "passed": True,
+            "current_turn": game.current_turn.value
+        }
+
+
+def process_ai_turns_until_human(game: GameState) -> list:
+    """
+    Keep processing AI turns until it's a human player's turn.
+    Returns list of all AI moves made.
+    """
+    ai_moves = []
+    max_iterations = 10  # Safety limit
+    iterations = 0
+    
+    while iterations < max_iterations:
+        current_player = game.get_current_player()
+        
+        # Stop if human player's turn or game over
+        if not current_player.is_ai or game.game_over:
+            break
+        
+        # Process one AI turn
+        ai_result = process_ai_turn(game)
+        ai_moves.append(ai_result)
+        
+        # If AI rolled 6, it gets another turn
+        if ai_result.get("rolled_six"):
+            print("🎲 AI rolled 6, gets another turn")
+            continue
+        
+        # Check if game is over
+        if ai_result.get("game_over"):
+            break
+        
+        iterations += 1
+    
+    return ai_moves
 
 
 def get_or_create_game() -> GameState:
@@ -61,7 +174,7 @@ def build_clovek_context():
     """Explicit context – never merged globally."""
     ensure_session()
     game = get_or_create_game()
-    language = set_language(session.get("language", "slo"))
+    language = set_language(session.get("clovek_lang", "slo"))
 
     # Import factory settings
     from .clovek import FACTORY
@@ -71,7 +184,7 @@ def build_clovek_context():
         "state": {
             "mode": session["mode"],
             "paused": session["clovek_paused"],
-            "language": session["language"],
+            "clovek_lang": session["clovek_lang"],
             "options": session.get("options", {}),
             "current_turn": game.current_turn.value,
             "dice_value": game.dice_value,
@@ -106,17 +219,62 @@ def build_clovek_context():
 # =============================================================================
 # MAIN PAGE
 # =============================================================================
-from flask import current_app, Response
+# from flask import current_app, Response
+# @clovek_bp.route("/")
+# def index():
+#     context = {
+#         "CLOVEK": build_clovek_context()
+#     }
+
+#     template = current_app.jinja_env.get_template("clovek_game.html")
+#     html = template.render(context)
+
+#     return Response(html)
+
+#new - computer opponents
+from flask import session, current_app, Response
+from .clovek import active_matches # Import your global storage
+
 @clovek_bp.route("/")
 def index():
+    MODE_MAP = {
+        "HUMAN": GameMode.HOTSEAT,
+        "AI_EASY": GameMode.AI_EASY,
+        "AI_MEDIUM": GameMode.AI_MEDIUM,
+        "AI_HARD": GameMode.AI_HARD,
+        "NETWORK": GameMode.NETWORK
+    }
+    ensure_session() # Ensure sid exists
+    sid = session["sid"]
+    
+    # 1. Check if we need to create a new game
+    if sid not in active_matches:
+        # Get settings from session (set by your /computer1, /human routes)
+        raw_mode = session.get("mode", "HUMAN")
+        mode_enum = MODE_MAP.get(raw_mode, GameMode.HOTSEAT)
+        
+        red_name = session.get("red_player_name", "Igralec 1")
+        blue_name = session.get("blue_player_name", "Igralec 2")
+        
+        # 2. Call the factory with session data
+        active_games[sid] = initialize_game(mode_enum, red_name, blue_name)
+        print(f"🎮 Created new game for {sid} in mode {mode_enum}")
+
+    # 3. Build Context (Pass the game object so the template can see is_ai)
+    game_state = active_games[sid]
     context = {
-        "CLOVEK": build_clovek_context()
+        "CLOVEK": build_clovek_context(), # Your general UI context
+        "game": game_state,                # The actual game engine
+        "mode": session.get("mode")        # Current mode string
     }
 
     template = current_app.jinja_env.get_template("clovek_game.html")
     html = template.render(context)
 
     return Response(html)
+
+
+
 
 # =============================================================================
 # API
@@ -188,50 +346,56 @@ def start_game():
 @clovek_bp.route("/api/game/new", methods=["POST"])
 def api_new_game():
     """API endpoint to start new game."""
-    ensure_session()
-    sid = session["sid"]
-    
-    # Remove old game
-    if sid in active_games:
-        del active_games[sid]
-    
-    # Create fresh game
-    game = get_or_create_game()
-    
-    # Prepare pawns (move them to home squares)
-    from .engine.engine import prepare_all_pawns
-    
-    animations = []
-    
-    # Start game unless in network mode waiting for opponent
-    if session["mode"] != "NETWORK":
-        # Prepare red pawns (move 1-4 to tiles 1-4)
-        from .engine.engine import prepare_pawns  # .engine.engine is correct!
-        from .engine.model import PlayerColor
+    try:
+        ensure_session()
+        sid = session["sid"]
         
-        red_animations = prepare_pawns(game, PlayerColor.RED)
-        animations.extend(red_animations)
+        # Remove old game
+        if sid in active_games:
+            del active_games[sid]
         
-        # Prepare blue pawns (move 5-8 to tiles 5-8)
-        blue_animations = prepare_pawns(game, PlayerColor.BLUE)
-        animations.extend(blue_animations)
+        # Create fresh game
+        game = get_or_create_game()
         
-        # Unpause game after preparation
-        session["clovek_paused"] = False
+        animations = []
         
-        # Set initial turn to red
-        from .engine.model import PlayerColor
-        game.current_turn = PlayerColor.RED
+        # Start game unless in network mode waiting for opponent
+        if session["mode"] != "NETWORK":
+            # Prepare red pawns (move 1-4 to tiles 1-4)
+            from .engine.engine import prepare_pawns
+            from .engine.model import PlayerColor
+            
+            red_animations = prepare_pawns(game, PlayerColor.RED)
+            animations.extend(red_animations)
+            
+            # Prepare blue pawns (move 5-8 to tiles 5-8)
+            blue_animations = prepare_pawns(game, PlayerColor.BLUE)
+            animations.extend(blue_animations)
+            
+            # Unpause game after preparation
+            session["clovek_paused"] = False
+            
+            # Set initial turn to red
+            game.current_turn = PlayerColor.RED
+            
+            print(f"✅ Game started in {session['mode']} mode")
         
-        print(f"✅ Game started in {session['mode']} mode")
+        return jsonify({
+            "success": True,
+            "message": "Nova igra začeta",
+            "paused": session["clovek_paused"],
+            "preparation_animations": animations,
+            "current_turn": game.current_turn.value
+        })
     
-    return jsonify({
-        "success": True,
-        "message": "Nova igra začeta",
-        "paused": session["clovek_paused"],
-        "preparation_animations": animations,
-        "current_turn": game.current_turn.value
-    })
+    except Exception as e:
+        print(f"❌ Error in api_new_game: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
 @clovek_bp.route("/api/game/end", methods=["POST"])
@@ -349,6 +513,7 @@ def api_statistics():
 # 🎮 MENU ROUTES - OPPONENT SETTINGS
 # =============================================================================
 @clovek_bp.route("/human")
+@clovek_bp.route("/human/")
 def set_human():
     """Set mode to two human players (hotseat)."""
     ensure_session()
@@ -493,7 +658,7 @@ def api_set_language():
     ensure_session()
     
     data = request.get_json() or {}
-    lang = data.get("language")
+    lang = data.get("clovek_lang")
     
     if lang not in ["slo", "eng"]:
         return jsonify({
@@ -501,12 +666,12 @@ def api_set_language():
             "error": "Invalid language"
         }), 400
     
-    session["language"] = lang
+    session["clovek_lang"] = lang
     session.modified = True
     
     return jsonify({
         "success": True,
-        "language": lang
+        "clovek_lang": lang
     })
 
 
@@ -678,13 +843,31 @@ def api_roll_dice():
     dice_value = random.randint(1, 6)
     game.dice_value = dice_value
     
-    # TODO: Check for valid moves, AI turn, etc.
+    # Check if player can move
+    from .engine.engine import can_player_move_at_all
     
-    return jsonify({
+    can_move = can_player_move_at_all(game, dice_value)
+    
+    result = {
         "success": True,
         "dice_value": dice_value,
-        "current_turn": game.current_turn.value
-    })
+        "current_turn": game.current_turn.value,
+        "can_move": can_move
+    }
+    
+    # If player can't move, pass turn
+    if not can_move:
+        from .engine.engine import pass_turn
+        pass_turn(game)
+        result["passed"] = True
+        result["current_turn"] = game.current_turn.value
+        
+        # Check if next player is AI
+        ai_moves = process_ai_turns_until_human(game)
+        if ai_moves:
+            result["ai_moves"] = ai_moves
+    
+    return jsonify(result)
 
 
 @clovek_bp.route("/api/game/move-pawn", methods=["POST"])
@@ -744,14 +927,22 @@ def api_move_pawn():
     rolled_six = game.dice_value == 6
     end_turn(game, rolled_six)
     
-    return jsonify({
+    result = {
         "success": True,
         "animation_sequence": animations,
         "rolled_six": rolled_six,
         "current_turn": game.current_turn.value,
         "game_over": game_over,
         "winner": game.winner.value if game.winner else None
-    })
+    }
+    
+    # If not rolled 6 and next player is AI, process AI turns
+    if not rolled_six and not game_over:
+        ai_moves = process_ai_turns_until_human(game)
+        if ai_moves:
+            result["ai_moves"] = ai_moves
+    
+    return jsonify(result)
 
 
 @clovek_bp.route("/api/game/check-moves", methods=["POST"])
@@ -901,3 +1092,45 @@ def about():
     return Response(html)
 
 
+
+
+
+#new
+from .engine.engine import select_ai_move, execute_move, end_turn, pass_turn
+@clovek_bp.route("/api/ai_move", methods=["POST"])
+def ai_move():
+    ensure_session()
+    game = active_games.get(session["sid"])
+    
+    player = game.get_current_player()
+    if not player.is_ai:
+        return jsonify({"error": "Not AI turn"}), 400
+
+    # 1. Roll the dice for the computer
+    dice = random.randint(1, 6)
+    game.dice_value = dice
+    
+    # 2. Let the brain pick the pawn
+    pawn_id = select_ai_move(game, dice)
+    
+    if pawn_id:
+        # 3. Execute the move
+        animations = execute_move(game, pawn_id, dice)
+        # Check if they rolled a 6 for extra turn
+        rolled_six = (dice == 6)
+        end_turn(game, rolled_six)
+        
+        return jsonify({
+            "dice": dice,
+            "animations": animations,
+            "next_player": game.current_turn.value
+        })
+    else:
+        # No moves possible
+        pass_turn(game)
+        return jsonify({
+            "dice": dice,
+            "animations": [],
+            "next_player": game.current_turn.value
+        })
+    

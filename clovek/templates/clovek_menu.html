@@ -144,7 +144,7 @@
             <!-- SLOVENIAN -->
             <li onclick="setLanguage('slo')">
                 <span class="menu-radio">
-                    {% if CLOVEK.state.language == "slo" %}●{% else %}○{% endif %}
+                    {% if CLOVEK.state.clovek_lang == "slo" %}●{% else %}○{% endif %}
                 </span>
                 <span data-label-key="slovene">Slovensko</span>
             </li>
@@ -152,14 +152,14 @@
             <!-- ENGLISH -->
             <li onclick="setLanguage('eng')">
                 <span class="menu-radio">
-                    {% if CLOVEK.state.language == "eng" %}●{% else %}○{% endif %}
+                    {% if CLOVEK.state.clovek_lang == "eng" %}●{% else %}○{% endif %}
                 </span>
                 <span data-label-key="english">Angleško</span>
             </li>
             
         </ul>
     </li>
-
+    
     <!-- ========================================================================
          HELP MENU
          ======================================================================== -->
@@ -190,7 +190,16 @@ function newGame() {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            // Log the response text to see what the error is
+            return response.text().then(text => {
+                console.error("Server error response:", text);
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             console.log("✅ New game created");
@@ -219,9 +228,15 @@ function newGame() {
             
             // Only reload if no animations
             location.reload();
+        } else {
+            console.error("Game creation failed:", data.error);
+            alert(`Error: ${data.error || "Failed to create game"}`);
         }
     })
-    .catch(err => console.error("Error starting new game:", err));
+    .catch(err => {
+        console.error("Error starting new game:", err);
+        alert(`Failed to start game: ${err.message}`);
+    });
 }
 
 function endGame() {
@@ -326,27 +341,41 @@ function setOpponent(mode) {
 // ────────────────────────────────────────────────────────────────────────────
 
 function setLanguage(lang) {
+    console.log(`🌍 Changing language to ${lang}`);
+    
     fetch("/clovek/api/language", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language: lang })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            // Update all labels on page
-            updateAllLabels(lang);
+            console.log(`✅ Language changed to ${lang}, reloading...`);
+            // Reload page to apply new language
+            location.reload();
+        } else {
+            console.error("Failed to change language:", data.error);
+            alert(`Error: ${data.error || "Failed to change language"}`);
         }
     })
-    .catch(err => console.error(`Error setting language to ${lang}:`, err));
+    .catch(err => {
+        console.error(`Error setting language to ${lang}:`, err);
+        alert(`Failed to change language: ${err.message}`);
+    });
 }
 
 function updateAllLabels(lang) {
-    // Fetch translated labels
+    // This function is no longer needed as we reload the page,
+    // but keeping it for backwards compatibility
     fetch(`/clovek/api/labels/${lang}`)
     .then(response => response.json())
     .then(labels => {
-        // Update all elements with data-label-key attribute
         document.querySelectorAll('[data-label-key]').forEach(element => {
             const key = element.getAttribute('data-label-key');
             if (labels[key]) {

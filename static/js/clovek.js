@@ -146,6 +146,7 @@ function throwDice() {
     .then(data => {
         if (data.success) {
             animateDiceRoll(data.dice_value);
+            handleAIMovesResponse(data);
         } else {
             console.error("Dice roll failed:", data.error);
         }
@@ -234,6 +235,7 @@ function selectPawn(pawnId) {
         if (data.success && data.animation_sequence) {
             // Queue animation sequence from server
             queueAnimationSequence(data.animation_sequence);
+            handleAIMovesResponse(data);
         } else {
             console.error("Move failed:", data.error);
         }
@@ -392,8 +394,8 @@ function redrawAllPawns(excludePawn = null) {
  * ============================================================================ */
 
 // Pawn position offsets (adjust these to fine-tune pawn placement)
-const PAWN_OFFSET_X = 17;  // Pixels to the right
-const PAWN_OFFSET_Y = 17;  // Pixels down
+const PAWN_OFFSET_X = 22;  // Pixels to the right
+const PAWN_OFFSET_Y = 19;  // Pixels down
 
 function drawPawn(x, y, image) {
     if (!ctx || !image) return;
@@ -772,6 +774,26 @@ function initGame() {
     
     console.log("✅ Game initialized");
 }
+
+function handleAIMovesResponse(data) {
+    if (data.ai_moves && data.ai_moves.length > 0) {
+        console.log(`🤖 Processing ${data.ai_moves.length} AI moves`);
+        
+        data.ai_moves.forEach(aiMove => {
+            if (aiMove.animations && aiMove.animations.length > 0) {
+                queueAnimationSequence(aiMove.animations);
+            }
+        });
+        
+        // Update to final turn
+        const lastMove = data.ai_moves[data.ai_moves.length - 1];
+        gameState.currentTurn = lastMove.current_turn;
+    }
+}
+
+
+
+
 
 // Start when DOM is ready
 if (document.readyState === "loading") {

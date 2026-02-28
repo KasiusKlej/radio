@@ -72,7 +72,10 @@ METRO_GAMES = {}
 # Key: user_sid (from session), Value: game_instance_id
 PLAYER_MAP = {}
 
-
+#new
+# 🔗 NAMESPACED KEYS (Isolation from CardGames)
+SESSION_LANG_KEY = "metro_lang"  # 👈 This ensures Metropoly language stays in Metropoly
+SESSION_GAME_ID = "metro_zap_id"
 
 # -------------------------------------------------
 # HELPERS
@@ -87,21 +90,35 @@ PLAYER_MAP = {}
 #     return game
 
 #### rewriten
-def get_user_game():
-    """Fetches the game instance this specific player is attached to."""
-    sid = session.get("user_sid")
-    game_id = PLAYER_MAP.get(sid)
+# def get_user_game():
+#     """Fetches the game instance this specific player is attached to."""
+#     sid = session.get("user_sid")
+#     game_id = PLAYER_MAP.get(sid)
     
-    if not game_id:
-        return None
+#     if not game_id:
+#         return None
         
-    return METRO_GAMES.get(game_id)
+#     return METRO_GAMES.get(game_id)
+
+def get_user_game():
+    sid = session.get("user_sid")
+    instance_id = PLAYER_MAP.get(sid)
+    return METRO_GAMES.get(instance_id)
+
+
+# def ensure_sid():
+#     if "user_sid" not in session:
+#         session["user_sid"] = str(uuid.uuid4())
+#     if "metro_lang" not in session:
+#         session["metro_lang"] = "slo" # ONE place for default lang
+#     return session["user_sid"]
 
 def ensure_sid():
     if "user_sid" not in session:
         session["user_sid"] = str(uuid.uuid4())
-    if "lang" not in session:
-        session["lang"] = "slo" # ONE place for default lang
+    # 🩹 FIX: Initialize Metropoly-specific default
+    if SESSION_LANG_KEY not in session:
+        session[SESSION_LANG_KEY] = "slo"
     return session["user_sid"]
 
 # -------------------------------------------------
@@ -109,70 +126,56 @@ def ensure_sid():
 # -------------------------------------------------
 
 # --- 3. THE CONTEXT PROCESSOR ---
-# @metropoly_bp.context_processor
-# def inject_metropoly_context():
-#     # Import the parser inside to avoid circular issues with logic.py
-#     from .new_engine_without_circular_imports import metropoly_language_parser
-    
-#     lang_iso = session.get('lang', 'slo')
-    
-#     # Use the map defined at the top of the file
-#     file_prefix = LANG_MAP.get(lang_iso, 'eng') 
-    
-#     # Robust Path Resolution:
-#     # We go up from 'engine' (root_path) to 'metropoly', then to 'mywebsite'
-#     mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
-    
-#     # Path: mywebsite/static/metropoly/assets/languages/
-#     lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
-    
-#     target_filename = f"{file_prefix}.txt"
-
-#     try:
-#         # Pass the Path object and the filename
-#         raw_lang = metropoly_language_parser(lang_dir, target_filename)
-#     except Exception as e:
-#         # Helpful console output if it fails again
-#         raw_lang = {"menu": {}, "phrases": {}, "turn": {}}
-
-#     return {
-#         "m": raw_lang.get("menu", {}),
-#         "phrases": raw_lang.get("phrases", {}),
-#         "turn": raw_lang.get("turn", {}), # 👈 ADD THIS: Fixes the crash
-#         "lang_dict": raw_lang,
-#         "game": get_user_game()
-#     }
-
 
 #### The context processor is now the only place that cares about the .txt files.
 import copy
+# @metropoly_bp.context_processor
+# def inject_metropoly_context():
+#     # 1. Get the language from the session (Personal preference)
+#     lang_iso = session.get('metro_lang', 'slo')
+#     file_prefix = LANG_MAP.get(lang_iso, 'slo')
+    
+#     # 2. Parse the file
+#     mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
+#     lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
+    
+#     # 🩹 CRITICAL: Return a deep copy to prevent cross-player contamination
+#     raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
+#     lang_data = copy.deepcopy(raw_data)
+
+#     # 3. Get the game logic
+#     game_instance = get_user_game()
+    
+#     # 4. If the game exists, render its state using this player's language
+#     game_json = game_instance.to_dict(lang_data) if game_instance else None
+
+#     return {
+#         "m": lang_data.get("menu", {}),
+#         "lang_dict": lang_data,
+#         "game": game_json, # This is the "Personalized View"
+#         "current_lang": lang_iso
+#     }
+
 @metropoly_bp.context_processor
 def inject_metropoly_context():
-    # 1. Get the language from the session (Personal preference)
-    lang_iso = session.get('lang', 'slo')
-    file_prefix = LANG_MAP.get(lang_iso, 'slo')
-    
-    # 2. Parse the file
-    mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
-    lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
-    
-    # 🩹 CRITICAL: Return a deep copy to prevent cross-player contamination
-    raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
-    lang_data = copy.deepcopy(raw_data)
+    # 1. Get the player's specific Metropoly preference
+    lang_iso = session.get(SESSION_LANG_KEY, 'slo')
+    lang_data = get_current_lang_data()
 
-    # 3. Get the game logic
+    # 2. Get the logical game instance
     game_instance = get_user_game()
     
-    # 4. If the game exists, render its state using this player's language
+    # 3. Label the logic with the player's eyes
     game_json = game_instance.to_dict(lang_data) if game_instance else None
 
     return {
         "m": lang_data.get("menu", {}),
+        "turn": lang_data.get("turn", {}),
+        "phrases": lang_data.get("phrases", {}),
         "lang_dict": lang_data,
-        "game": game_json, # This is the "Personalized View"
+        "game": game_json,
         "current_lang": lang_iso
     }
-
 
 
 
@@ -181,65 +184,72 @@ def inject_metropoly_context():
 # @metropoly_bp.route("/exit")
 # @metropoly_bp.route("/exit/")
 # def exitGame():
+#     """
+#     Cleans up the player's connection to the game and returns home.
+#     Following the 'Universal Games' rule: we only remove the PLAYER'S connection.
+#     """
 #     sid = session.get("user_sid")
-#     active_metropoly_games.pop(sid, None)
+    
+#     # 1. Remove this specific player from the map
+#     # (The game instance stays in METRO_GAMES in case other players are in the match)
+#     PLAYER_MAP.pop(sid, None)
+    
+#     # 2. Cleanup session markers
 #     session.pop("zap_st_igre", None)
-#     # 🩹 FIX: Explicitly return the redirect so Flask doesn't get 'None'
+    
+#     print(f"🚪 Player {sid} exited Metropoly.")
+    
+#     # 🩹 FIX: Always return a valid redirect response
 #     return redirect("/")
-# @metropoly_bp.route("/")
-# def index():
-#     ensure_sid()
-#     sid = session["user_sid"]
-#     if sid not in active_metropoly_games:
-#         active_metropoly_games[sid] = MetropolyGame() 
-#     return render_template("metropoly_game.html", game=active_metropoly_games[sid].to_dict())
-
 
 @metropoly_bp.route("/exit")
 @metropoly_bp.route("/exit/")
 def exitGame():
-    """
-    Cleans up the player's connection to the game and returns home.
-    Following the 'Universal Games' rule: we only remove the PLAYER'S connection.
-    """
     sid = session.get("user_sid")
-    
-    # 1. Remove this specific player from the map
-    # (The game instance stays in METRO_GAMES in case other players are in the match)
+    # We remove the player's connection to the match
     PLAYER_MAP.pop(sid, None)
-    
-    # 2. Cleanup session markers
-    session.pop("zap_st_igre", None)
-    
-    print(f"🚪 Player {sid} exited Metropoly.")
-    
-    # 🩹 FIX: Always return a valid redirect response
+    # Clear Metropoly specific session markers, leave 'lang' (for other games) alone
+    session.pop(SESSION_GAME_ID, None)
     return redirect("/")
+
+
+# @metropoly_bp.route("/")
+# def index():
+#     """
+#     Main entry point. Ensures the user has a game to look at.
+#     """
+#     ensure_sid()
+#     sid = session.get("user_sid")
+
+#     # 1. Check if the player is already assigned to a game
+#     instance_id = PLAYER_MAP.get(sid)
+
+#     # 2. If not, create a new match instance and link the player to it
+#     if not instance_id:
+#         instance_id = f"game-{uuid.uuid4().hex[:8]}" # Unique match ID
+#         METRO_GAMES[instance_id] = MetropolyGame()
+#         PLAYER_MAP[sid] = instance_id
+#         print(f"⚓ NEW MATCH: {instance_id} initialized for Player {sid}")
+
+#     # 3. RENDER
+#     # We do NOT pass 'game=' here. 
+#     # Because we use the @metropoly_bp.context_processor we built earlier, 
+#     # Flask will automatically call get_user_game(), get the language 
+#     # from the session, and inject the translated 'game' object into 
+#     # 'metropoly_game.html' for us.
+#     return render_template("metropoly_game.html")
 
 @metropoly_bp.route("/")
 def index():
-    """
-    Main entry point. Ensures the user has a game to look at.
-    """
     ensure_sid()
-    sid = session.get("user_sid")
-
-    # 1. Check if the player is already assigned to a game
+    sid = session["user_sid"]
     instance_id = PLAYER_MAP.get(sid)
 
-    # 2. If not, create a new match instance and link the player to it
     if not instance_id:
-        instance_id = f"game-{uuid.uuid4().hex[:8]}" # Unique match ID
+        instance_id = f"game-{uuid.uuid4().hex[:8]}"
         METRO_GAMES[instance_id] = MetropolyGame()
         PLAYER_MAP[sid] = instance_id
-        print(f"⚓ NEW MATCH: {instance_id} initialized for Player {sid}")
 
-    # 3. RENDER
-    # We do NOT pass 'game=' here. 
-    # Because we use the @metropoly_bp.context_processor we built earlier, 
-    # Flask will automatically call get_user_game(), get the language 
-    # from the session, and inject the translated 'game' object into 
-    # 'metropoly_game.html' for us.
     return render_template("metropoly_game.html")
 
 
@@ -324,14 +334,22 @@ def handle_action():
 # MENU & SETTINGS
 # -------------------------------------------------
 
-@metropoly_bp.route("/set-language/<code>/")
-@metropoly_bp.route("/set-language/<code>")
-def set_language(code):
-    # Only one thing to change: the session
-    session["lang"] = code
+# @metropoly_bp.route("/set-language/<code>/")
+# @metropoly_bp.route("/set-language/<code>")
+# def set_language(code):
+#     # Only one thing to change: the session
+#     session["metro_lang"] = code
     
-    # Engine will sync on the next get_user_game() call
+#     # Engine will sync on the next get_user_game() call
+#     return redirect(url_for("metropoly.index"))
+
+@metropoly_bp.route("/set-language/<code>")
+@metropoly_bp.route("/set-language/<code>/")
+def set_language(code):
+    # 🩹 FIX: Update ONLY the Metropoly preference
+    session[SESSION_LANG_KEY] = code
     return redirect(url_for("metropoly.index"))
+
 
 # toggle buttons
 @metropoly_bp.route("/api/toggle/<option_name>", methods=["POST"])
@@ -373,22 +391,39 @@ from flask import jsonify, request, session
 # ROUTE HELPERS
 # =============================================================================
 
+# def get_current_lang_data():
+#     """
+#     Helper to fetch and deep-copy the current player's language dictionary.
+#     Ensures the 'Personal Eyes' rule is followed for every response.
+#     """
+#     from .new_engine_without_circular_imports import metropoly_language_parser
+    
+#     lang_iso = session.get('lang', 'slo')
+#     file_prefix = LANG_MAP.get(lang_iso, 'slo')
+    
+#     # Path: mywebsite/static/metropoly/assets/languages/
+#     root = Path(metropoly_bp.root_path).resolve().parent.parent
+#     lang_dir = root / "static" / "metropoly" / "assets" / "languages"
+    
+#     raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
+#     return copy.deepcopy(raw_data)
+
 def get_current_lang_data():
     """
-    Helper to fetch and deep-copy the current player's language dictionary.
-    Ensures the 'Personal Eyes' rule is followed for every response.
+    Fetches and deep-copies language data strictly for Metropoly.
     """
     from .new_engine_without_circular_imports import metropoly_language_parser
     
-    lang_iso = session.get('lang', 'slo')
+    # 🩹 FIX: Look strictly at the Metropoly-specific session key
+    lang_iso = session.get(SESSION_LANG_KEY, 'slo')
     file_prefix = LANG_MAP.get(lang_iso, 'slo')
     
-    # Path: mywebsite/static/metropoly/assets/languages/
-    root = Path(metropoly_bp.root_path).resolve().parent.parent
-    lang_dir = root / "static" / "metropoly" / "assets" / "languages"
+    mywebsite_root = Path(metropoly_bp.root_path).resolve().parent.parent
+    lang_dir = mywebsite_root / "static" / "metropoly" / "assets" / "languages"
     
     raw_data = metropoly_language_parser(lang_dir, f"{file_prefix}.txt")
     return copy.deepcopy(raw_data)
+
 
 # =============================================================================
 # CORE API ROUTES

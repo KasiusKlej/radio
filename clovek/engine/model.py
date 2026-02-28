@@ -246,7 +246,16 @@ class Pawn:
     def is_in_home_square(self) -> bool:
         """Check if pawn is in starting house."""
         return self.position is None
-
+    
+    def get_start_tile_id(self) -> int:
+        """
+        Get the start tile ID for this pawn's color.
+        Red: tile 9, Blue: tile 57
+        """
+        if self.color == PlayerColor.RED:
+            return 9
+        else:  # BLUE
+            return 57
 
 @dataclass
 class Player:
@@ -281,17 +290,13 @@ class Player:
         """Get the start tile ID for this player."""
         return 9 if self.color == PlayerColor.RED else 57
     
-    def get_home_entry_tile_id(self) -> int:
-        """Get the tile ID that leads to home stretch."""
-        return 105 if self.color == PlayerColor.RED else 56
+    # def get_home_entry_tile_id(self) -> int:
+    #     """Get the tile ID that leads to home stretch."""
+    #     return 105 if self.color == PlayerColor.RED else 56
     
     def get_home_stretch_start_id(self) -> int:
         """Get first tile of home stretch."""
         return 119 if self.color == PlayerColor.RED else 123
-    
-    def get_goal_tile_id(self) -> int:
-        """Get the final goal tile ID."""
-        return 122 if self.color == PlayerColor.RED else 126
     
     def pawns_at_goal(self) -> int:
         """Count how many pawns have reached the goal."""
@@ -300,7 +305,31 @@ class Player:
     def has_won(self) -> bool:
         """Check if player has won (all 4 pawns home)."""
         return self.pawns_at_goal() == 4
-
+    
+    def get_home_entry_tile_id(self) -> int:
+        """
+        Get the tile where pawns enter the home stretch.
+        Red: tile 118 (enters home stretch at 119-122)
+        Blue: tile 106 (enters home stretch at 123-126)
+        """
+        if self.color == PlayerColor.RED:
+            return 118
+        else:  # BLUE
+            return 106
+    
+    def get_goal_tile_id(self) -> int:
+        """
+        Get the final goal tile ID.
+        Red: tile 122 (last of home stretch 119-122)
+        Blue: tile 126 (last of home stretch 123-126)
+        """
+        if self.color == PlayerColor.RED:
+            return 122
+        else:  # BLUE
+            return 126
+    
+        
+    
 
 @dataclass
 class GameState:
@@ -360,23 +389,54 @@ SPECIAL_TILES = {
 # HELPER FUNCTIONS
 # ============================================================================
 
+# def initialize_game(mode: GameMode, 
+#                    red_name: str = "Red Player", 
+#                    blue_name: str = "Blue Player") -> GameState:
+#     """Initialize a new game."""
+#     board = create_board()
+    
+#     red_player = Player(
+#         color=PlayerColor.RED,
+#         name=red_name,
+#         is_ai=False
+#     )
+    
+#     blue_player = Player(
+#         color=PlayerColor.BLUE,
+#         name=blue_name,
+#         is_ai=mode in [GameMode.AI_EASY, GameMode.AI_MEDIUM, GameMode.AI_HARD],
+#         ai_difficulty=mode.value if mode != GameMode.HOTSEAT and mode != GameMode.NETWORK else None
+#     )
+    
+#     return GameState(
+#         mode=mode,
+#         board=board,
+#         red_player=red_player,
+#         blue_player=blue_player
+#     )
+
 def initialize_game(mode: GameMode, 
-                   red_name: str = "Red Player", 
-                   blue_name: str = "Blue Player") -> GameState:
-    """Initialize a new game."""
+                    red_name: str = "Red Player", 
+                    blue_name: str = "Blue Player") -> GameState:
+    """Initialize a new game based on chosen mode."""
     board = create_board()
     
+    # Red is always Human in this version
     red_player = Player(
         color=PlayerColor.RED,
         name=red_name,
         is_ai=False
     )
     
+    # Blue is AI if the mode is one of the AI levels
+    is_blue_ai = mode in [GameMode.AI_EASY, GameMode.AI_MEDIUM, GameMode.AI_HARD]
+    
     blue_player = Player(
         color=PlayerColor.BLUE,
         name=blue_name,
-        is_ai=mode in [GameMode.AI_EASY, GameMode.AI_MEDIUM, GameMode.AI_HARD],
-        ai_difficulty=mode.value if mode != GameMode.HOTSEAT and mode != GameMode.NETWORK else None
+        is_ai=is_blue_ai,
+        # Ensure the string "AI_HARD" etc. is stored here for the select_ai_move switch
+        ai_difficulty=mode.name if is_blue_ai else None 
     )
     
     return GameState(
@@ -385,7 +445,6 @@ def initialize_game(mode: GameMode,
         red_player=red_player,
         blue_player=blue_player
     )
-
 
 def get_tile_at_position(board: Dict[int, Tile], x: int, y: int, tolerance: int = 20) -> Optional[Tile]:
     """Find tile at given screen coordinates."""
