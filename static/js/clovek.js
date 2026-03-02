@@ -30,6 +30,7 @@ const gameState = {
     currentTurn: "red",
     diceValue: 6,       // Initial dice value (before any rolls)
     dicePosition: null, // Will be set to center initially
+    diceValue: 6,
     animating: false,
     options: {
         fast: false,    // Fast-forward animations
@@ -137,6 +138,18 @@ function throwDice() {
         return;
     }
     
+    // CRITICAL: Check if waiting for dice roll
+    if (!gameState.waitingForDiceRoll) {
+        console.log("❌ Already rolled dice this turn");
+        return;
+    }
+    
+    const currentPlayer = gameState.currentTurn;
+    console.log(`🎲 ${currentPlayer} throwing dice...`);
+    
+    // DON'T set waitingForDiceRoll = false here!
+    // Let animateDiceRoll handle it after server confirms
+    
     // Request dice roll from server
     fetch("/clovek/api/game/roll-dice", {
         method: "POST",
@@ -145,28 +158,41 @@ function throwDice() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Server confirmed roll - now update state and animate
+            gameState.waitingForDiceRoll = false;  // ← MOVED HERE
             animateDiceRoll(data.dice_value);
             handleAIMovesResponse(data);
         } else {
             console.error("Dice roll failed:", data.error);
+            // waitingForDiceRoll stays true
         }
     })
-    .catch(err => console.error("Dice roll error:", err));
+    .catch(err => {
+        console.error("Dice roll error:", err);
+        // waitingForDiceRoll stays true
+    });
 }
 
-function animateDiceRoll(finalValue) {
+function animateDiceRoll(finalValue, isAI = false) {
     gameState.animating = true;
     
     // Play dice sound
+    // if (!gameState.options.sound)  BUG
     playSound("KOCKA");
     
-    // Get dice position based on current turn
+    // CRITICAL: Store who is rolling BEFORE animation
+    const rollingPlayer = gameState.currentTurn;
+    
+    // Get dice area based on current turn
     const area = gameState.currentTurn === "red" 
         ? FACTORY.dice_throw_area.red 
         : FACTORY.dice_throw_area.blue;
     
-    // Clear the initial center position (only used for display before game starts)
-    gameState.dicePosition = null;
+    // Random position within area (billiard style)
+    const targetX = area.x + Math.random() * (area.width - 48);
+    const targetY = area.y + Math.random() * (area.height - 48);
+    
+    console.log(`🎲 ${gameState.currentTurn} rolling dice to (${Math.round(targetX)}, ${Math.round(targetY)})`);
     
     const duration = gameState.options.fast ? 400 : 800;
     const frameDelay = gameState.options.fast ? 60 : 120;
@@ -182,25 +208,51 @@ function animateDiceRoll(finalValue) {
         if (elapsed < duration) {
             // Show random dice face during roll
             const randomValue = Math.floor(Math.random() * 6) + 1;
-            drawDice(area.x, area.y, randomValue);
+            drawDice(targetX, targetY, randomValue);
             
             setTimeout(() => requestAnimationFrame(animateFrame), frameDelay);
         } else {
             // Show final value and store position
             gameState.diceValue = finalValue;
-            gameState.dicePosition = { x: area.x, y: area.y };
-            drawDice(area.x, area.y, finalValue);
+            gameState.dicePosition = { x: targetX, y: targetY };
+            drawDice(targetX, targetY, finalValue);
             gameState.animating = false;
             
-            console.log(`🎲 Dice rolled: ${finalValue}`);
+            console.log(`🎲 ${rollingPlayer} rolled: ${finalValue}`);
             
-            // Check if player can move at all
-            checkIfPlayerCanMove();
+            // Check if player can move ONLY for human players
+            // AI moves are already handled by server
+            if (!isAI) {
+                checkIfPlayerCanMove(rollingPlayer);
+            }
         }
     }
     
     requestAnimationFrame(animateFrame);
 }
+
+//buggy
+// function animateDiceRoll(finalValue) {
+//     // Flying animation from current position to target area
+//     const startX = gameState.dicePosition?.x || canvas.width / 2;
+//     const startY = gameState.dicePosition?.y || canvas.height / 2;
+    
+//     const targetX = targetArea.x + Math.random() * (targetArea.width - 48);
+//     const targetY = targetArea.y + Math.random() * (targetArea.height - 48);
+    
+//     // Flies, then rolls, then STAYS VISIBLE
+//     gameState.dicePosition = { x: targetX, y: targetY };
+// }
+
+function moveDiceToCurrentPlayer() {
+    // Random position in target area (billiard style - never same spot)
+    const randomX = targetArea.x + Math.random() * (targetArea.width - 48);
+    const randomY = targetArea.y + Math.random() * (targetArea.height - 48);
+    
+    gameState.dicePosition = { x: randomX, y: randomY };
+    render();
+}
+
 
 function drawDice(x, y, value) {
     if (!ctx || !assets.dice[value]) return;
@@ -219,10 +271,32 @@ function drawDice(x, y, value) {
  * ============================================================================ */
 
 function selectPawn(pawnId) {
-    if (gameState.animating || !gameState.diceValue) {
-        console.log("Cannot select pawn: animating or no dice roll");
+    console.log(`🎯 selectPawn(${pawnId}) called - State: turn=${gameState.currentTurn}, waiting=${gameState.waitingForDiceRoll}, dice=${gameState.diceValue}`);
+    
+    if (gameState.animating) {
+        console.log("❌ Cannot select pawn: animating");
         return;
     }
+    
+    // CRITICAL: Check if dice has been rolled this turn
+    if (gameState.waitingForDiceRoll) {
+        console.log("❌ Must roll dice first! (waitingForDiceRoll=true)");
+        return;
+    }
+    
+    if (!gameState.diceValue) {
+        console.log("❌ No dice value available (diceValue is null/0)");
+        return;
+    }
+    
+    // CRITICAL: Validate that pawn belongs to current player
+    const pawnColor = pawnId <= 4 ? "red" : "blue";
+    if (pawnColor !== gameState.currentTurn) {
+        console.log(`❌ Cannot move ${pawnColor} pawn - it's ${gameState.currentTurn}'s turn!`);
+        return;
+    }
+    
+    console.log(`✓ Valid selection: ${pawnColor} pawn ${pawnId} on ${gameState.currentTurn}'s turn with dice=${gameState.diceValue}`);
     
     // Send move request to server
     fetch("/clovek/api/game/move-pawn", {
@@ -230,17 +304,48 @@ function selectPawn(pawnId) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pawn_id: pawnId })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            console.error(`❌ Server returned ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log("🎯 Move pawn response:", data);
+        
         if (data.success && data.animation_sequence) {
+            // Update turn and waiting state
+            if (data.current_turn) {
+                gameState.currentTurn = data.current_turn;
+            }
+            gameState.waitingForDiceRoll = true;  // Ready for next dice roll
+            
             // Queue animation sequence from server
             queueAnimationSequence(data.animation_sequence);
+            
+            // Handle AI response if any
+            if (data.ai_moves) {
+                console.log(`📦 Received ${data.ai_moves.length} AI moves from server`);
+            }
             handleAIMovesResponse(data);
         } else {
-            console.error("Move failed:", data.error);
+            console.error(`❌ Move failed: ${data.error}`);
+            console.error(`   Client state: turn=${gameState.currentTurn}, waiting=${gameState.waitingForDiceRoll}, dice=${gameState.diceValue}`);
+            console.error(`   This indicates client/server state mismatch!`);
+            
+            // Try to recover by resetting client state
+            if (data.error === "Roll dice first" || data.error === "Dice not rolled") {
+                console.warn("⚠️  Server says dice not rolled - resetting client state");
+                gameState.waitingForDiceRoll = true;
+                gameState.diceValue = 6;  // Show neutral dice
+                render();
+            }
         }
     })
-    .catch(err => console.error("Move error:", err));
+    .catch(err => {
+        console.error("❌ Move error:", err);
+        console.error(`   Client state at error: turn=${gameState.currentTurn}, waiting=${gameState.waitingForDiceRoll}, dice=${gameState.diceValue}`);
+    });
 }
 
 /* ============================================================================
@@ -274,15 +379,30 @@ function queueAnimationSequence(sequence) {
 function processNextAnimation() {
     if (animationQueue.length === 0) {
         gameState.animating = false;
-        gameState.diceValue = null;
         console.log("✅ Animation sequence complete");
         
         // Redraw all pawns in their final positions
         redrawAllPawns();
         
+        // Keep dice visible after animations
+        if (gameState.diceValue && gameState.dicePosition) {
+            drawDice(gameState.dicePosition.x, gameState.dicePosition.y, gameState.diceValue);
+        }
+        
         // Unpause game after preparation
-        gameState.paused = false;
-        console.log("▶️  Game unpaused, ready to play!");
+        if (gameState.paused) {
+            gameState.paused = false;
+            console.log("▶️  Game unpaused, ready to play!");
+        }
+        
+        // Only move dice if we're in active gameplay (not preparation)
+        // Check if waitingForDiceRoll is true, meaning turn has ended
+        if (!gameState.paused && gameState.waitingForDiceRoll) {
+            moveDiceToCurrentPlayer();
+        }
+        
+        // Update status bar
+        updateStatusBar();
         
         return;
     }
@@ -302,23 +422,23 @@ function animatePawnMove(anim) {
     const fromTile = getBoardTile(from);
     const toTile = getBoardTile(to);
     
+    // don't play sounds if Zvok option is off for a player
+    if (!gameState.options.sound) {
+        if (sound === "GREMO" || sound === "DA" || sound === "NE") {
+            playSoundVariation(sound);
+        } else if (sound == undefined) {
+            playSound("FIGURA");
+        }
+
+    }
+
+
+    
     if (!fromTile || !toTile) {
         console.error(`Invalid tiles: from=${from}, to=${to}`);
         processNextAnimation();
         return;
     }
-    
-    // Play sound based on the sound parameter:
-    // - "GREMO", "DA", "NE" = play that sound variation
-    // - undefined = play FIGURA (default step sound)
-    // - null = silent (preparation moves)
-    if (sound === "GREMO" || sound === "DA" || sound === "NE") {
-        playSoundVariation(sound);
-    } else if (sound === undefined) {
-        // Default step sound
-        playSound("FIGURA");
-    }
-    // If sound === null, it's silent (preparation)
     
     // Get duration based on fast mode
     const duration = gameState.options.fast ? 150 : 300;
@@ -510,6 +630,21 @@ function handlePreparationAnimations(animations) {
     
     console.log(`🏠 Processing ${animations.length} preparation animations`);
     
+    // Reset game state for new game
+    gameState.currentTurn = "red";
+    gameState.waitingForDiceRoll = true;
+    gameState.paused = true;
+    
+    // Move dice to red player's area for new game
+    const redArea = FACTORY.dice_throw_area.red;
+    gameState.diceValue = 6;
+    gameState.dicePosition = {
+        x: redArea.x + Math.random() * (redArea.width - 48),
+        y: redArea.y + Math.random() * (redArea.height - 48)
+    };
+    
+    console.log("🎲 Dice reset to red area for new game");
+    
     // Queue all preparation animations
     queueAnimationSequence(animations);
 }
@@ -527,30 +662,36 @@ function render() {
     // Draw all pawns at their stored positions
     redrawAllPawns();
     
-    // Draw dice if we have a value and position
+    // ALWAYS draw dice if we have a value and position
     if (gameState.diceValue && gameState.dicePosition) {
-        drawDice(
-            gameState.dicePosition.x, 
-            gameState.dicePosition.y, 
-            gameState.diceValue
-        );
-    } else if (gameState.diceValue) {
-        // Fallback: draw at center if no position set
-        const area = gameState.currentTurn === "red" 
-            ? (FACTORY?.dice_throw_area?.red || { x: 100, y: 450 })
-            : (FACTORY?.dice_throw_area?.blue || { x: 730, y: 50 });
-        drawDice(area.x, area.y, gameState.diceValue);
+        drawDice(gameState.dicePosition.x, gameState.dicePosition.y, gameState.diceValue);
     }
+    
+    updateStatusBar();
+}
+
+// Continuous render loop to keep dice visible
+function startRenderLoop() {
+    function renderFrame() {
+        if (!gameState.animating) {
+            render();
+        }
+        requestAnimationFrame(renderFrame);
+    }
+    requestAnimationFrame(renderFrame);
+    console.log("🎬 Continuous render loop started");
 }
 
 /* ============================================================================
  * TURN MANAGEMENT
  * ============================================================================ */
 
-function checkIfPlayerCanMove() {
+function checkIfPlayerCanMove(rollingPlayer) {
     /**
      * Check if current player has any valid moves.
      * If not, automatically pass turn to opponent.
+     * 
+     * @param rollingPlayer - Who rolled the dice (to verify correctness)
      */
     fetch("/clovek/api/game/check-moves", {
         method: "POST",
@@ -562,14 +703,19 @@ function checkIfPlayerCanMove() {
     .then(response => response.json())
     .then(data => {
         if (data.success && !data.can_move) {
-            console.log(`❌ ${data.current_player} cannot move, passing turn`);
+            console.log(`❌ ${rollingPlayer} cannot move (rolled ${gameState.diceValue}), passing turn`);
+            
+            // CRITICAL: Verify we're passing for the right player
+            if (data.current_player && data.current_player !== rollingPlayer) {
+                console.warn(`⚠️  Server says current_player is ${data.current_player}, but ${rollingPlayer} rolled!`);
+            }
             
             // Auto-pass after short delay
             setTimeout(() => {
                 passTurn();
             }, 1000);
         } else if (data.success && data.can_move) {
-            console.log(`✓ ${data.current_player} has ${data.valid_moves} valid moves`);
+            console.log(`✓ ${rollingPlayer} has ${data.valid_moves} valid moves`);
         }
     })
     .catch(err => console.error("Error checking moves:", err));
@@ -586,12 +732,25 @@ function passTurn() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(`🔄 Turn passed to ${data.current_turn}`);
+            console.log(`🔄 Turn passed from ${gameState.currentTurn} to ${data.current_turn}`);
             
             // Update game state
             gameState.currentTurn = data.current_turn;
-            gameState.diceValue = null;
-            gameState.dicePosition = null;
+            gameState.waitingForDiceRoll = true;
+            
+            // Keep dice visible with value 6 (neutral)
+            gameState.diceValue = 6;
+            
+            // Move dice to new player's area
+            moveDiceToCurrentPlayer();
+            
+            console.log(`✅ ${data.current_turn} must now roll dice (old roll cleared)`);
+            
+            // Handle AI moves if any (server may return ai_moves after pass)
+            if (data.ai_moves) {
+                console.log(`📦 Received ${data.ai_moves.length} AI moves after pass`);
+                handleAIMovesResponse(data);
+            }
             
             // Redraw board
             render();
@@ -637,6 +796,36 @@ if (canvas) {
         }
     });
 }
+
+// bug- pawns can't be clicked
+// if (canvas) {
+//     canvas.addEventListener("click", (e) => {
+//         if (gameState.animating) return;
+        
+//         if (gameState.dicePosition) {
+//             const diceSize = 48;
+//             const diceRect = {
+//                 x: gameState.dicePosition.x,
+//                 y: gameState.dicePosition.y,
+//                 width: diceSize,
+//                 height: diceSize
+//             };
+            
+//             if (isPointInRect(x, y, diceRect)) {
+//                 throwDice();  // ← Only clicking dice itself
+//                 return;
+//             }
+//         }
+        
+//         // Check if clicked on any pawn
+//         const clickedPawn = findPawnAtPosition(x, y);
+//         if (clickedPawn) {
+//             console.log(`🎯 Pawn ${clickedPawn} clicked`);
+//             selectPawn(clickedPawn);
+//             return;
+//         }
+//     });
+// }
 
 function isPointInRect(x, y, rect) {
     return x >= rect.x && x <= rect.x + rect.width &&
@@ -740,8 +929,8 @@ function displayInitialPawnsAndDice() {
     // Set initial dice value and position (center of board)
     gameState.diceValue = 6; // Show 6 initially
     gameState.dicePosition = {
-        x: Math.floor(canvas.width / 2 - 24),
-        y: Math.floor(canvas.height / 2 - 24)
+        x: Math.floor(canvas.width / 2 - 70),
+        y: Math.floor(canvas.height / 2 - 30)
     };
     
     // Draw dice at center
@@ -766,6 +955,9 @@ function initGame() {
     // Load board tile positions (optional, has fallback)
     loadBoardTiles();
     
+    // Start continuous render loop
+    startRenderLoop();
+    
     // Wait for assets to load before initial display
     setTimeout(() => {
         displayInitialPawnsAndDice();
@@ -775,21 +967,163 @@ function initGame() {
     console.log("✅ Game initialized");
 }
 
+// function handleAIMovesResponse(data) {
+//     if (data.ai_moves && data.ai_moves.length > 0) {
+//         console.log(`🤖 Processing ${data.ai_moves.length} AI moves`);
+        
+//         data.ai_moves.forEach(aiMove => {
+//             if (aiMove.animations && aiMove.animations.length > 0) {
+//                 queueAnimationSequence(aiMove.animations);
+//             }
+//         });
+        
+//         // Update to final turn
+//         const lastMove = data.ai_moves[data.ai_moves.length - 1];
+//         gameState.currentTurn = lastMove.current_turn;
+//     }
+// }
+
+
+// function handleAIMovesResponse(data) {
+//     if (data.ai_moves && data.ai_moves.length > 0) {
+//         console.log(`🤖 Processing ${data.ai_moves.length} AI moves`);
+        
+//         // Process EACH AI move (might be multiple if AI rolls 6)
+//         data.ai_moves.forEach((aiMove, index) => {
+//             console.log(`🤖 AI move ${index + 1}:`, aiMove);
+            
+//             // 1. Show AI dice roll
+//             if (aiMove.dice_value) {
+//                 console.log(`🎲 AI rolled: ${aiMove.dice_value}`);
+//                 gameState.diceValue = aiMove.dice_value;  // ← UPDATE STATE
+                
+//                 // 2. Move dice to AI player's side
+//                 const aiPlayer = aiMove.current_turn === "red" ? "blue" : "red";
+//                 const aiDiceArea = aiPlayer === "red" 
+//                     ? FACTORY.dice_throw_area.red 
+//                     : FACTORY.dice_throw_area.blue;
+                
+//                 gameState.dicePosition = {
+//                     x: aiDiceArea.x + 6,
+//                     y: aiDiceArea.y + 6
+//                 };  // ← MOVE DICE VISUALLY
+//             }
+            
+//             // 3. Queue animations
+//             if (aiMove.animations && aiMove.animations.length > 0) {
+//                 queueAnimationSequence(aiMove.animations);
+//             }
+//         });
+        
+//         // 4. Update to final turn
+//         const lastMove = data.ai_moves[data.ai_moves.length - 1];
+//         gameState.currentTurn = lastMove.current_turn;
+        
+//         // 5. Move dice to final player
+//         moveDiceToCurrentPlayer();
+//     }
+// }
+
 function handleAIMovesResponse(data) {
     if (data.ai_moves && data.ai_moves.length > 0) {
-        console.log(`🤖 Processing ${data.ai_moves.length} AI moves`);
+        console.log(`🤖 Received ${data.ai_moves.length} AI moves from server`);
         
-        data.ai_moves.forEach(aiMove => {
-            if (aiMove.animations && aiMove.animations.length > 0) {
-                queueAnimationSequence(aiMove.animations);
+        // Wait for any current animations to finish before AI plays
+        function waitAndPlayAI() {
+            if (gameState.animating) {
+                console.log("⏳ Waiting for animations to complete before AI plays...");
+                setTimeout(waitAndPlayAI, 100);
+                return;
             }
-        });
+            
+            // Now process AI moves
+            processAIMoves(data.ai_moves);
+        }
         
-        // Update to final turn
-        const lastMove = data.ai_moves[data.ai_moves.length - 1];
-        gameState.currentTurn = lastMove.current_turn;
+        waitAndPlayAI();
     }
 }
+
+function processAIMoves(aiMoves) {
+    let moveIndex = 0;
+    
+    function playNextAIMove() {
+        if (moveIndex >= aiMoves.length) {
+            console.log("✅ All AI moves complete");
+            return;
+        }
+        
+        const aiMove = aiMoves[moveIndex];
+        console.log(`🤖 AI move ${moveIndex + 1}/${aiMoves.length}:`, aiMove);
+        
+        // Update game state for AI turn
+        gameState.currentTurn = aiMove.current_turn === "red" ? "blue" : "red"; // AI is opposite of result
+        gameState.waitingForDiceRoll = false;
+        
+        // Animate AI dice roll
+        if (aiMove.dice_value) {
+            console.log(`🤖 AI rolling dice...`);
+            animateDiceRoll(aiMove.dice_value, true);  // ← Pass isAI=true
+            
+            // Wait for dice animation, then play pawn animations
+            setTimeout(() => {
+                if (aiMove.animations && aiMove.animations.length > 0) {
+                    queueAnimationSequence(aiMove.animations);
+                    
+                    // Wait for pawn animations, then next AI move
+                    waitForAnimationsComplete(() => {
+                        // Update to result turn
+                        gameState.currentTurn = aiMove.current_turn;
+                        gameState.waitingForDiceRoll = true;
+                        moveDiceToCurrentPlayer();
+                        
+                        moveIndex++;
+                        setTimeout(playNextAIMove, 500);
+                    });
+                } else {
+                    // No animations, just update turn and continue
+                    gameState.currentTurn = aiMove.current_turn;
+                    gameState.waitingForDiceRoll = true;
+                    moveDiceToCurrentPlayer();
+                    
+                    moveIndex++;
+                    setTimeout(playNextAIMove, 500);
+                }
+            }, 1200);
+        }
+    }
+    
+    playNextAIMove();
+}
+
+function waitForAnimationsComplete(callback) {
+    function checkComplete() {
+        if (gameState.animating || animationQueue.length > 0) {
+            setTimeout(checkComplete, 100);
+        } else {
+            callback();
+        }
+    }
+    checkComplete();
+}
+
+
+function moveDiceToCurrentPlayer() {
+    const targetArea = gameState.currentTurn === "red" 
+        ? FACTORY.dice_throw_area.red 
+        : FACTORY.dice_throw_area.blue;
+    
+    // Random position in target area (billiard style - never same spot)
+    const randomX = targetArea.x + Math.random() * (targetArea.width - 48);
+    const randomY = targetArea.y + Math.random() * (targetArea.height - 48);
+    
+    gameState.dicePosition = { x: randomX, y: randomY };
+    
+    console.log(`🎲 Dice moved to ${gameState.currentTurn} area at (${Math.round(randomX)}, ${Math.round(randomY)})`);
+    
+    render();  // Keeps dice visible
+}
+
 
 
 
@@ -839,3 +1173,29 @@ window.clovekGame = {
  * - "NE" = Sad (being captured, random 0-4)
  * - null/undefined = Default "FIGURA" step sound
  */
+
+
+function updateStatusBar() {
+    const statusElement = document.getElementById("status-turn");
+    if (!statusElement) return;
+    
+    const player = gameState.currentTurn === "red" ? "RDEČI" : "MODRI";
+    const playerEng = gameState.currentTurn === "red" ? "RED" : "BLUE";
+    const color = gameState.currentTurn === "red" ? "#dc2626" : "#2563eb";
+    
+    let statusText;
+    if (gameState.waitingForDiceRoll) {
+        statusText = `Na potezi je ${player}. Vrži kocko.`;
+    } else if (gameState.diceValue) {
+        statusText = `${player} je na potezi. Premakni figuro (${playerEng}: ${gameState.diceValue})`;
+    } else {
+        statusText = `Na potezi je ${player}`;
+    }
+    
+    statusElement.textContent = statusText;
+    statusElement.style.color = color;
+    statusElement.style.fontWeight = "bold";
+    
+    console.log(`📊 Status: ${statusText}`);
+}
+

@@ -444,6 +444,27 @@ def exit_game():
 # =============================================================================
 # 🎮 MENU ROUTES - OPTIONS
 # =============================================================================
+@clovek_bp.route("/api/options", methods=["POST"])
+def api_options():
+    """Update game options."""
+    ensure_session()
+    
+    data = request.get_json() or {}
+    option = data.get("option")
+    value = data.get("value")
+    
+    if option not in ["sound", "fast"]:
+        return jsonify({"success": False, "error": "Invalid option"}), 400
+    
+    if "clovek_options" not in session:
+        session["clovek_options"] = {}
+    
+    session["clovek_options"][option] = value
+    session.modified = True
+    
+    return jsonify({"success": True, "option": option, "value": value})
+
+
 @clovek_bp.route("/api/options/toggle", methods=["POST"])
 def api_toggle_option():
     """Toggle boolean options (fast, sound, save_result)."""
@@ -674,6 +695,26 @@ def api_set_language():
         "clovek_lang": lang
     })
 
+# # ERROR 404 bad request
+# @clovek_bp.route("/api/language", methods=["POST"])
+# def api_set_language():
+#     """Set game language."""
+#     ensure_session()
+    
+#     data = request.get_json() or {}
+#     language = data.get("language")  # ← Accept "language" parameter
+    
+#     if language not in ["slo", "eng"]:
+#         return jsonify({"success": False, "error": "Invalid language"}), 400
+    
+#     from .labels import Language
+#     lang_enum = Language.SLOVENIAN if language == "slo" else Language.ENGLISH
+    
+#     session["clovek_lang"] = lang_enum.value
+#     session.modified = True
+    
+#     return jsonify({"success": True, "language": language})
+
 
 @clovek_bp.route("/api/labels/<lang>")
 def api_get_labels(lang):
@@ -803,73 +844,6 @@ def api_chat_history():
 # =============================================================================
 # 🎮 GAME FLOW - DICE & PAWNS
 # =============================================================================
-@clovek_bp.route("/api/game/roll-dice", methods=["POST"])
-def api_roll_dice():
-    """Player rolls the dice."""
-    ensure_session()
-    sid = session["sid"]
-    
-    # Check if game exists
-    if sid not in active_games:
-        return jsonify({
-            "success": False,
-            "error": "No active game"
-        }), 400
-    
-    game = active_games[sid]
-    
-    # Check if game is paused
-    if session.get("clovek_paused", True):
-        return jsonify({
-            "success": False,
-            "error": "Game is paused"
-        }), 400
-    
-    # Check if game is over
-    if game.game_over:
-        return jsonify({
-            "success": False,
-            "error": "Game is over"
-        }), 400
-    
-    # Check if dice already rolled this turn
-    if game.dice_value is not None:
-        return jsonify({
-            "success": False,
-            "error": "Dice already rolled this turn"
-        }), 400
-    
-    # Roll dice (1-6)
-    dice_value = random.randint(1, 6)
-    game.dice_value = dice_value
-    
-    # Check if player can move
-    from .engine.engine import can_player_move_at_all
-    
-    can_move = can_player_move_at_all(game, dice_value)
-    
-    result = {
-        "success": True,
-        "dice_value": dice_value,
-        "current_turn": game.current_turn.value,
-        "can_move": can_move
-    }
-    
-    # If player can't move, pass turn
-    if not can_move:
-        from .engine.engine import pass_turn
-        pass_turn(game)
-        result["passed"] = True
-        result["current_turn"] = game.current_turn.value
-        
-        # Check if next player is AI
-        ai_moves = process_ai_turns_until_human(game)
-        if ai_moves:
-            result["ai_moves"] = ai_moves
-    
-    return jsonify(result)
-
-
 @clovek_bp.route("/api/game/move-pawn", methods=["POST"])
 def api_move_pawn():
     """Move a pawn."""
@@ -944,6 +918,59 @@ def api_move_pawn():
     
     return jsonify(result)
 
+@clovek_bp.route("/api/game/roll-dice", methods=["POST"])
+def api_roll_dice():
+    """Player rolls the dice."""
+    ensure_session()
+    sid = session["sid"]
+    
+    # Check if game exists
+    if sid not in active_games:
+        return jsonify({
+            "success": False,
+            "error": "No active game"
+        }), 400
+    
+    game = active_games[sid]
+    
+    # Check if game is paused
+    if session.get("clovek_paused", True):
+        return jsonify({
+            "success": False,
+            "error": "Game is paused"
+        }), 400
+    
+    # Check if game is over
+    if game.game_over:
+        return jsonify({
+            "success": False,
+            "error": "Game is over"
+        }), 400
+    
+    # Check if dice already rolled this turn
+    if game.dice_value is not None:
+        return jsonify({
+            "success": False,
+            "error": "Dice already rolled this turn"
+        }), 400
+    
+    # Roll dice (1-6)
+    dice_value = random.randint(1, 6)
+    game.dice_value = dice_value
+    
+    # Check if player can move
+    from .engine.engine import can_player_move_at_all
+    
+    can_move = can_player_move_at_all(game, dice_value)
+    
+    result = {
+        "success": True,
+        "dice_value": dice_value,
+        "current_turn": game.current_turn.value,
+        "can_move": can_move
+    }
+            
+    return jsonify(result)
 
 @clovek_bp.route("/api/game/check-moves", methods=["POST"])
 def api_check_moves():
@@ -978,7 +1005,7 @@ def api_check_moves():
         "success": True,
         "can_move": can_move,
         "valid_moves": len(valid_moves),
-        "current_player": game.current_turn.value
+        "current_player": game.current_turn.value  # ✅ This is correct now
     })
 
 
@@ -1001,12 +1028,18 @@ def api_pass_turn():
     
     pass_turn(game)
     
-    return jsonify({
+    result = {
         "success": True,
         "current_turn": game.current_turn.value,
         "message": "Turn passed"
-    })
-
+    }
+    
+    # ✅ NOW check if next player is AI (after explicit pass)
+    ai_moves = process_ai_turns_until_human(game)
+    if ai_moves:
+        result["ai_moves"] = ai_moves
+    
+    return jsonify(result)
 
 @clovek_bp.route("/api/game/state")
 def api_get_game_state():
@@ -1054,7 +1087,6 @@ def api_get_game_state():
             ]
         }
     })
-
 
 @clovek_bp.route("/api/board/tiles")
 def api_get_board_tiles():

@@ -79,6 +79,14 @@
         <span class="menu-label" data-label-key="opponent">Nasprotnik</span>
         <ul class="dropdown">
 
+            <!-- HUMAN (Radio option) -->
+            <li onclick="setOpponent('HUMAN')">
+                <span class="menu-radio">
+                    {% if CLOVEK.state.mode == "HUMAN" %}●{% else %}○{% endif %}
+                </span>
+                <span data-label-key="human">Človek</span>
+            </li>
+
             <!-- COMPUTER (Nested submenu) -->
             <li class="menu-item-nested">
                 <span class="menu-radio">
@@ -113,14 +121,6 @@
                     </li>
                     
                 </ul>
-            </li>
-
-            <!-- HUMAN (Radio option) -->
-            <li onclick="setOpponent('HUMAN')">
-                <span class="menu-radio">
-                    {% if CLOVEK.state.mode == "HUMAN" %}●{% else %}○{% endif %}
-                </span>
-                <span data-label-key="human">Človek</span>
             </li>
 
             <!-- NETWORK (Radio option) -->
@@ -346,7 +346,7 @@ function setLanguage(lang) {
     fetch("/clovek/api/language", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language: lang })
+        body: JSON.stringify({ clovek_lang: lang })
     })
     .then(response => {
         if (!response.ok) {
